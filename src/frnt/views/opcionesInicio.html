@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta charset="UTF-8">
+      <title>Spartacus - Programa del agente</title>
+      <link rel="stylesheet" href="../../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+      <link rel="stylesheet" href="css/opcionesInicio.css">
+      <link rel="stylesheet" href="css/stylefonts.css">
+   </head>
+   <body class="text-center bg-secondary position-absolute h-100 col-12 p-0">
+   </body>
+
+   <div class="modal fade" id="opcionesCanal" tabindex="-1" role="dialog" aria-labelledby="titOpcionesCanal" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="titOpcionesCanal">Opciones de inicio</h5>
+            <button type="button" onclick="cerrarSesion()" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body text-left">
+            Actualmente tiene asigandos mas de un canal de atención ¿Cúal canal desea usar?
+            <div class="col-12 d-flex px-0 py-3">
+               <button type="button" onclick="cambiarCanal('IBD');" class="btn btn-dark col float-left mr-1">Inbound</button>
+               <button type="button" onclick="cambiarCanal('OBD');" class="btn btn-info col float-left ml-1">Outbound</button>
+            </div>
+          </div>
+          <div id="loader" style="display: none;" class="modal-body text-center">
+            <div  class=" spinner-grow text-success" role="status">
+               <span class="sr-only">Loading...</span>
+            </div>
+            <div  class=" spinner-grow text-dark" role="status">
+               <span class="sr-only">Loading...</span>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="cerrarSesion()">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+   <script src="js/opcionesInicio.js"></script>
+</html>

@@ -1,0 +1,292 @@
+const querys = require('../querys/Cliente');
+const pool = require('../cnn/database');
+
+module.exports.consultar = async (criterios, datosPaginacion) => {
+
+    var objResult = {};
+    try {
+
+        var criteriosSeleccion = "";
+        var criteriosSeleccion2 = "";
+        if (/^([a-zA-ZñÑáéíóúÁÉÍÓÚ.,#&%//?¡¿!\s])*$/.test(criterios)) {
+            criteriosSeleccion = " and cliente.BTCLIENTENCOMPLETO like CONCAT('%','" + criterios + "','%') group by id  order by telefonos,  id desc limit ? , ? ";
+            criteriosSeleccion2 = " and cliente.BTCLIENTENCOMPLETO like CONCAT('%','" + criterios + "','%') ";
+        }
+        else if (/^([0-9\s])*$/.test(criterios)) {
+
+            if (criterios.length == 10) {
+                criteriosSeleccion = " and tel.BTCLIENTETELNO like  CONCAT('%','" + criterios + "','%') group by id  order by telefonos,  id desc limit ? , ? ";
+                criteriosSeleccion2 = " and tel.BTCLIENTETELNO like  CONCAT('%','" + criterios + "','%') ";
+            } else {
+                criteriosSeleccion = " and cliente.BTCLIENTENUMERO like  CONCAT('%','" + criterios + "','%') group by id  order by telefonos, id desc limit ? , ? ";
+                criteriosSeleccion2 = " and cliente.BTCLIENTENUMERO like  CONCAT('%','" + criterios + "','%') ";
+            }
+
+        }
+        else if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,4})+$/.test(criterios)) {
+
+            criteriosSeleccion = " and correos.BTCLIENTECORREO like  CONCAT('%','" + criterios + "','%') group by id  order by telefonos , id desc limit ? , ? ";
+            criteriosSeleccion2 = " and correos.BTCLIENTECORREO like  CONCAT('%','" + criterios + "','%') ";
+
+        } else if (criterios[0] == "+") {
+            criteriosSeleccion = " and tel.BTCLIENTETELNO like  CONCAT('%','" + criterios.substring(1, criterios.length - 1) + "','%') group by id  order by telefonos, id desc limit ? , ? ";
+            criteriosSeleccion2 = " and tel.BTCLIENTETELNO like  CONCAT('%','" + criterios.substring(1, criterios.length - 1) + "','%') ";
+        }
+        if (criteriosSeleccion == "") {
+            criteriosSeleccion = " and cliente.BTCLIENTENCOMPLETO like CONCAT('%','" + criterios + "','%') group by id  order by telefonos, id desc limit ? , ? ";
+            criteriosSeleccion2 = " and cliente.BTCLIENTENCOMPLETO like CONCAT('%','" + criterios + "','%') ";
+        }
+
+        const resultado1 = await pool.query(querys.consultarTotal + criteriosSeleccion2);
+        const resultado = await pool.query(querys.consultar + criteriosSeleccion, [datosPaginacion.inicio, datosPaginacion.limite]);
+        objResult.valor = resultado;
+        objResult.total = resultado1[0].total;
+        return objResult;
+
+    } catch (error) {
+
+        objResult.valor = [];
+        objResult.total = 0;
+        return objResult;
+    }
+
+
+}
+
+module.exports.consultarTotal = async (criterios) => {
+    var objResult = {};
+    var criteriosSeleccion = "";
+    if (/^([a-zA-Z\s])*$/.test(criterios)) {
+        criteriosSeleccion = " and cliente.BTCLIENTENCOMPLETO like CONCAT('%','" + criterios + "','%') ";
+    }
+    else if (/^([0-9\s])*$/.test(criterios)) {
+        criteriosSeleccion = " and tel.BTCLIENTETELNO like  CONCAT('%','" + criterios + "','%') ";
+    }
+    else if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,4})+$/.test(criterios)) {
+        criteriosSeleccion = " and correos.BTCLIENTECORREO like  CONCAT('%','" + $criterios + "','%') ";
+    }
+
+    const resultado = await pool.query(querys.consultarTotal + criteriosSeleccion);
+
+    objResult.valor = resultado;
+    return objResult;
+
+}
+
+module.exports.insertar = async (obj) => {
+    const id = await pool.query(querys.calcularId, []);
+    await pool.query(querys.insertar, [id[0].id,
+    obj.primerNombre,
+    obj.apellidoPaterno,
+    obj.apellidoMaterno,
+    obj.nombreCompleto,
+    obj.correoElectronico, obj.nombrecompleto2,
+   
+    obj.generoCtoIput,
+    obj.fechaNacimientoCtoInput,
+    obj.curpCtoInput,
+    obj.afiliadoCtoInput, obj.estado, obj.municipio, obj.sucursal]);
+
+    //inserta telefono
+    /*const exiTel =  await pool.query(querys.consultarInsertTel,[id[0].id,obj.telefono]);
+    if( exiTel[0].total == 0)
+    {
+        await pool.query(querys.insertarTelefono,[id[0].id,obj.nir,obj.serie,obj.razon,obj.telefono,obj.tipo ]);
+    }*/
+
+    //inserta telefono
+    var exiTel=0;
+    if(obj.telefonoFijoInput!=""){
+        exiTel =  await pool.query(querys.actualizarTelefono, [id[0].id, obj.telefonoFijoInput, 'PERSONAL']);
+        if(exiTel.affectedRows==0){ 
+            await pool.query(querys.insertarTelefono, [id[0].id, obj.nir, obj.serie, obj.razon, obj.telefonoFijoInput, 'PERSONAL']);
+        }
+    }
+    if(obj.telefonoMovilInput!=""){
+        exiTel =  await pool.query(querys.actualizarTelefono, [id[0].id, obj.telefonoMovilInput, 'MOVIL']);
+        if(exiTel.affectedRows==0){ 
+            await pool.query(querys.insertarTelefono, [id[0].id, obj.nir, obj.serie, obj.razon, obj.telefonoMovilInput, 'MOVIL']);
+        } 
+    }
+    if(obj.telefonoAlternativoInput!=""){
+        exiTel =  await pool.query(querys.actualizarTelefono, [id[0].id, obj.telefonoAlternativoInput, 'ALTERNATIVO']);
+        if(exiTel.affectedRows==0){ 
+            await pool.query(querys.insertarTelefono, [id[0].id, obj.nir, obj.serie, obj.razon, obj.telefonoAlternativoInput, 'ALTERNATIVO']);
+        } 
+    }
+
+
+    //insertar correo    
+    if(obj.correoElectronico!=""){
+     exiCorreo = await pool.query(querys.actualizarCorreo, [id[0].id, obj.correoElectronico]);
+    if (exiCorreo.affectedRows==0){ 
+        await pool.query(querys.insertarCorreo, [id[0].id, obj.correoElectronico]);
+    } 
+    }
+    
+    const valores = await this.consultarPorLlaves(id[0].id)
+    const resultado = await pool.query(querys.consultarClientes , [id[0].id]);
+    var result = {
+        result: "OK",
+        valores: valores[0],
+        resultado: resultado[0]
+    }
+
+    const clienteCRM12 = await pool.query(querys.consultarClienteCRM12, [obj.idFolio]);
+    if (parseInt(clienteCRM12[0].total) == 0 || clienteCRM12[0].cliente==id[0].id  ) {
+        var actualizo = await pool.query(querys.actualizarCrm, [id[0].id, obj.idFolio]);
+        if(actualizo.affectedRows==0){ 
+            await pool.query(querys.insertarCrm, [id[0].id , obj.idLlamada, obj.idAgente, obj.nombreAgente, obj.extension, obj.telefonoCliente, obj.canalId, obj.rutaIVR,  obj.urls, obj.idLlamada]);
+            }
+        await pool.query(querys.guardarNombre, ['EN LLAMADA',obj.idLlamada, obj.telefonoCliente, obj.nombreCompleto, obj.idAgente]);
+    } else {      
+        var result = {
+            result: "Esta llamada ya fue tipificada, no es posible cambiar el cliente seleccionado.",
+            valores: valores[0],
+            resultado: resultado[0]
+        }    
+    }
+
+
+    return result;
+}
+
+module.exports.actualizar = async (obj) => {
+    await pool.query(querys.actualizar, [
+        obj.primerNombre,
+        obj.apellidoPaterno,
+        obj.apellidoMaterno,
+        obj.nombreCompleto,
+        obj.correoElectronico,
+        obj.nombrecompleto2,       
+        obj.generoCtoIput,
+        obj.fechaNacimientoCtoInput,
+        obj.curpCtoInput,
+        obj.afiliadoCtoInput, obj.estado, obj.municipio, obj.sucursal,
+        obj.id]);
+
+    var exiTel=0;
+    if(obj.telefonoFijoInput!=""){
+        exiTel =  await pool.query(querys.actualizarTelefono, [obj.id, obj.telefonoFijoInput, 'PERSONAL']);
+        if(exiTel.affectedRows==0){ 
+            await pool.query(querys.insertarTelefono, [obj.id, obj.nir, obj.serie, obj.razon, obj.telefonoFijoInput, 'PERSONAL']);
+        }
+    }
+    if(obj.telefonoMovilInput!=""){
+        exiTel =  await pool.query(querys.actualizarTelefono, [obj.id, obj.telefonoMovilInput, 'MOVIL']);
+        if(exiTel.affectedRows==0){ 
+            await pool.query(querys.insertarTelefono, [obj.id, obj.nir, obj.serie, obj.razon, obj.telefonoMovilInput, 'MOVIL']);
+        } 
+    }
+    if(obj.telefonoAlternativoInput!=""){
+        exiTel =  await pool.query(querys.actualizarTelefono, [obj.id, obj.telefonoAlternativoInput, 'ALTERNATIVO']);
+        if(exiTel.affectedRows==0){ 
+            await pool.query(querys.insertarTelefono, [obj.id, obj.nir, obj.serie, obj.razon, obj.telefonoAlternativoInput, 'ALTERNATIVO']);
+        } 
+    }
+
+
+    //insertar correo    
+    if(obj.correoElectronico!=""){
+     exiCorreo = await pool.query(querys.actualizarCorreo, [obj.id, obj.correoElectronico]);
+    if (exiCorreo.affectedRows==0){ 
+        await pool.query(querys.insertarCorreo, [obj.id, obj.correoElectronico]);
+    } 
+    }
+  
+    const valores = await this.consultarPorLlaves(obj.id)
+    const resultado = await pool.query(querys.consultarClientes , [obj.id]);
+    var result = {
+        result: "OK",
+        valores: valores[0],
+        resultado: resultado[0]
+    }
+
+    const clienteCRM12 = await pool.query(querys.consultarClienteCRM12, [obj.idFolio]);
+    if (parseInt(clienteCRM12[0].total) == 0 || clienteCRM12[0].cliente==obj.id ) {
+        var actualizo = await pool.query(querys.actualizarCrm, [obj.id, obj.idFolio]);
+        if(actualizo.affectedRows==0){ 
+            await pool.query(querys.insertarCrm, [obj.id , obj.idLlamada, obj.idAgente, obj.nombreAgente, obj.extension, obj.telefonoCliente, obj.canalId, obj.rutaIVR,  obj.urls, obj.idLlamada]);
+            }
+        await pool.query(querys.guardarNombre, ['EN LLAMADA',obj.idLlamada, obj.telefonoCliente, obj.nombreCompleto, obj.idAgente]);
+    } else {      
+        var result = {
+            result: "Esta llamada ya fue tipificada, no es posible cambiar el cliente seleccionado.",
+            valores: valores[0],
+            resultado: resultado[0]
+        }    
+    }
+
+
+    return result;
+
+}
+
+module.exports.consultarPorLlaves = async (llave) => {
+    const datos = await pool.query(querys.consultarPorLlaves, [llave]);
+    return datos;
+
+}
+
+module.exports.insertarTelefono = async (telefono) => {
+    const exiTel = await pool.query(querys.consultarInsertTel, [telefono.cliente, telefono.telefono,telefono.tipo]);
+    if (exiTel[0].total == 0) {
+        await pool.query(querys.insertarTelefono, [telefono.cliente, telefono.nir, telefono.serie, telefono.razon, telefono.telefono, telefono.tipo]);
+    }
+}
+
+module.exports.insertarCorreo = async (correo) => {
+    const exiCorreo = await pool.query(querys.consultarInsertCorreo, [correo.cliente, correo.correo]);
+    console.log("holaaa " + exiCorreo[0].total + " " + correo)
+    if (exiCorreo[0].total == 0) {
+        await pool.query(querys.insertarCorreo, [correo.cliente, correo.correo]);
+    }
+}
+
+module.exports.consultarPortabilidad = async (telefono) => {
+    const portabilidad = await pool.query(querys.consultarPortabilidad, [telefono, telefono]);
+    return portabilidad;
+}
+
+/* 
+module.exports.consultarEstados = async () => 
+{
+    const datos =await pool.query(querys.consultarEstados,[]);
+    return datos; 
+}
+
+module.exports.consultarCiudad = async () => 
+{
+    const datos =await pool.query(querys.consultarCiudad,[]);
+    return datos; 
+}
+
+  */
+
+module.exports.consultarTelefonos = async (idCliente) => {
+    const telefonos = await pool.query(querys.consultarTelefonos, [idCliente]);
+    return telefonos;
+}
+
+module.exports.consultarCorreos = async (idCliente) => {
+    const correos = await pool.query(querys.consultarCorreos, [idCliente]);
+    return correos;
+}
+
+
+module.exports.consultarContactos = async (idUsuario) => {
+    const contactos = await pool.query(querys.consultarContactos, [idUsuario]);
+    return contactos;
+}
+
+
+module.exports.consultarEstados = async () => {
+    const estados = await pool.query(querys.consultarEstados, []);
+    return estados;
+}
+
+module.exports.consultarMunicipio = async (id) => {
+    const mun = await pool.query(querys.consultarMunicipio, [id]);
+    return mun;
+}
+

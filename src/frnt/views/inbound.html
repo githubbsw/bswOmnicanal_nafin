@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+   <meta charset="UTF-8">
+   <title>Inbound - Spartacus - Programa del agente</title>
+   <link rel="stylesheet" href="../../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+   <link rel="stylesheet" href="css/style.css">
+   <link rel="stylesheet" href="css/styleResp.css">
+   <link rel="stylesheet" href="css/stylefonts.css">
+   <link rel="stylesheet" href="css/altacita2.css">
+   <script src="release/SIPml-api.js" type="text/javascript"> </script>
+   <link rel="stylesheet" type="text/css" href="css/datatables/datatables.min.css" />
+</head>
+
+<body class="text-center bg-secondary position-absolute h-100 col-12 px-0" style="display: none;">
+   <input type="hidden" value="IBD" id="AREAINICIADA_">
+   <div class="container-fluid px-0">
+      <nav class="navbar navbar-dark bg-dark">
+         <div class="d-flex ">
+            <div class="dropdown">
+               <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <span class="icon-user"></span>
+               </a>
+               <div class="dropdown-menu  pb-0" aria-labelledby="dropdownMenuLink">
+                  <a class="dropdown-item" href="#" data-toggle="modal" data-target="#exampleModal">Solicitar
+                     recesos</a>
+                  <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalConfiguracion"><span
+                        class="icon-cogs pr-1"></span>Configuración </a>
+                  <a onclick="cerrarSesion()" class="dropdown-item text-danger pb-2" href="#"><span
+                        class="icon-switch pr-1"></span> Cerrar sesión</a>
+                  <div class="dropdown-item pb-2"  id="version"></div>
+               </div>
+            </div>
+            <button onclick="modulosToggle()" type="button" class="btn btn-secondary float-rigth mx-2"><span
+                  class="icon-menu"></span></button>
+            <button onclick="cerrarVentana()" type="button" class="btn btn-danger float-rigth mx-2"><span
+                  class="icon-home"></span></button>
+            <!--<button id="verRespuestasTipoP" data-toggle="modal" data-target="#modalRespuestas" type="button"
+               class="btn btn-warning float-rigth mx-0"><span class="icon-quotes-right"></span></button>
+            -->
+               <button id="verRespuestasTipoP" onclick="traerScrip()" type="button"
+               class="btn btn-warning float-rigth mx-0"><span class="icon-quotes-right"></span></button>
+               
+            <button type="button" class="btn btn-dark float-rigth mx-1" style="background-color: #7D3C98;"
+               data-whatever='SMS' data-numero='' data-toggle="modal" data-target="#modalSMS">SMS</button>
+            <button id="btnCita" onclick="abrirAltaCita()" title="Citas" type="button"
+               class="btn btn-light float-rigth mx-2"><span class="icon-calendar"></span></button>
+            <button onclick="verPantallaCRM()" type="button" title="Abrir CRM"
+               class="btn btn-light float-rigth mx-2"><span class="icon-folder-open"></span></button>
+               <button id="btnCita" onclick="pitarLocalizacion()" title="Horarios y Ubicaciones" type="button"
+               class="btn btn-light float-rigth mx-2"><span class="icon-location2"></span></button>
+            <div id="alertPrincipal" class="alert alert-primary mb-0 px-3 py-1" role="alert" style="display: none;"> Se
+               autorizo tu receso...!</div>
+            <!--<button onclick="abrirBuscarCliente()" type="button" class="btn btn-danger float-rigth mx-1"><span class="icon-home"></span></button>-->
+         </div>
+         <div class="float-rigth text-white">
+            <div id="circulo_estatus" class="circulo_estatus float-left mr-3"></div>
+            <div class="float-left" id="usuario">Usuario</div>
+            <div class="col" id="usuario_">Llamadas de entrada (Inbound <span id="server_" style="color:#ffc107"></span>)</div>
+         </div>
+         <img src="img/logoTipo.png" alt="" style="width: 275px;">
+      </nav>
+   </div>
+   <div class="bg-light position-relative d-flex" style="height: calc(100% - 72px); width: 100%;">
+      <div id="modulosCont" class="col-3 float-left bg-secondary h-100" style="overflow-y: scroll; display: none;">
+         <div class="input-group my-3">
+            <div class="input-group-prepend">
+               <label style="font-size: smaller;" class="input-group-text" for="comboPerfil">Perfil</label>
+            </div>
+            <select onchange="cambioPerfil()" style="font-size: smaller;" class="custom-select"
+               id="comboPerfil"></select>
+         </div>
+         <div class="input-group mb-3">
+            <div class="input-group-prepend">
+               <label style="font-size: smaller;" class="input-group-text" for="comboPerfil">Modulos</label>
+            </div>
+            <select onchange="cambioModulo()" style="font-size: smaller;" class="custom-select"
+               id="comboModulos"></select>
+         </div>
+         <div class="accordion" id="accordionModulos">
+         </div>
+      </div>
+      <div class="col d-none  float-left bg-light h-100 px-0 position-relative" id="divOpen">
+      </div>
+      <div class="col d-none float-left bg-light h-100 px-0 position-relative" id="divOpen2">
+      </div>
+      <div class="col d-flex  float-left bg-light h-100 px-0 position-relative" id="divLlamada">
+         <div id="buscarCliente" class="col-5 float-left text-center text-white pt-3"
+            style="background: #00000091;overflow-y: scroll;display:none">
+            <input id="buscar" onblur="consultarCliente('listClientes', '')" onkeypress="return runScript(event)"
+               style="margin-bottom: 10px; width: 100%;padding: 11px;border: none;border-bottom: solid 5px #28a745;outline: none;"
+               placeholder="Inserte Correo, Telefono, Nombre o folio de la persona">
+            <div class="d-flex justify-content-between">
+               <button onclick="nuevoCliente()" id="btnNuevoCliente" type="button" class="btn col btn-info mb-3">Nueva
+                  persona</button>
+            </div>
+            <div class="loader" style="display: none;">
+               <div class=" spinner-grow text-success" role="status">
+                  <span class="sr-only">Loading...</span>
+               </div>
+               <div class=" spinner-grow text-dark" role="status">
+                  <span class="sr-only">Loading...</span>
+               </div>
+            </div>
+            <ul id="listClientes" class="list-group text-left text-dark d-none">
+            </ul>
+            <table id="example" class="display responsive nowrap text-left" width="100%"></table>
+         </div>
+         <div id="displayTipificacion" style="overflow: hidden; display:none"
+            class="col-5 float-left text-center text-white pt-0 px-0"></div>
+         <div class="col-4 px-0 float-left " id="altadecitaContenedor" style="display: none;">
+         </div>
+
+         <div id="displayScript" class="col-4 float-left text-center text-white pt-3"
+            style="background: #00000091;overflow-y: scroll; display: none;">
+            <h5>Scripts de Saludo y despedida</h5>
+
+            <div class=" col-6 float-left altaCRM text-left p-2"  >Tipo de script
+               <select id="selectRespTipo" onchange="filtrarRespuestas()" class="custom-select form-control" placeholder="">
+               </select>
+            </div>
+            <div class=" col-6 float-left altaCRM text-left p-2"  >Script 
+               <select id="listRespuestas" onchange="verScript()" class="custom-select form-control" placeholder="">
+               </select>
+            </div>
+            <div class="card" style="height: calc(100% - 150px); background-color: transparent;">
+               <div class="card-body p-0 pt-2">
+                  <h5 id="preguntaTitulo" class="card-title"></h5>
+                  <div style="text-align: justify;     overflow-y: scroll;height: calc(100% - 50px);"
+                     id="respuestaText" class="card-text px-2"></div>
+               </div>
+            </div>
+         </div>
+
+         <div id="displayCliente" class="col-4 float-left text-center text-white pt-3"
+            style="background: #00000091;overflow-y: scroll;">
+            <h2>Persona</h2>
+            <div class="d-flex justify-content-between">
+               <button onclick="seleccionarCliente()" id="seleccionarCliente" type="button"
+                  class="btn col btn-info mx-1" style="display: none;">Seleccionar esta persona</button>
+               <button onclick="editarCliente()" id="editarCliente" type="button" class="btn col btn-success mx-1"
+                  style="display: none;">Editar esta persona</button>
+               <button onclick="cancelarBusquedaSelect()" id="cancelarSeleccion" type="button"
+                  class="btn col btn-danger mx-1" style="display: none;">Cancelar búsqueda</button>
+               <button onclick="quitarTipificacion()" id="quitarTipificacion" type="button"
+                  class="btn col btn-danger mx-1" style="display: none;">Cerrar tipificación</button>
+            </div>
+
+            <ul class="list-group mb-3 text-left">
+
+               <li class="list-group-item transparente datoCliente">Folio de la persona: <span class="text-white"
+                     id="idCliente"></span></li>
+               <li class="list-group-item transparente datoCliente">Nombre: <span class="text-white"
+                     id="nombreCliente"></span></li>
+               <li class="list-group-item transparente datoCliente">Teléfonos: <span class="text-white"
+                     id="telefonoCliente"></span></li>
+               <li class="list-group-item transparente datoCliente">Correo electrónico: <span class="text-white"
+                     id="correoCliente"></span></li>
+               <li class="list-group-item transparente datoCliente" style="visibility: hidden;">Contacto: <span class="text-white"
+                        id="datoContacto"></span></li>
+               <li class="list-group-item transparente datoCliente" style="visibility: hidden;" >CURP: <span class="text-white" id="datoCURP"></span>
+               </li>
+               <li class="list-group-item transparente datoCliente" style="visibility: hidden;" >Fecha de nacimiento: <span class="text-white"
+                     id="datoFechaNac"></span></li>
+               <li class="list-group-item transparente datoCliente" style="visibility: hidden;" >Genero: <span class="text-white"
+                     id="datoGenero"></span></li>               
+               <li class="list-group-item transparente datoCliente" style="visibility: hidden;">¿Esta afiliado a algun programa? <span
+                     class="text-white" id="datoAfilio"></span></li>            
+            </ul>
+         </div>
+         <div id="displayClienteNuevo" class="col-6 float-left text-center text-white pt-3"
+            style="background: #00000091;overflow-y: scroll;display: none;">
+            <div class="alert alert-success" id="actuaGuarda" style="display: none;"></div>
+            <h3>Datos de la persona que llama</h3>
+            <div class="d-flex justify-content-between bd-highlight flex-wrap">
+               <button onclick="pestanasCRM('CRMPRINCIPALES')" id="CRMPRINCIPALES" type="button"
+                  class="btn  btn-aux-crm col btn-dark mx-1">Datos principales</button>               
+               <button onclick="insertarCliente()" id="CRMINSCLIENTE" type="button"
+                  class="btn col btn-info mx-1">Guardar</button>
+               <button onclick="insertarCorreo()" id="CRMINSCORREOS" type="button" class="btn col btn-info mx-1"
+                  style="display:none">Guardar correo</button>
+               <button onclick="insertarTelefono()" id="CRMINSTELEFONO" type="button" class="btn col btn-info mx-1"
+                  style="display:none">Guardar telefono</button>
+               <button onclick="cancelarAltaCliente()" id="btnCancelarAltaCliente" type="button" class="btn col-1 btn-danger mx-1"><span
+                     class="icon-cross"></span></button>
+               <button onclick="pestanasCRM('CRMTELEFONOS')" id="CRMTELEFONOS" type="button"
+                  class="btn btn-aux-crm col btn-dark mx-1" style="visibility: hidden;display: none" >+ Teléfonos</button>
+               <button onclick="pestanasCRM('CRMCORREOS')" id="CRMCORREOS" type="button"
+                  class="btn btn-aux-crm col btn-dark mx-1" style="visibility: hidden;display: none" >+ Correos</button>
+            </div>
+            <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left deshabilitado">Folio persona:<input
+                  class="col " id="idClienteInput" title="Id cliente" disabled></div>
+            <div class="CRMPRINCIPALES col-12 float-left altaCRM text-left ">Nombres<input
+                  onblur="crearNombreCompleto()" class="col " id="primerNombreInput" title="Nombre"
+                  style="text-transform: uppercase;" onkeyup="this.value=Letras(this.value)" ></div>
+            <!--   <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left ">Segundo nombre<input onblur="crearNombreCompleto()" class="col " id="segundoNombreInput" title="Nombre" ></div> -->
+            <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left ">Apellido paterno<input
+                  onblur="crearNombreCompleto()" class="col " id="apellidoPaternoInput" title="Nombre"
+                  style="text-transform: uppercase;" onkeyup="this.value=Letras(this.value)" ></div>
+            <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left ">Apellido materno<input
+                  onblur="crearNombreCompleto()" class="col " id="apellidoMaternoInput" title="Nombre"
+                  style="text-transform: uppercase;" onkeyup="this.value=Letras(this.value)" ></div>
+           
+
+
+                  <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left "  >Estado
+                     <select id="comboEstadoPersona" onchange="cmboMuncipioPersonaBuscar()" class="custom-select form-control">
+                     </select>
+                  </div>
+                  <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left "  >Municipio
+                     <select id="comboMunicipioPersona" class="custom-select form-control" onchange="metodoInsertar()">
+                     </select>
+                  </div>
+                 
+
+                  <div class="CRMPRINCIPALES col-12 float-left altaCRM text-left p-0">
+                    
+                  <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left ">Teléfono movil<input class="col"
+                        id="telefonoMovilInput" title="Teléfono" maxlength="14" onchange="validarTelefono(this)"  style="text-transform: uppercase;"></div>
+                        <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left ">Teléfono alternativo<input class="col"
+                           id="telefonoAlternativoInput" title="Teléfono" maxlength="14" onchange="validarTelefono(this)" style="text-transform: uppercase;" ></div>         
+                           <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left deshabilitado ">Teléfono origen<input class="col"
+                              id="telefonoFijoInput" title="Teléfono" maxlength="10"  disabled></div>          
+                  </div>
+                  <div class="CRMPRINCIPALES col-12 float-left altaCRM text-left ">Correo<input class="col"
+                     id="clineteCorreoInput" title="Correo" onchange="metodoInsertar()" ></div>                
+                  <div class="CRMPRINCIPALES col-12 float-left altaCRM text-left deshabilitado">Nombre completo<input class="col"
+                     id="nombreCompletoInput" title="Nombre" disabled style="text-transform: uppercase;"   ></div>
+                     
+                     
+
+                     <div style="visibility: hidden;display: none" class="CRMPRINCIPALES col-12 float-left altaCRM text-left p-2"  >Le corresponde la sucursal de: 
+                        <select id="comboSucursalesPersona" class="custom-select form-control">
+                        </select>
+                     </div>
+
+                
+
+                        
+            <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left p-2" style="visibility: hidden;"  >Genero<select id="generoCtoIput"
+                  class="custom-select form-control" placeholder="Selecciona un genero">
+                  <option value="1" selected >MASCULINO</option>
+                  <option value="2">FEMENINO</option>
+               </select></div>
+            <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left p-2" style="visibility: hidden;" >Fecha nacimiento<input type="date"
+                  class="col py-1" id="fechaNacimientoCtoInput" title="Fecha nacimiento"></div>
+            <div class="CRMPRINCIPALES col-12 float-left altaCRM text-left p-2" style="visibility: hidden;" >CURP<input class="col py-1"
+                  id="curpCtoInput" title="CURP" style="text-transform: uppercase;" maxlength="18"></div>
+           
+            <div class="CRMPRINCIPALES col-12 float-left altaCRM text-left p-2" style="visibility: hidden;" >¿Esta afiliado a algun programa?<input
+                  class="col py-1" id="afiliadoCtoInput" title="Afiliado"></div>
+
+            <!--     
+                <div class="CRMPRINCIPALES col-12 float-left altaCRM text-left p-2">CURP<input class="col py-1" id="curpInput" title="CURP" ></div>
+                <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left p-2">Estado<select id="estadoInput" class="custom-select form-control" onchange="consultarCiudadDelEstado()" placeholder="Selecciona un estado" >                 
+                </select></div>
+                <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left p-2">Ciudad<select id="ciudadInput" class="custom-select form-control" placeholder="Selecciona una ciudad" >                 
+               </select></div>               
+               -->
+
+            
+
+
+
+
+            <!--
+                <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left p-2">Código postal<input class="col py-1" id="codigoPostalInput" title="Código postal" ></div>
+                <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left p-2">Colonia<input class="col py-1" id="coloniaInput" title="Colonia" ></div>
+                <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left p-2">Calle<input class="col py-1" id="calleInput" title="CALLE" ></div>
+                <div class="CRMPRINCIPALES col-4 float-left altaCRM text-left p-2">Número exterior<input class="col py-1" id="numeroExteriorInput" title="Número exterior" ></div>
+                <div class="CRMPRINCIPALES col-4 float-left altaCRM text-left p-2">Número interior<input class="col py-1" id="numeroInteriorInput" title="Número interior" ></div>
+               <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left p-2">RFC<input class="col py-1" id="rfcInput" title="RFC" ></div>
+               <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left p-2">NSS<input class="col py-1" id="nssInput" title="NSS" ></div>               
+               <div class="CRMPRINCIPALES col-4 float-left altaCRM text-left p-2">País<input class="col py-1" id="paisInput" title="País" ></div>   -->
+            <div class="CRMPRINCIPALES col-8 float-left altaCRM text-left p-5"></div>
+            <div class="CRMTELEFONOS col-6 float-left altaCRM text-left p-2">Teléfono<input class="col py-1"
+                  id="telefonoInput" onblur="consultarPortabilidad()" title="Teléfono"></div>
+            <div class="CRMTELEFONOS col-6 float-left altaCRM text-left p-2">Tipo<select id="tipoTelefonoIput"
+                  class="custom-select form-control">
+                  <option value="PERSONAL" selected>PERSONAL</option>
+                  <option value="MOVIL">MOVIL</option>
+               </select></div>
+            <div class="CRMTELEFONOS col-4 float-left altaCRM text-left p-2">Nir<input class="col py-1" id="nirInput"
+                  title="Nir" disabled></div>
+            <div class="CRMTELEFONOS col-4 float-left altaCRM text-left p-2">Serie<input class="col py-1"
+                  id="serieInput" title="Serie" disabled></div>
+            <div class="CRMTELEFONOS col-4 float-left altaCRM text-left p-2">Red<input class="col py-1" id="redInput"
+                  title="Red" disabled></div>
+            <div class="CRMTELEFONOS col-12 float-left altaCRM text-left p-2">Compañia<input class="col py-1"
+                  id="compaInput" title="Compañia" disabled></div>
+            <div class="CRMTELEFONOS col-12 float-left altaCRM text-left p-2">
+               <table id="gridTelefonos" class="display responsive nowrap text-left" width="100%"></table>
+            </div>
+         
+            <div class="CRMCORREOS col-12 float-left altaCRM text-left p-2">
+               <table id="gridCorreos" class="display responsive nowrap text-left" width="100%"></table>
+            </div>
+         </div>
+         <div id="displayLlamada" style="display: none;overflow-y: scroll;"
+            class="col float-left text-center text-white pt-3 px-0 ">
+            <div id="txtCallStatus" class="text-white text-center" style="font-size: 20px;"></div>
+            <div id="tiempoEnLlamada" class="text-white mb-2" style="font-size: 20px;"></div>
+           <!-- <img id="imgUser" src="img/llamadaUser.png" class="mt-0" style="margin-left: 27px; width: 100px; display:none;" >-->
+            <div id="numeroRemoto" class="text-white mt-3" style="font-size: 30px;"></div>
+            <div id="horaLlamada" class="text-white mb-2" style="font-size: 20px;"></div>
+            <div id="idLlamada" class="text-white" style="font-size: 20px;"></div>
+            <button type="button" id="btnRecuperarDatosLlamada" style="display: none;" onclick="recuperarDatosLlamada()" class="btn btn-info">Recuperar datos de llamada</button>
+            <div id="navegacionIvr" class="text-white" style="font-size: 0px;" style='visibility:hidden'></div>
+
+            <div class="col-8 col-md-6 col-lg-8 mx-auto d-flex justify-content-around px-3 pt-2">
+               <div class="col-12 float-left altaCRM text-center p-2"> 
+                  <select id="transferenciasCombo"  class="custom-select form-control">
+                  </select>
+                  <button type="button" onclick="sipTransferRapido2()" class="btn btn-info col-12 py-1">Transferir</button>
+               </div>
+               
+            </div>
+            <div class="col-8 col-md-6 col-lg-4 mx-auto d-flex justify-content-around px-3 pt-2">
+               <div onclick="sipToggleMute();" id="btnMute" class="boton360 float-right text-white bg-secondary"><img
+                     src="img/mic.png" style="width: 30px;margin: 0 auto;"></div>
+               <div id="btnMute2" class="boton360 float-right text-white bg-secondary" style="display: none;">
+                  <div style="width: 30px;margin: 0 auto;"></div>
+               </div>
+               <div title="Buscar cliente" onclick="abrirBuscarCliente()" class="boton360 text-white bg-info"><span
+                     class="icon-search mx-auto"></span></div>
+               <div title="Cancelar" onclick="cancelarLlamada()" class="boton360 text-white bg-dark"><span
+                  class="icon-cancel-circle mx-auto"></span></div>
+               <div class="boton360 float-right text-white bg-secondary d-none"><img src="img/keypad.png"
+                     style="width: 30px;margin: 0 auto;"></div>
+                     <div id="BTNRAPIDA" title="Salud" onclick="sipTransferRapido()"
+                  class="boton360 float-right text-white bg-secondary"><span class="icon-arrow-right"></span></div>
+            </div>
+            <div class="col-8 col-md-6 col-lg-4 mx-auto d-flex justify-content-around px-3 pt-2">
+               <div title="Tipificar" onclick="tipificacion()" class="boton360 text-white bg-dark"><span
+                     class="icon-tree mx-auto"></span></div>
+               <div id="btnVerTeclado" onclick="pintarTecladoEnLlamada()"
+                  class="boton360 float-right text-white bg-secondary"><img src="img/keypad.png"
+                     style="width: 30px;margin: 0 auto;"></div>
+                    
+            </div>
+            <div class="col-8 col-md-6 col-lg-4  mx-auto d-flex justify-content-around px-5 pt-2">
+               <div title="Colgar" id="btnHangUp" style="display: none;" onclick="sipHangUp('Agente');"
+                  class="boton360 float-right text-white bg-danger"><span class="icon-phone-hang-up mx-auto"></span>
+               </div>
+            </div>
+            <div id="teclado_" class="mx-auto d-none flex-wrap" style="width: 350px;">
+               <div class="col-12" style="padding: 5px;"><input id="numeroMarcar_" class="inputNumero" type="text">
+               </div>
+               <div onclick="marcar('1')" class="numeroMarcador2  col-4">
+                  <div>1</div>
+               </div>
+               <div onclick="marcar('2')" class="numeroMarcador2  col-4">
+                  <div>2</div>
+               </div>
+               <div onclick="marcar('3')" class="numeroMarcador2  col-4">
+                  <div>3</div>
+               </div>
+               <div onclick="marcar('4')" class="numeroMarcador2  col-4">
+                  <div>4</div>
+               </div>
+               <div onclick="marcar('5')" class="numeroMarcador2  col-4">
+                  <div>5</div>
+               </div>
+               <div onclick="marcar('6')" class="numeroMarcador2  col-4">
+                  <div>6</div>
+               </div>
+               <div onclick="marcar('7')" class="numeroMarcador2  col-4">
+                  <div>7</div>
+               </div>
+               <div onclick="marcar('8')" class="numeroMarcador2  col-4">
+                  <div>8</div>
+               </div>
+               <div onclick="marcar('9')" class="numeroMarcador2  col-4">
+                  <div>9</div>
+               </div>
+               <div onclick="marcar('*')" class="numeroMarcador2  col-4">
+                  <div>*</div>
+               </div>
+               <div onclick="marcar('0')" class="numeroMarcador2  col-4">
+                  <div>0</div>
+               </div>
+               <div onclick="marcar('#')" class="numeroMarcador2  col-4">
+                  <div>#</div>
+               </div>
+               <div onclick="clearMarcador()" class="numeroMarcador  col-4">
+                  <div style="background: #797d80;"><span class="icon-checkbox-unchecked"></span></div>
+               </div>
+               <div onclick="sipTransfer()" class="numeroMarcador  col-4">
+                  <div title="Transferir" class="bg-info"><span class="icon-forward"></span></div>
+               </div>
+               <div onclick="backspace()" class="numeroMarcador  col-4">
+                  <div style="background: #797d80;"><span class="icon-arrow-left2"></span></div>
+               </div>
+            </div>
+         </div>
+         <div id="displayUsuario" style="overflow-y: scroll;" class="col float-left text-center text-white pt-3 px-0">
+            <div id="txtRegStatus" class="text-white text-center" style="font-size: 20px;"></div>
+            <img id="imgUser" src="img/agente.png" class="mt-5" style="width: 200px;">
+            <div class="d-flex col-8 mx-auto px-0 flex-wrap">
+               <div id="canalesLLammadas" class="col-12 py2" style="font-size: 24px;">Canales</div>
+            </div>
+            <ul class="list-group mb-3 col-8 mx-auto text-left">
+               <li id="nombreAgente" class="list-group-item transparente2"></li>
+               <li id="campanaAgente" class="list-group-item transparente2"></li>
+               <li id="extAgente" class="list-group-item transparente2"></li>
+               <li id="supervisorAgente" class="list-group-item transparente2"></li>
+            </ul>
+         </div>
+         <div id="marcadorSide" class="h-100" style="background: #00000091; position: relative;">
+            <div id="marcadorSide-etiqueta3" class="bg-secondary" onclick="mostrarChats()"
+               style="cursor: pointer; padding: 8px 0px; font-size: 33px; position: absolute; width: 40px; height: auto; left: -40px; top: 2px; border-radius: 20px 0px 0px 20px;">
+            </div>
+            <div style="height: calc(100% );background: #00000091;  color: #000; text-align: left; width: 400px; "
+               id="chats">
+               <ul class="list-group" id="listaContactos" style="overflow-y: scroll; height: calc(100%);color: white;">
+               </ul>
+            </div>
+         </div>
+         <div id="elertDescone"
+            style="position: absolute;position:absolute;background-color: #ff0000b5;width: 100%;height: 27%;margin-top: 17%;display: none;">
+            <div class="col-12 d-flex px-0 mb-3">
+               <div class="col-3 float-left px-0">
+                  <div style="font-size: 20px;text-align: initial;margin-left: 24PX;color: #dec5c5;">
+                     <strong>Aviso.</strong> Desconexión de la red.</div>
+               </div>
+               <div class="colS-4 float-left px-0">
+                  <div class="text-white" style="font-size: 40px;TEXT-ALIGN: end;margin-top: 12%;"><i>Reconectando
+                        en...</i></div>
+               </div>
+               <div class="col-1 float-left px-0">
+                  <div id="segDesc" class="text-white text-center"
+                     style="font-size: 180px;text-align: initial;margin-top: -44px;">5</div>
+               </div>
+               <div class="col-4 float-left col-lg-5 ">
+                  <div style="font-size: 30px;position: absolute;bottom: 10%;right: 23%;"><input type="button"
+                        value="Reconexión" onclick="reoconexionDIrecta()"
+                        style="border-radius: 11px;width: 208px;color: white;background: #a01b1b;border-color: #d0171700;">
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="mydiv" class="card float-right d-none" style="width: 18rem;">
+         <div id="mydivheader" class="card-header bg-dark text-white">
+            Llamada en curso
+         </div>
+         <div class="card-body">
+            <h6 id="txtCallStatus_" class="card-subtitle mb-2 text-muted"></h6>
+            <img src="img/llamadaUser2.png" style="width: 100px; height: 100px; margin-right: -17px;">
+            <h5 id="numeroRemoto_" class="card-title"></h5>
+            <h6 id="tiempoEnLlamada_" class="card-subtitle mb-2 text-muted">00:00:00</h6>
+            <p id="idLlamada_" class="card-text"></p>
+            <a id="btnMute_" onclick="sipToggleMute()" href="#" class="btn btn-dark"><img src="img/mic.png"
+                  style="width: 20px"></a>
+            <a onclick="cerrarVentana();abrirBuscarCliente();" href="#" class="btn btn-dark"><span
+                  class="icon-search"></span></a>
+            <a onclick="cerrarVentana();" href="#" class="btn btn-dark"><span class="icon-enlarge"></span></a>
+            <a onclick="sipHangUp();" href="#" class="btn btn-danger col-12 my-3"><span
+                  class="icon-phone-hang-up mx-auto"></span></a>
+         </div>
+      </div>
+      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+         <div class="modal-dialog" role="document">
+            <div class="modal-content bg-dark">
+               <div class="modal-header bg-dark text-white">
+                  <h5 class="modal-title" id="exampleModalLabel">Recesos</h5>
+                  <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body bg-white ">
+                  <div class="alert alert-success" id="success-alert" style="display: none;"></div>
+                  <div class="col-12 d-flex px-0 mb-3">
+                     <div class="col-6 float-left px-0">
+                        <ul class="list-group">
+                           <li id="recesoAcomulado" class="list-group-item list-group-item-info">Receso acumulado:
+                              00:00:00</li>
+                           <li id="tiempoEfectivo" class="list-group-item">Tiempo acumulado: 00:00:00</li>
+                        </ul>
+                     </div>
+                     <div class="col-6 float-left px-0">
+                        <ul class="list-group">
+                           <li id="ingresoSistema" class="list-group-item">Ingreso al sistema: 00:00:00</li>
+                           <li id="tiempoSesion" class="list-group-item list-group-item-info">Tiempo en sesion: <br>
+                              00:00:00</li>
+                        </ul>
+                     </div>
+                  </div>
+                  <div class="input-group my-3">
+                     <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">Solicitar un receso:</span>
+                     </div>
+                     <select class="custom-select" id="inputGroupSelect04"
+                        aria-label="Example select with button addon">
+                     </select>
+                     <div class="input-group-append">
+                        <button class="btn btn-outline-success" id="solicitarRec" type="button"
+                           onclick="solicitarReceso()">Solicitar</button>
+                        <button class="btn btn-outline-success" id="btnTomarRec" type="button" onclick="tomarReceso()"
+                           style="display: none;">Tomar</button>
+                     </div>
+                  </div>
+                  <div id="listaMovi" class="list-group" style="overflow-y: scroll;height: 200px;">
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="pausaModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+         <div class="modal-dialog" role="document">
+            <div class="modal-content">
+               <div class="modal-body">
+                  <div class="jumbotron text-center">
+                     <h2 class="display-4"> <i class="fas fa-stopwatch"></i></h2>
+                     <h1 id="tituloPausa" class="h3">Agente en: Capacitación</h1>
+                     <p class="lead"></p>
+                     <hr class="my-4">
+                     <p>Tiempo en receso:</p>
+                     <div class="font-weight-bolder text-success pb-3"><span id="tiempoPausa"
+                           style="font-size: 25px">00:00:00</span> </div>
+                     <button id="btnTerminarReceso" type="button" class="btn btn-success btn-lg">Terminar
+                        receso</button>
+                     <div class="loader" style="display: none;">
+                        <div class=" spinner-grow text-light" role="status">
+                           <span class="sr-only">Loading...</span>
+                        </div>
+                        <div class=" spinner-grow text-dark" role="status">
+                           <span class="sr-only">Loading...</span>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+
+
+      <!-- Modal -->
+      <div class="modal fade" id="exampleModalNavidad" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+         <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel"></h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body w-100">
+                  <img class="w-100" src="img/navidad.jpg" alt="">
+               </div>
+            </div>
+         </div>
+      </div>
+      <div style="display: none;">
+         <input type="text" style="display: none;" id="txtDisplayName" value="">
+         <input type="text" style="display: none;" id="txtPrivateIdentity" value="">
+         <input type="text" style="display: none;" id="txtPublicIdentity" value="">
+         <input type="password" style="display: none;" id="txtPassword" value="">
+         <input type="text" style="display: none;" id="txtRealm" value="">
+         <input type="text" style="display: none;" id="txtPhoneNumber" value="">
+         <audio id="audio_remote" autoplay="autoplay"> </audio>
+         <audio id="ringtone" loop src="sounds/telefono_tono.mp3"> </audio>
+         <audio id="ringbacktone" loop src="sounds/ringbacktone.wav"> </audio>
+         <audio id="dtmfTone" src="sounds/dtmf.wav"> </audio>
+         <table style='width: 100%;'>
+            <tr>
+               <td id="tdVideo" class='tab-video'>
+                  <div id="divVideo" class='div-video'>
+                     <div id="divVideoRemote"
+                        style='position:relative; border:1px solid #009; height:100%; width:100%; z-index: auto; opacity: 1'>
+                        <video class="video" width="100%" height="100%" id="video_remote" autoplay="autoplay"
+                           style="opacity: 0;
+                           background-color: #000000; -webkit-transition-property: opacity; -webkit-transition-duration: 2s;"></video>
+                     </div>
+                     <div id="divVideoLocalWrapper" style="margin-left: 0px; border:0px solid #009; z-index: 1000">
+                        <iframe class="previewvideo" style="border:0px solid #009; z-index: 1000"> </iframe>
+                        <div id="divVideoLocal" class="previewvideo" style=' border:0px solid #009; z-index: 1000'>
+                           <video class="video" width="100%" height="100%" id="video_local" autoplay="autoplay"
+                              muted="true"
+                              style="opacity: 0;
+                              background-color: #000000; -webkit-transition-property: opacity;-webkit-transition-duration: 2s;"></video>
+                        </div>
+                     </div>
+                     <div id="divScreencastLocalWrapper"
+                        style="margin-left: 90px; border:0px solid #009; z-index: 1000">
+                        <iframe class="previewvideo" style="border:0px solid #009; z-index: 1000"> </iframe>
+                        <div id="divScreencastLocal" class="previewvideo" style=' border:0px solid #009; z-index: 1000'>
+                        </div>
+                     </div>
+                  </div>
+               </td>
+            </tr>
+         </table>
+         <input type="button" class="btn" style="" id="btnFullScreen" value="FullScreen" disabled
+            onclick='toggleFullScreen();' /> &nbsp;
+      </div>
+      <div class="modal fade" id="confirmarCambio" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+         <div class="modal-dialog" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Cambiar a Outbound</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body text-left">
+                  ¿Esta seguro de cambiar de canal de atención?
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                  <button id="btnSiCambiar" type="button" class="btn btn-danger">Sí, cambiarme de canal</button>
+               </div>
+            </div>
+         </div>
+      </div>
+
+      <!--
+      <div class="modal fade" id="modalRespuestas" tabindex="-1" role="dialog" aria-labelledby="modalRespuestasLabel"
+         aria-hidden="true">
+         <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="modalRespuestasLabel">Respuestas tipo pregunta</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body">
+                  <div class="col-12 d-flex px-0">
+                     <div class="input-group mb-3 col-6">
+                        <div class="input-group-prepend">
+                           <span class="input-group-text">Tipo</span>
+                        </div>
+                        <select onchange="filtrarRespuestas()" class="custom-select" id="selectRespTipo">
+                        </select>
+                     </div>
+                     <div class="input-group mb-3 col-6">
+                        <div class="input-group-prepend">
+                           <span class="input-group-text">Pregunta</span>
+                        </div>
+                        <input onkeyup="filtrarRespuestas()" type="text" class="form-control" id="inputBuscarResp"
+                           placeholder="Escriba para buscar...">
+                     </div>
+                  </div>
+                  <div class="col-6 float-left">
+                     <ul class="list-group text-left" id="listRespuestas" style="height: 400px;overflow-y: scroll;">
+
+                     </ul>
+                  </div>
+                  <div class="col-6 float-left">
+                     <div class="card" style="height: 400px;">
+                        <div class="card-body">
+                           <h5 id="preguntaTitulo" class="card-title"></h5>
+                           <p style="font-size: 30px; text-align: justify;     overflow-y: scroll;height: calc(100% - 50px);"
+                              id="respuestaText" class="card-text text-danger"></p>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+               </div>
+            </div>
+         </div>
+      </div>
+
+-->
+      <!-- Modal -->
+      <div class="modal fade" id="modalSMS" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         data-backdrop="static" data-keyboard="false" aria-hidden="true">
+         <div class="modal-dialog" role="document">
+            <div class="modal-content">
+               <div class="modal-header bg-dark text-white">
+                  <h5 class="modal-title" id="exampleModalLabel">SMS</h5>
+                  <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body text-left">
+                  <div id="tipificacionSMS">
+
+                  </div>
+
+                  <div id="smsCuerpo">
+                     <div class="form-group">
+                        <label for="numeroTlefonicoSMS">Número teléfonico</label>
+                        <input type="text" class="form-control" id="numeroTlefonicoSMS" placeholder="888 999 80 80">
+                     </div>
+                     <div class="form-group">
+                        <label for="textoSMS">Mensaje SMS</label>
+                        <textarea class="form-control" id="textoSMS" placeholder="Escriba aquí el mesaje SMS..."
+                           rows="3"></textarea>
+                     </div>
+                  </div>
+
+
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                  <button type="button" class="btn btn-success" onclick="enviarSMS()">Enviar</button>
+               </div>
+            </div>
+         </div>
+      </div>
+
+
+
+      <!-- Modal -->
+      <div class="modal fade" id="modalConfiguracion" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+         <div class="modal-dialog" role="document">
+            <div class="modal-content">
+               <div class="modal-header bg-dark text-white">
+                  <h5 class="modal-title" id="exampleModalLabel">Configuración</h5>
+                  <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body text-left">
+                  <div class="form-group">
+                     <label for="versTip">Version de la tipificación</label>
+                     <select onchange="cambiarConf()" class="form-control" id="versTip">
+                        <option value="V1">Versión 1</option>
+                        <option value="V2" selected>Versión 2</option>
+                     </select>
+
+                  </div>
+                  <div class="form-group">
+                     <label for="clienteAuto">¿Consultar cliente automáticamente?</label>
+                     <select onchange="cambiarConf()" class="form-control" id="clienteAuto">
+                        <option value="true" selected>Si</option>
+                        <option value="false">No</option>
+                     </select>
+                  </div>
+                  <div class="form-group">
+                     <label for="clienteAuto">Volumen de timbre</label>
+                     <select onchange="cambiarVolumen()" class="form-control" id="volumenTimbre">
+                        <option value="0.3">3</option>
+                        <option value="0.4">4</option>
+                        <option value="0.5">5</option>
+                        <option value="0.6">6</option>
+                        <option value="0.7">7</option>
+                        <option value="0.8">8</option>
+                        <option value="0.9">9</option>
+                        <option value="1" selected>10</option>
+                     </select>
+                  </div>
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+               </div>
+            </div>
+         </div>
+      </div>
+
+      <div id="timerParaFin" >
+
+      </div>
+      <!-- Modal -->
+      <div class="modal fade" id="modalCancelarLlam" tabindex="-1" role="dialog" aria-labelledby="modalCancelarLlamLabel" aria-hidden="true">
+         <div class="modal-dialog" role="document">
+           <div class="modal-content">
+             <div class="modal-header bg-dark text-white">
+               <h5 class="modal-title" id="modalCancelarLlamLabel">¡Aviso!</h5>
+               <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                 <span aria-hidden="true">&times;</span>
+               </button>
+             </div>
+             <div class="modal-body" id="mensajeModal">
+              
+             </div>
+             <div class="modal-footer" style="flex-wrap: inherit;">
+               <button type="button" onclick="cancelarLlamadaPor('Llamada cancelada por desconexion')" class="btn btn-dark">Llamada cancelada por desconexion</button>
+               <button type="button" onclick="cancelarLlamadaPor('Llamada sin audio')" class="btn btn-dark">Llamada sin audio</button>
+               <button type="button" onclick="cancelarLlamadaPor('Llamada de prueba')" class="btn btn-dark">Llamada de prueba</button>
+
+             </div>
+           </div>
+         </div>
+       </div>
+      <div id='divGlassPanel' class='glass-panel' style='visibility:hidden'></div>
+      <input value="IBD" type="hidden" id="canalActual">
+      <script src="js/socket.io.js"></script>
+      <script src="js/pantallaAgente/llamada.js"> </script>
+      <script src="js/timerBsw.js"> </script>
+      <script src="js/pantallaAgente/funciones.js"></script>
+      <script src="js/pantallaAgente/cliente.js"></script>
+      <script src="js/pantallaAgente/inicio.js"></script>
+      <script src="js/pantallaAgente/modulos.js"></script>
+      <script src="js/pantallaAgente/dragable.js"></script>
+      <script src="js/pantallaAgente/crm.js"></script>
+      <script src="js/pantallaAgente/chatMulticanal.js"></script>
+      <script src="js/altaCita2.js"></script>
+</body>

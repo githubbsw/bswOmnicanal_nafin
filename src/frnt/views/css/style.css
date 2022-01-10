@@ -1,0 +1,266 @@
+
+body{
+
+	background-image: url(../img/bg-degradado.png);
+	background-size: 100% 100%;
+	
+}
+
+.bg-gris{
+	background-color: #d1d4d6;
+}
+
+
+.numeroContacto{
+
+	cursor: pointer;
+    font-weight: 500;
+
+}
+
+.numeroContacto:hover{
+
+	text-decoration: underline;
+}
+.inputBuscar{
+	background: transparent;
+	border: none;
+	outline: none;
+	width: 100%;
+	color: #fff;
+}
+.inputBuscar::placeholder{
+	color: #fff;
+}
+
+.inputNumero{
+	outline: none;
+	width: 100%;
+    padding: 10px;
+    margin: 10px auto;
+    border: none;
+    background: #c9cfd0b8;
+    color: #fff;
+    font-size: 23px;
+    font-weight: 600;
+    text-align: center;
+}
+.numeroMarcador{
+
+	margin: 5px 0px;
+    padding: 0 5px;
+
+}
+
+.numeroMarcador2{
+
+	margin: 5px 0px;
+    padding: 0 5px;
+
+}
+
+
+
+
+.numeroMarcador2 div{
+	
+	padding: 2px;
+    cursor: pointer;
+    background-color: #6969696e;
+    font-weight: bolder;
+    font-size: 32px;
+    border-radius: 5px;
+
+}
+
+.numeroMarcador div{
+	
+	padding: 2px;
+    cursor: pointer;
+    background-color: #dedede40;
+    font-weight: bolder;
+    font-size: 32px;
+    border-radius: 5px;
+
+}
+
+.numeroMarcador div:hover{
+
+	background-color: #f8f8f9;
+	color: #1d2123;
+
+}
+
+#abrirTeclado{
+
+	position: absolute;
+    background: #00BCD4;
+    bottom: 15px;
+    right: 15px;
+    padding: 14px;
+	border-radius: 50px;
+	cursor: pointer;
+
+}
+
+#divOpen{
+	background-image: url(../img/spc.png);
+	background-size: 100% 100%;
+}
+
+#displayTipificacion{
+	background-image: url(../img/spc_.png);
+	background-size: 100% 100%;
+}
+
+.circulo_estatus {
+	width: 20px;
+	height: 20px;
+	-moz-border-radius: 50%;
+	-webkit-border-radius: 50%;
+	border-radius: 50%;
+	background: #5cb85c;
+}
+
+.bigText {
+	font-size: 42px;
+	margin-top: -57px;
+	font-weight: 700;
+	color: #5e5e5e;
+	margin-left: 21px;
+}
+
+#divLlamada{
+	background-image: url(../img/bg-degradado.png);
+	background-size: 100% 100%;
+}
+.tit{
+	width: 50px;
+}
+
+.transparente{
+
+	 background:transparent;
+	 color: #ada8a8;
+	 border: none;
+	 border-bottom: solid 1px #615f5f;
+
+}
+.transparente2{
+
+	background:transparent;
+	color: #ffffff;
+	border: none;
+	border-bottom: solid 1px #bfbdbd;
+
+}
+
+.deshabilitado{
+	border-radius: 10px;
+    background: #dee2e626;
+}
+
+.altaCRM {
+
+	color: #c3c3c3;
+	margin: 5px auto;
+
+}
+
+
+.altaCRM input{
+
+	background: transparent;
+    border: none;
+    outline: none;
+	border-bottom: 1px solid #989898;
+	color: #fff;
+
+}
+
+.altaCRM input::placeholder{
+
+	color: transparent;
+
+}
+
+.datosAgente{
+
+	color: #00ccff;
+	font-size: 18px;
+}
+
+.boton360 {
+    /*border: solid 5px;*/
+    width: 60px;
+    height: 60px;
+    margin: 5px;
+    padding: 10px;
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+    border-radius: 50px;
+    line-height: 32px;
+    text-transform: uppercase;
+    float: left;
+    font-size: 30px;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+	text-align: center;
+	cursor: pointer;
+}
+
+
+/*scrollbar css style start*/
+#mydiv {
+	position: absolute;
+	z-index: 9;
+	cursor: pointer;
+	-webkit-box-shadow: 10px 10px 22px -4px rgba(0,0,0,0.75);
+	-moz-box-shadow: 10px 10px 22px -4px rgba(0,0,0,0.75);
+	box-shadow: 10px 10px 22px -4px rgba(0,0,0,0.75);
+  }
+
+
+::-webkit-scrollbar{
+	width:8px;
+	background-color:#cccccc;
+}
+::-webkit-scrollbar:horizontal{
+	height:8px;
+}
+::-webkit-scrollbar-track{
+	border:0px #ffffff solid;
+	border-radius:6px;
+}
+::-webkit-scrollbar-thumb{
+	background-color:#919191;
+	border:0px solid #aaa;
+	border-radius:12px;
+}
+::-webkit-scrollbar-thumb:hover{
+	background-color:#919191;
+	border:0px solid #aaa;
+}
+::-webkit-scrollbar-thumb:active{
+	background-color:#919191;
+	border:0px solid #aaa;
+}
+
+/*scrollbar css style end*/
+
+   
+#timerParaFin{
+
+	width: 200px;
+    height: 50px;
+    position: absolute;
+    color: #dc3545;
+    bottom: 31px;
+    right: 0px;
+    font-weight: 700;
+	font-size: 50px;
+	
+	left: 50%;
+	margin-left: -100px;
+}

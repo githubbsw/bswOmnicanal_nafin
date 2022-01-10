@@ -1,0 +1,7 @@
+{
+    "dest": "release-builds/",
+    "icon": "assets/icons/favi.png",
+    "categories": [
+      "Utility"
+    ]
+  }

@@ -1,0 +1,26 @@
+.form-group label {
+    color: #fff;
+    font-weight: 700;
+ }
+
+ .form-group select,
+ .form-group input,
+ .form-group textarea {
+    font-weight: 500;
+    background-color: #ffffff00;
+    color: #fff;
+ }
+
+ input:focus,
+ select:focus {
+    font-weight: 500;
+    background-color: #ffffff00;
+ }
+
+ .card {
+    background-color: transparent;
+    border: none;
+ }
+
+
+ select:disabled { color: #000 !important; }

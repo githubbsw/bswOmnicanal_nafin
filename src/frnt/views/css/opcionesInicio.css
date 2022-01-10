@@ -1,0 +1,42 @@
+html,
+body {
+  height: 100%;
+}
+
+.Bg{
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+  align-items: center;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  background: rgb(0,153,0);
+  background: linear-gradient(90deg, rgba(0,153,0,0.6250875350140056) 0%, rgba(91,199,0,0.8127626050420168) 100%);
+}
+
+.Bg_2{
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+  align-items: center;
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+
+.Bg_2 img{
+  margin: 0 auto;
+  width: 80%;
+}
+
+
+body {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+  align-items: center;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  background-color: #f5f5f5;
+  background-size: 100% 100%;
+  background-image: url("../img/bg-degradado.png");
+}

@@ -1,0 +1,33 @@
+#altadecitaContenedor .form-group label {
+    color: #fff;
+    font-weight: 700;
+ }
+
+ #altadecitaContenedor .form-group select,
+ #altadecitaContenedor .form-group input,
+ #altadecitaContenedor .form-group textarea {
+    font-weight: 500;
+    background-color: #ffffff00;
+    color: #fff;
+ }
+
+
+ #altadecitaContenedor .form-group select option {
+    font-weight: 500;
+    background-color: #ffffff00;
+    color: #676767;
+ }
+
+ #altadecitaContenedor input:focus,
+ #altadecitaContenedor select:focus {
+    font-weight: 500;
+    background-color: #ffffff00;
+ }
+
+ #altadecitaContenedor .card {
+    background-color: transparent;
+    border: none;
+ }
+
+
+ #altadecitaContenedor select:disabled { color: #000 !important; }

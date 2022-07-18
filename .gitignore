@@ -6696,3 +6696,6 @@ package.json
 release-builds/spartacus-win32-ia32/resources/app.asar
 release-builds/windows-installer/RELEASES
 cnn2020.json
+cnn2020.json
+package-lock.json
+*.json

@@ -88,10 +88,10 @@
       </div>
       <div class="col d-flex  float-left bg-light h-100 px-0 position-relative" id="divLlamada">
          <div id="buscarCliente" class="col-5 float-left text-center text-white pt-3"
-            style="background: #00000091;overflow-y: scroll;display:none">
+            style="background: #00000091;overflow-y: scroll;display:block">
             <input id="buscar" onblur="consultarCliente('listClientes', '')" onkeypress="return runScript(event)"
                style="margin-bottom: 10px; width: 100%;padding: 11px;border: none;border-bottom: solid 5px #28a745;outline: none;"
-               placeholder="Inserte Correo, Telefono, Nombre o folio de la persona">
+               placeholder="Inserte RFC, Telefono O Nombre">
             <div class="d-flex justify-content-between">
                <button onclick="nuevoCliente()" id="btnNuevoCliente" type="button" class="btn col btn-info mb-3">Nueva
                   persona</button>
@@ -190,55 +190,91 @@
                <button onclick="pestanasCRM('CRMCORREOS')" id="CRMCORREOS" type="button"
                   class="btn btn-aux-crm col btn-dark mx-1" style="visibility: hidden;display: none" >+ Correos</button>
             </div>
-            <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left deshabilitado">Folio persona:<input
+            <div class="CRMPRINCIPALES col-12 float-left altaCRM text-left deshabilitado">Folio persona:<input
                   class="col " id="idClienteInput" title="Id cliente" disabled></div>
+            <div class="CRMPRINCIPALES col-12 float-left altaCRM text-left ">PyME Razón Social<input
+               class="col " id="pYMEInput" title="PyME" >
+            </div>
+            <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left ">Regimen
+               <select class="col " id="REGIMENInput" title="Regimen" onchange="filtrarrfc()" >
+               </select>
+            </div>
+            <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left ">RFC
+               <input class="col " id="RFCInput" title="RFC" style="text-transform: uppercase;" maxlength="13" />
+            </div>        
+            <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left ">Sector
+               <select class="col " id="sectorInput" title="Sector" >
+               </select>
+            </div>
             <div class="CRMPRINCIPALES col-12 float-left altaCRM text-left ">Nombres<input
                   onblur="crearNombreCompleto()" class="col " id="primerNombreInput" title="Nombre"
-                  style="text-transform: uppercase;" onkeyup="this.value=Letras(this.value)" ></div>
-            <!--   <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left ">Segundo nombre<input onblur="crearNombreCompleto()" class="col " id="segundoNombreInput" title="Nombre" ></div> -->
+                  style="text-transform: uppercase;" onkeyup="this.value=Letras(this.value)" >
+            </div>
             <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left ">Apellido paterno<input
                   onblur="crearNombreCompleto()" class="col " id="apellidoPaternoInput" title="Nombre"
-                  style="text-transform: uppercase;" onkeyup="this.value=Letras(this.value)" ></div>
+                  style="text-transform: uppercase;" onkeyup="this.value=Letras(this.value)" >
+            </div>
             <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left ">Apellido materno<input
                   onblur="crearNombreCompleto()" class="col " id="apellidoMaternoInput" title="Nombre"
-                  style="text-transform: uppercase;" onkeyup="this.value=Letras(this.value)" ></div>
-           
+                  style="text-transform: uppercase;" onkeyup="this.value=Letras(this.value)" >
+            </div>
+            <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left ">Correo
+               <input class="col"id="clineteCorreoInput" title="Correo" onchange="metodoInsertar()" >
+            </div>
+            <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left ">Edad
+               <select class="col" id="edadInput" title="Edad" >
+               </select>
+            </div>
+            <div class="CRMPRINCIPALES col-12 float-left altaCRM text-left ">Genero representante
+               <select class="col" id="GeneroInput" title="Genero" >
+               </select>
+            </div>
+       
+            <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left  ">Teléfono
+               <input class="col" id="telefonoInput" title="Teléfono" maxlength="10" >
+            </div>  
+            <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left  ">Tipo telefono
+               <input class="col" id="TipotelInput" title="tipotel" maxlength="10" >
+            </div>
+            <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left  ">Extension telefonica
+               <input class="col"id="ExtesionInput" title="tipotel" maxlength="10" >
+            </div>        
 
+            <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left "  >Estado
+               <select id="comboEstadoPersona"  class="custom-select form-control">
+               </select>
+            </div>
+            
+            <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left ">Codigo postal
+               <input class="col" id="cpInput" title="Codigo postal" >
+            </div>
+            <div class="CRMPRINCIPALES col-12 float-left altaCRM text-left ">Actividad
+               <select class="col" id="ActividadInput" title="Actividad" >
+               </select>
+            </div>
+            <div class="CRMPRINCIPALES col-12 float-left altaCRM text-left ">Cliente actividad otros
+               <input class="col" id="ActividadOtroInput" title="Codigo postal" >
+            </div>
+            <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left ">Medio conocimiento
+               <select class="col" id="MedioInput" title="Actividad" >
+               </select>
+            </div>
+            <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left ">Especifica (Otro canal)
+               <input class="col" id="OtroCanalInput" title="Codigo postal" >
+            </div>
 
-                  <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left "  >Estado
-                     <select id="comboEstadoPersona" onchange="cmboMuncipioPersonaBuscar()" class="custom-select form-control">
-                     </select>
-                  </div>
-                  <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left "  >Municipio
-                     <select id="comboMunicipioPersona" class="custom-select form-control" onchange="metodoInsertar()">
-                     </select>
-                  </div>
-                 
-
-                  <div class="CRMPRINCIPALES col-12 float-left altaCRM text-left p-0">
-                    
-                  <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left ">Teléfono movil<input class="col"
-                        id="telefonoMovilInput" title="Teléfono" maxlength="14" onchange="validarTelefono(this)"  style="text-transform: uppercase;"></div>
-                        <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left ">Teléfono alternativo<input class="col"
-                           id="telefonoAlternativoInput" title="Teléfono" maxlength="14" onchange="validarTelefono(this)" style="text-transform: uppercase;" ></div>         
-                           <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left deshabilitado ">Teléfono origen<input class="col"
-                              id="telefonoFijoInput" title="Teléfono" maxlength="10"  disabled></div>          
-                  </div>
-                  <div class="CRMPRINCIPALES col-12 float-left altaCRM text-left ">Correo<input class="col"
-                     id="clineteCorreoInput" title="Correo" onchange="metodoInsertar()" ></div>                
-                  <div class="CRMPRINCIPALES col-12 float-left altaCRM text-left deshabilitado">Nombre completo<input class="col"
-                     id="nombreCompletoInput" title="Nombre" disabled style="text-transform: uppercase;"   ></div>
-                     
-                     
-
-                     <div style="visibility: hidden;display: none" class="CRMPRINCIPALES col-12 float-left altaCRM text-left p-2"  >Le corresponde la sucursal de: 
-                        <select id="comboSucursalesPersona" class="custom-select form-control">
-                        </select>
-                     </div>
-
-                
-
-                        
+            <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left " style="visibility: hidden;" >Municipio
+               <select id="comboMunicipioPersona" class="custom-select form-control" onchange="metodoInsertar()">
+               </select>
+            </div>     
+                                  
+            <div class="CRMPRINCIPALES col-12 float-left altaCRM text-left deshabilitado" style="visibility: hidden;">Nombre completo<input class="col"
+               id="nombreCompletoInput" title="Nombre" disabled style="text-transform: uppercase;"   >
+            </div>
+            <div style="visibility: hidden;display: none" class="CRMPRINCIPALES col-12 float-left altaCRM text-left p-2"  >Le corresponde la sucursal de: 
+               <select id="comboSucursalesPersona" class="custom-select form-control">
+               </select>
+            </div>      
             <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left p-2" style="visibility: hidden;"  >Genero<select id="generoCtoIput"
                   class="custom-select form-control" placeholder="Selecciona un genero">
                   <option value="1" selected >MASCULINO</option>

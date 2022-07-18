@@ -9,8 +9,10 @@ module.exports.consultar = async (criterios, datosPaginacion) => {
         var criteriosSeleccion = "";
         var criteriosSeleccion2 = "";
         if (/^([a-zA-ZñÑáéíóúÁÉÍÓÚ.,#&%//?¡¿!\s])*$/.test(criterios)) {
-            criteriosSeleccion = " and cliente.BTCLIENTENCOMPLETO like CONCAT('%','" + criterios + "','%') group by id  order by telefonos,  id desc limit ? , ? ";
-            criteriosSeleccion2 = " and cliente.BTCLIENTENCOMPLETO like CONCAT('%','" + criterios + "','%') ";
+            criteriosSeleccion = " and cliente.BTCLIENTENCOMPLETO like CONCAT('%','" + criterios + "','%') "
+            +" OR  cliente.btclienterfc like CONCAT('%','" + criterios + "','%')  group by id  order by telefonos,  id desc limit ? , ? ";
+            criteriosSeleccion2 = " and cliente.BTCLIENTENCOMPLETO like CONCAT('%','" + criterios + "','%') "
+            +" OR  cliente.btclienterfc like CONCAT('%','" + criterios + "','%')";
         }
         else if (/^([0-9\s])*$/.test(criterios)) {
 
@@ -33,9 +35,12 @@ module.exports.consultar = async (criterios, datosPaginacion) => {
             criteriosSeleccion2 = " and tel.BTCLIENTETELNO like  CONCAT('%','" + criterios.substring(1, criterios.length - 1) + "','%') ";
         }
         if (criteriosSeleccion == "") {
-            criteriosSeleccion = " and cliente.BTCLIENTENCOMPLETO like CONCAT('%','" + criterios + "','%') group by id  order by telefonos, id desc limit ? , ? ";
-            criteriosSeleccion2 = " and cliente.BTCLIENTENCOMPLETO like CONCAT('%','" + criterios + "','%') ";
+            criteriosSeleccion = " and cliente.BTCLIENTENCOMPLETO like CONCAT('%','" + criterios + "','%')"
+             +" OR  cliente.btclienterfc like CONCAT('%','" + criterios + "','%') group by id  order by telefonos, id desc limit ? , ? ";
+            criteriosSeleccion2 = " and cliente.BTCLIENTENCOMPLETO like CONCAT('%','" + criterios + "','%') "
+            +" OR cliente.btclienterfc like CONCAT('%','" + criterios + "','%') ";
         }
+        
 
         const resultado1 = await pool.query(querys.consultarTotal + criteriosSeleccion2);
         const resultado = await pool.query(querys.consultar + criteriosSeleccion, [datosPaginacion.inicio, datosPaginacion.limite]);
@@ -80,47 +85,29 @@ module.exports.insertar = async (obj) => {
     obj.apellidoPaterno,
     obj.apellidoMaterno,
     obj.nombreCompleto,
-    obj.correoElectronico, obj.nombrecompleto2,
-   
-    obj.generoCtoIput,
-    obj.fechaNacimientoCtoInput,
-    obj.curpCtoInput,
-    obj.afiliadoCtoInput, obj.estado, obj.municipio, obj.sucursal]);
-
-    //inserta telefono
-    /*const exiTel =  await pool.query(querys.consultarInsertTel,[id[0].id,obj.telefono]);
-    if( exiTel[0].total == 0)
-    {
-        await pool.query(querys.insertarTelefono,[id[0].id,obj.nir,obj.serie,obj.razon,obj.telefono,obj.tipo ]);
-    }*/
+    obj.correoElectronico, 
+    obj.nombrecompleto2,
+    obj.genero,
+    "",
+    "",
+    "", obj.estado, "", "",obj.rfc,obj.pyme,obj.regimen,obj.sector,obj.edad,
+    obj.telefono,obj.tipotelefono,obj.Extesion,obj.codigoPostal,
+    obj.Actividad,obj.ActividadOtro,
+    obj.Medio,obj.OtroCanal]);
 
     //inserta telefono
     var exiTel=0;
-    if(obj.telefonoFijoInput!=""){
-        exiTel =  await pool.query(querys.actualizarTelefono, [id[0].id, obj.telefonoFijoInput, 'PERSONAL']);
+    if(obj.telefono!=""){
+        exiTel =  await pool.query(querys.actualizarTelefono, [id[0].id, obj.telefono, 'PERSONAL']);
         if(exiTel.affectedRows==0){ 
-            await pool.query(querys.insertarTelefono, [id[0].id, obj.nir, obj.serie, obj.razon, obj.telefonoFijoInput, 'PERSONAL']);
+            await pool.query(querys.insertarTelefono, [id[0].id, "", "","", obj.telefono, 'PERSONAL']);
         }
     }
-    if(obj.telefonoMovilInput!=""){
-        exiTel =  await pool.query(querys.actualizarTelefono, [id[0].id, obj.telefonoMovilInput, 'MOVIL']);
-        if(exiTel.affectedRows==0){ 
-            await pool.query(querys.insertarTelefono, [id[0].id, obj.nir, obj.serie, obj.razon, obj.telefonoMovilInput, 'MOVIL']);
-        } 
-    }
-    if(obj.telefonoAlternativoInput!=""){
-        exiTel =  await pool.query(querys.actualizarTelefono, [id[0].id, obj.telefonoAlternativoInput, 'ALTERNATIVO']);
-        if(exiTel.affectedRows==0){ 
-            await pool.query(querys.insertarTelefono, [id[0].id, obj.nir, obj.serie, obj.razon, obj.telefonoAlternativoInput, 'ALTERNATIVO']);
-        } 
-    }
-
-
     //insertar correo    
-    if(obj.correoElectronico!=""){
-     exiCorreo = await pool.query(querys.actualizarCorreo, [id[0].id, obj.correoElectronico]);
+    if(obj.correo!=""){
+     exiCorreo = await pool.query(querys.actualizarCorreo, [id[0].id, obj.correo]);
     if (exiCorreo.affectedRows==0){ 
-        await pool.query(querys.insertarCorreo, [id[0].id, obj.correoElectronico]);
+        await pool.query(querys.insertarCorreo, [id[0].id, obj.correo]);
     } 
     }
     
@@ -288,5 +275,25 @@ module.exports.consultarEstados = async () => {
 module.exports.consultarMunicipio = async (id) => {
     const mun = await pool.query(querys.consultarMunicipio, [id]);
     return mun;
+}
+
+
+module.exports.consultarCombosCliente = async () => {
+    const regimen =await pool.query(querys.consultarCombosRegimen, []);
+    const sector =await pool.query(querys.consultarCombosSector, []);
+    const edad =await pool.query(querys.consultarCombosEdad, []);
+    const genero =await pool.query(querys.consultarCombosGenero, []);
+    const actividad =await pool.query(querys.consultarCombosActividad, []);
+    const medio =await pool.query(querys.consultarCombosMedio, []);
+    const res=
+    {
+        regimen:regimen,
+        sector:sector,
+        edad:edad,
+        genero:genero,
+        actividad:actividad,
+        medio:medio
+    }
+    return res;
 }
 

@@ -536,7 +536,7 @@ function nuevoCliente(){
     $("#displayScript").hide()
     $("#displayCliente").hide();
     $("#altadecitaContenedor").hide() ;  
-    //$("#telefonoInput").val(numeroRemoto.textContent);
+    $("#telefonoInput").val(numeroRemoto.textContent);
     $("#telefonoInput").val();
   //  consultarPortabilidad();
     $("#clineteCorreoInput").val("");
@@ -764,8 +764,7 @@ function insertarCliente(numero)
     for(var i = 0; i < obj2.length; i++ ){
         if(obj2[i].id =="primerNombreInput" && obj2[i].value =="" ){
             $("#CRMINSCLIENTE").show();
-            //$("#btnCancelarAltaCliente").show();
-            $("#actuaGuarda").html("<Strong>Aviso.</Strong> Es necesario llenar el campo Primer nombre");
+            $("#actuaGuarda").html("<Strong>Aviso.</Strong> Es necesario llenar el campo nombre");
             $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
             {
                 $("#actuaGuarda").slideUp(3000);
@@ -779,11 +778,29 @@ function insertarCliente(numero)
                 $("#actuaGuarda").slideUp(3000);
             });
             $("#CRMINSCLIENTE").show();
-            //$("#btnCancelarAltaCliente").show();
             return;
         }
     }
     for(var i = 0; i < obj_.length; i++ ){
+        if(obj_[i].id == "REGIMENInput" &&  (obj_[i].value ==""  || obj_[i].value == "NOSELECT") ){
+            $("#actuaGuarda").html("<Strong>Aviso.</Strong> Es necesario seleccionar un Estado");
+            $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
+            {
+                $("#actuaGuarda").slideUp(3000);
+            });
+            $("#CRMINSCLIENTE").show();
+            return;
+        }
+        if(obj_[i].id == "sectorInput" &&  (obj_[i].value ==""  || obj_[i].value == "NOSELECT") ){
+            $("#actuaGuarda").html("<Strong>Aviso.</Strong> Es necesario seleccionar un Estado");
+            $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
+            {
+                $("#actuaGuarda").slideUp(3000);
+            });
+            $("#CRMINSCLIENTE").show();
+            return;
+        }
+
         if(obj_[i].id == "comboEstadoPersona" &&  (obj_[i].value ==""  || obj_[i].value == "NOSELECT") ){
             $("#actuaGuarda").html("<Strong>Aviso.</Strong> Es necesario seleccionar un Estado");
             $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
@@ -791,109 +808,37 @@ function insertarCliente(numero)
                 $("#actuaGuarda").slideUp(3000);
             });
             $("#CRMINSCLIENTE").show();
-            //$("#btnCancelarAltaCliente").show();
             return;
         }
-        if(obj_[i].id == "comboMunicipioPersona" && obj_[i].value ==""){
-            $("#actuaGuarda").html("<Strong>Aviso.</Strong> Es necesario Seleccionar in Municipio");
-            $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
-            {
-                $("#actuaGuarda").slideUp(3000);
-            });
-            $("#CRMINSCLIENTE").show();
-            //$("#btnCancelarAltaCliente").show();
-            return;
-        }
+        
     }
 
-    if($("#telefonoMovilInput").val() ==""  ){
-        $("#telefonoMovilInput").val("NO PROPORCIONA")
+    if($("#telefonoInput").val() ==""  ){
+        $("#telefonoInput").val("NO PROPORCIONA")
     }
-    if($("#telefonoAlternativoInput").val() ==""  ){
-        $("#telefonoAlternativoInput").val("NO PROPORCIONA")
-    }
+    
 
-    if($("#telefonoMovilInput").val().toUpperCase() =="NO PROPORCIONA" && $("#telefonoAlternativoInput").val().toUpperCase() =="NO PROPORCIONA" ){
-        $("#telefonoMovilInput").val("");
-        $("#telefonoAlternativoInput").val("");
-        $("#actuaGuarda").html("<Strong>Aviso.</Strong> Debe ingresar almenos un Teléfono Movil o Teléfono alternativo");
+    
+    if( new RegExp('^[0-9]*$').test($("#telefonoInput").val().trim()) == false && $("#telefonoInput").val().toUpperCase() !="NO PROPORCIONA" ){ 
+        $("#actuaGuarda").html("<Strong>Aviso.</Strong> Ingrese Teléfono valido ");
         $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
         {
             $("#actuaGuarda").slideUp(3000);
         });
         $("#CRMINSCLIENTE").show();
-        //$("#btnCancelarAltaCliente").show();
-        return;
-    }
-/*
-    if(($("#telefonoMovilInput").val().trim().length!= 10 && $("#telefonoMovilInput").val().toUpperCase() !="NO PROPORCIONA" )  && ( $("#telefonoAlternativoInput").val().trim().length!= 10  && $("#telefonoAlternativoInput").val().toUpperCase() !="NO PROPORCIONA" ) ){ 
-        $("#actuaGuarda").html("<Strong>Aviso.</Strong> Ingrese Teléfono Movil a 10 digitos  o   Teléfono alternativo a 10 digitos  ");
-        $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
-        {
-            $("#actuaGuarda").slideUp(3000);
-        });
-        $("#CRMINSCLIENTE").show();
-        //$("#btnCancelarAltaCliente").show();
-        return;
-    }
-*/
-    if( new RegExp('^[0-9]*$').test($("#telefonoMovilInput").val().trim()) == false && $("#telefonoMovilInput").val().toUpperCase() !="NO PROPORCIONA" ){ 
-        $("#actuaGuarda").html("<Strong>Aviso.</Strong> Ingrese Teléfono Movil valido ");
-        $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
-        {
-            $("#actuaGuarda").slideUp(3000);
-        });
-        $("#CRMINSCLIENTE").show();
-        //$("#btnCancelarAltaCliente").show();
-        return;
-    }
-    if( new RegExp('^[0-9]*$').test($("#telefonoAlternativoInput").val().trim()) == false && $("#telefonoAlternativoInput").val().toUpperCase() !="NO PROPORCIONA" ){ 
-        $("#actuaGuarda").html("<Strong>Aviso.</Strong> Ingrese Teléfono alternativo valido ");
-        $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
-        {
-            $("#actuaGuarda").slideUp(3000);
-        });
-        $("#CRMINSCLIENTE").show();
-        //$("#btnCancelarAltaCliente").show();
         return;
     }
     
-    if(($("#telefonoMovilInput").val().trim().length!= 10 && $("#telefonoMovilInput").val().toUpperCase() !="NO PROPORCIONA" )){ 
-        $("#actuaGuarda").html("<Strong>Aviso.</Strong> Ingrese Teléfono Movil a 10 digitos  ");
+    
+    if(($("#telefonoInput").val().trim().length!= 10 && $("#telefonoInput").val().toUpperCase() !="NO PROPORCIONA" )){ 
+        $("#actuaGuarda").html("<Strong>Aviso.</Strong> Ingrese Teléfono a 10 digitos  ");
         $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
         {
             $("#actuaGuarda").slideUp(3000);
         });
         $("#CRMINSCLIENTE").show();
-        //$("#btnCancelarAltaCliente").show();
         return;
     }
-
-        
-    if( ( $("#telefonoAlternativoInput").val().trim().length!= 10  && $("#telefonoAlternativoInput").val().toUpperCase() !="NO PROPORCIONA" ) ){ 
-        $("#actuaGuarda").html("<Strong>Aviso.</Strong> Ingrese Teléfono alternativo a 10 digitos  ");
-        $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
-        {
-            $("#actuaGuarda").slideUp(3000);
-        });
-        $("#CRMINSCLIENTE").show();
-        //$("#btnCancelarAltaCliente").show();
-        return;
-    }
-
-    /*
-    if( new RegExp('^[0-9]*$').test($("#telefonoMovilInput").val().trim()) == false    &&  new RegExp('^[0-9]*$').test($("#telefonoAlternativoInput").val().trim()) == false  )) ){ 
-        $("#actuaGuarda").html("<Strong>Aviso.</Strong> Ingrese Teléfono Movil  valido o   Teléfono alternativo valido  ");
-        $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
-        {
-            $("#actuaGuarda").slideUp(3000);
-        });
-        $("#CRMINSCLIENTE").show();
-        //$("#btnCancelarAltaCliente").show();
-        return;
-    }
-   */
-
     var obj = {
         idLlamada: llamadaOk.idLlamada,
         idAgente: usuarioOk.CNUSERID,
@@ -904,19 +849,32 @@ function insertarCliente(numero)
         extension: llamadaOk.extension,
         canalId: llamadaOk.canalId,
         rutaIVR: llamadaOk.rutaIVR,
-
-        primerNombre: $("#primerNombreInput").val(),    
-       // segundoNombre: $("#segundoNombreInput").val(),  
+        rfc: $("#RFCInput").val(),
+        pyme:$("#pYMEInput").val(),
+        regimen:$("#REGIMENInput").val(),
+        sector:$("#sectorInput").val(),
+        primerNombre: $("#primerNombreInput").val(),      
         apellidoPaterno: $("#apellidoPaternoInput").val(),  
         apellidoMaterno: $("#apellidoMaternoInput").val(),  
-        nombreCompleto: $("#nombreCompletoInput").val(),  
+        nombreCompleto: $("#nombreCompletoInput").val(),
+        correo:$("#clineteCorreoInput").val(),
+        edad:$("#edadInput").val(),  
         estado: $("#comboEstadoPersona").val(), 
         municipio: $("#comboMunicipioPersona").val(), 
         sucursal: $("#comboSucursalesPersona").val(), 
-       /* rfc: $("#rfcInput").val(),  
+        genero: $("#GeneroInput").val(), 
+        telefono: $("#telefonoInput").val(),
+        tipotelefono:$("#TipotelInput").val(),
+        Extesion:$("#ExtesionInput").val(), 
+        codigoPostal: $("#cpInput").val(),
+        Actividad:$("#ActividadInput").val(),
+        ActividadOtro:$("#ActividadOtroInput").val(),
+        Medio:$("#MedioInput").val(),
+        OtroCanal:$("#OtroCanalInput").val(),
+       /*   
         nss: $("#nssInput").val(),  
         curp: $("#curpInput").val(),  
-        codigoPostal: $("#codigoPostalInput").val(),  
+          
         numeroExterior: $("#numeroExteriorInput").val(),  
         numeroInterior: $("#numeroInteriorInput").val(),  
         calle: $("#calleInput").val(),  
@@ -924,7 +882,7 @@ function insertarCliente(numero)
         ciudad: $("#ciudadInput").val(),  
          
         fechaNacimiento: $("#fechaNacimientoInput").val(),  
-        genero: $("#generoIput").val(),  
+         
         pais: $("#paisInput").val(),  
         direccion: "",  */
         correoElectronico: "",
@@ -935,11 +893,9 @@ function insertarCliente(numero)
         tipo: $("#tipoTelefonoIput").val(),
         correoElectronico:  $("#clineteCorreoInput").val(),
         correo:$("#clineteCorreoInput").val(), 
-       /* genero:$("#generoIput").val(),    
-        fechaNacimiento:$("#fechaNacimientoInput").val(),      */ 
         nombrecompleto2:nombrecompleto2,
         /*datos contacto*/
-        telefonoFijoInput: $("#telefonoFijoInput").val(),
+
         telefonoAlternativoInput:$("#telefonoAlternativoInput").val(),
         telefonoMovilInput: $("#telefonoMovilInput").val(),
         generoCtoIput: $("#generoCtoIput").val(),
@@ -948,8 +904,7 @@ function insertarCliente(numero)
         afiliadoCtoInput: $("#afiliadoCtoInput").val(),
     };
 
-    telefonostxt = $("#telefonoFijoInput").val() + ' (PERSONAL) ' +
-    $("#telefonoAlternativoInput").val() + ' (Alternativo)'+ $("#telefonoMovilInput").val() + ' (MOVIL) ';
+    telefonostxt = $("#telefonoInput").val();
     
     correotxt = $("#clineteCorreoInput").val();
 
@@ -1239,8 +1194,7 @@ recargarcliente=false;
 
 function cancelarAltaCliente(){
 
-    telefonostxt = $("#telefonoFijoInput").val() + ' (PERSONAL) ' +
-    $("#telefonoAlternativoInput").val() + ' (Alternativo)'+ $("#telefonoMovilInput").val() + ' (MOVIL) ';
+    telefonostxt = $("#telefonoFijoInput").val() ;
     
     correotxt = $("#clineteCorreoInput").val();
 

@@ -1533,41 +1533,52 @@ function cmboEstadoPersona(datos) {
         $("#comboEstadoPersona").append(`<option value="${e.ID}">${e.DSC}</option>`)
     });
     $("#comboEstadoPersona").val(datos[0].ID)
-    cmboMuncipioPersonaBuscar()
+    ipcRenderer.send('consultarCombosCliente');
 
 }
+
+ipcRenderer.on('consultarCombosClienteResult', async (event, datos) => {
+    consultarCombosCliente(datos)
+
+})
+
+function consultarCombosCliente(datos) {
+    $("#REGIMENInput").html("");
+    $("#sectorInput").html(""); 
+    $("#edadInput").html(""); 
+    $("#GeneroInput").html(""); 
+    $("#ActividadInput").html("");
+    $("#MedioInput").html("");
+    MedioInput
+    datos["regimen"].forEach(e => {
+        $("#REGIMENInput").append(`<option value="${e.ID}">${e.DSC}</option>`)
+    });
+    datos["sector"].forEach(e => {
+        $("#sectorInput").append(`<option value="${e.ID}">${e.DSC}</option>`)
+    });
+    datos["edad"].forEach(e => {
+        $("#edadInput").append(`<option value="${e.ID}">${e.DSC}</option>`)
+    });
+    datos["genero"].forEach(e => {
+        $("#GeneroInput").append(`<option value="${e.ID}">${e.DSC}</option>`)
+    }); 
+    datos["actividad"].forEach(e => {
+        $("#ActividadInput").append(`<option value="${e.ID}">${e.DSC}</option>`)
+    });
+    datos["medio"].forEach(e => {
+        $("#MedioInput").append(`<option value="${e.ID}">${e.DSC}</option>`)
+    });
+}
+
 
 function cmboMuncipioPersonaBuscar() {
-   /* $.ajax({
-        url: urls.dirTomcat + "/SIO_FNC_WS/services/ServicioCatalogos/municipiosPorEstado",
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        data: JSON.stringify({
-            estado: $("#comboEstadoPersona").val()
-        }),
-        type: "post",
-        dataType: 'json',
-        success: function (response) {
-            cmboMuncipioPersona(response.municipios)
-        }
-    });
-
-*/
     ipcRenderer.send('consultarMunicipio', $("#comboEstadoPersona").val())
-   // insertarCte();
-   //metodoInsertar();
 }
-
-
 
 ipcRenderer.on('consultarMunicipioResult', async (event, datos) => {
     cmboMuncipioPersona(datos)
 
 })
-
-
 
 function cmboMuncipioPersona(datos) {
     $("#comboMunicipioPersona").html("")

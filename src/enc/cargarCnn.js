@@ -37,6 +37,39 @@ var conf = {
         }
       }
     },
+    {
+      id: 2,
+      select: false,
+      nombre: "41.145/41.144",
+      canalDefault: "IBD",
+      vers: "SDB-10",
+      mysql: {
+        crm:{
+          ip: "10.25.10.144",
+          usuario: "bswcrm_user",
+          contrasena: "Entrada2020$",
+          baseDatos: "siogen01",
+        },
+        cc:{    
+          ip: "10.25.10.145",
+          usuario: "bswcc_user",
+          contrasena: "Entrada2020$",
+          baseDatos: "asteriskcdrdb",
+        },
+        cco:{    
+          ip: "10.25.10.145",
+          usuario: "bswcc_user",
+          contrasena: "Entrada2020$",
+          baseDatos: "asteriskcdrdb",
+        },
+        mde: {
+          ip: "10.25.10.144",
+          usuario: "bswcrm_user",
+          contrasena: "Entrada2020$",
+          baseDatos: "inmc",
+        }
+      }
+    },
   
   ]
 }

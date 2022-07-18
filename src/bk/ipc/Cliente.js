@@ -130,4 +130,10 @@ const helper = require('../helpers/Cliente.js');
     event.reply("consultarMunicipioResult", mun);
 
   });
+  
+  ipcMain.on('consultarCombosCliente', async(event) => {
+    const mun = await helper.consultarCombosCliente(); 
+    event.reply("consultarCombosClienteResult", mun);
+
+  });
 

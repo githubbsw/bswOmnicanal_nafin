@@ -8,11 +8,13 @@ module.exports.consultar = async (criterios, datosPaginacion) => {
 
         var criteriosSeleccion = "";
         var criteriosSeleccion2 = "";
-        if (/^([a-zA-ZñÑáéíóúÁÉÍÓÚ.,#&%//?¡¿!\s])*$/.test(criterios)) {
-            criteriosSeleccion = " and cliente.BTCLIENTENCOMPLETO like CONCAT('%','" + criterios + "','%') "
-            +" OR  cliente.btclienterfc like CONCAT('%','" + criterios + "','%')  group by id  order by telefonos,  id desc limit ? , ? ";
-            criteriosSeleccion2 = " and cliente.BTCLIENTENCOMPLETO like CONCAT('%','" + criterios + "','%') "
-            +" OR  cliente.btclienterfc like CONCAT('%','" + criterios + "','%')";
+        if (/^([a-zA-Z0-9\s])*$/.test(criterios) && (criterios.length>=12 && criterios.length<=13) ) {
+            criteriosSeleccion = " and  cliente.btclienterfc like CONCAT('%','" + criterios + "','%')  group by id  order by telefonos,  id desc limit ? , ? ";
+            criteriosSeleccion2 = " and cliente.btclienterfc like CONCAT('%','" + criterios + "','%')";
+        }
+        else if (/^([a-zA-ZñÑáéíóúÁÉÍÓÚ.,#&%//?¡¿! 0-9\s])*$/.test(criterios)) {
+            criteriosSeleccion = " and  cliente.btclienterazonsocial like CONCAT('%','" + criterios + "','%')  group by id  order by telefonos,  id desc limit ? , ? ";
+            criteriosSeleccion2 = " and cliente.btclienterazonsocial like CONCAT('%','" + criterios + "','%')";
         }
         else if (/^([0-9\s])*$/.test(criterios)) {
 
@@ -33,6 +35,12 @@ module.exports.consultar = async (criterios, datosPaginacion) => {
         } else if (criterios[0] == "+") {
             criteriosSeleccion = " and tel.BTCLIENTETELNO like  CONCAT('%','" + criterios.substring(1, criterios.length - 1) + "','%') group by id  order by telefonos, id desc limit ? , ? ";
             criteriosSeleccion2 = " and tel.BTCLIENTETELNO like  CONCAT('%','" + criterios.substring(1, criterios.length - 1) + "','%') ";
+        }
+        else if (/^([a-zA-ZñÑáéíóúÁÉÍÓÚ.,#&%//?¡¿!\s])*$/.test(criterios)) {
+            criteriosSeleccion = " and cliente.BTCLIENTENCOMPLETO like CONCAT('%','" + criterios + "','%') "
+            +" OR  cliente.btclienterfc like CONCAT('%','" + criterios + "','%')  group by id  order by telefonos,  id desc limit ? , ? ";
+            criteriosSeleccion2 = " and cliente.BTCLIENTENCOMPLETO like CONCAT('%','" + criterios + "','%') "
+            +" OR  cliente.btclienterfc like CONCAT('%','" + criterios + "','%')";
         }
         if (criteriosSeleccion == "") {
             criteriosSeleccion = " and cliente.BTCLIENTENCOMPLETO like CONCAT('%','" + criterios + "','%')"

@@ -8,11 +8,11 @@ module.exports.actualizarMulticanal = `UPDATE bdnrh.nrhemdbmcinteracciones
     SET nrhemdbmcinteraccioneslestatus = 1 
     WHERE NRHEMUSERID = ?;`
 
-module.exports.ActualizarEstatusLlamada = "UPDATE bstntrn.bstnstatusllamada set estatusLlamada = ? ,IdLlamada = ?  where userid = ? "
+module.exports.ActualizarEstatusLlamada = `UPDATE bstntrn.bstnstatusllamada set estatusLlamada = ? ,IdLlamada = ?  where userid = ? `;
 
 
-module.exports.validaUsuario = "SELECT a.SSUSRID, a.SSUSRDSC, a.SSUSRPSW, a.SSUSRKEY "
-    + " FROM siogen01.ssusri a  INNER JOIN cnuser b  ON b.CNUSERID = a.SSUSRID WHERE a.SSUSRID = ?";
+module.exports.validaUsuario = `SELECT a.SSUSRID, a.SSUSRDSC, a.SSUSRPSW, a.SSUSRKEY 
+     FROM siogen01.ssusri a  INNER JOIN cnuser b  ON b.CNUSERID = a.SSUSRID WHERE a.SSUSRID = ? `;
 
 module.exports.nombreUsuario = "SELECT A.SSUSRID,A.SSUSRDSC,A.SSUSRPSW,ifnull(A.SSUSRKEY,-1) SSUSRKEY,ifnull(B.CNCDIRID,-1) CNCDIRID, ifnull(B.CNUSERACC,'si') CNUSERACC ,ifnull(B.CNUSERESTATUS,'1') CNUSERESTATUS , ifnull(B.CNUSERCATCOL,'no') CNUSERCATCOL,B.CNUSERFOTO," +
     " ifnull(C.SMSUSERNOM,-1) SMSUSERNOM, ifnull(C.SMSUSERKEY,-1) SMSUSERKEY FROM  ssusri A" +

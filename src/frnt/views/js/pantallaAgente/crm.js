@@ -791,6 +791,9 @@ function insertarCliente(numero)
             $("#CRMINSCLIENTE").show();
             return;
         }
+
+
+        
         if(obj_[i].id == "sectorInput" &&  (obj_[i].value ==""  || obj_[i].value == "NOSELECT") ){
             $("#actuaGuarda").html("<Strong>Aviso.</Strong> Es necesario seleccionar un Estado");
             $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
@@ -1218,4 +1221,11 @@ function cancelarAltaCliente(){
      consultarCliente("listClientes", "");
     } 
 
+}
+
+function filtrarrfc(){    
+   
+    if ($('#REGIMENInput').val()=="1" ) {    
+        $("#nombreCompletoInput").maxlength = 15;
+    }     
 }

@@ -1,20 +1,25 @@
 module.exports.consultar =   " 	SELECT  "+
                             " cliente.btclienteNUMERO id,  "+
+                            " cliente.BTCLIENTENCOMPLETO nombrecompleto,  "+ 
+                            " cliente.BTCLIENTERFC rfc,  "+
+                            " cliente.btclienterazonsocial pyme,  "+
+                            " btclienteCORRELEC correo," +
+                            " btclientetelefono telefonos,"  +
+
                             " cliente.btclientePNOMBRE primerNombre,  "+
                             " cliente.btclienteAPATERNO apellidoPaterno,  "+
                             " cliente.btclienteAMATERNO apellidoMaterno, btclienteestadoid estado, btclienteciudadid municipio , btclientesuc sucursal, "+
                             " ifnull(( select BTCLIENTECORREO from bstntrn.btclientecorreo where BTCLIENTECORREONOCTEID = cliente.btclienteNUMERO order by BTCLIENTECORREOID desc limit 1),'')  correoElectronico,  "+
-                            " cliente.BTCLIENTENCOMPLETO nombrecompleto,  "+                    
-                            "  btclientetelefono telefonos   ,"  +
+                            " btclienteextension ext,"+
                             " cliente.btclientegenid generoCtoIput,  "+
-                            " cast(cast(cliente.btclientefnac  as date) as char(10)) fechaNacimientoCtoInput,  "+
-                            " cliente.btclientecurp curpCtoInput,  "+
+                            " cast(cast(cliente.btclientefnac  as date) as char(10)) fechaNacimientoCtoInput,  "+                          
+                            " cliente.btclienterazonsocial razonsocial,  "+
                             " cliente.btclientectoafiliado afiliadoCtoInput, "+          
-                             " ifnull(( select BTCLIENTETELNO from bstntrn.btclientetel where BTCLIENTETELNOCTEID = cliente.btclienteNUMERO and BTCLIENTETELTIPO='PERSONAL'order by BTCLIENTETELCONSID desc limit 1),'') telefonoFijoInput , "  +
-                             " ifnull(( select BTCLIENTETELNO from bstntrn.btclientetel where BTCLIENTETELNOCTEID = cliente.btclienteNUMERO and BTCLIENTETELTIPO='ALTERNATIVO'order by BTCLIENTETELCONSID desc limit 1),'') telefonoAlternativoInput , "  +
-                             " ifnull(( select BTCLIENTETELNO from bstntrn.btclientetel where BTCLIENTETELNOCTEID = cliente.btclienteNUMERO and BTCLIENTETELTIPO='MOVIL'order by BTCLIENTETELCONSID desc limit 1),'') telefonoMovilInput, "  +
-                             " ifnull(cliente.btclientecmp,'') campana "  +
-                           " FROM bstntrn.btcliente  as cliente  "+
+                            " ifnull(( select BTCLIENTETELNO from bstntrn.btclientetel where BTCLIENTETELNOCTEID = cliente.btclienteNUMERO and BTCLIENTETELTIPO='PERSONAL'order by BTCLIENTETELCONSID desc limit 1),'') telefonoFijoInput , "  +
+                            " ifnull(( select BTCLIENTETELNO from bstntrn.btclientetel where BTCLIENTETELNOCTEID = cliente.btclienteNUMERO and BTCLIENTETELTIPO='ALTERNATIVO'order by BTCLIENTETELCONSID desc limit 1),'') telefonoAlternativoInput , "  +
+                            " ifnull(( select BTCLIENTETELNO from bstntrn.btclientetel where BTCLIENTETELNOCTEID = cliente.btclienteNUMERO and BTCLIENTETELTIPO='MOVIL'order by BTCLIENTETELCONSID desc limit 1),'') telefonoMovilInput, "  +
+                            " ifnull(cliente.btclientecmp,'') campana "  +
+                            " FROM bstntrn.btcliente  as cliente  "+
                             " left JOIN bstntrn.btclientetel as tel ON tel.BTCLIENTETELNOCTEID = cliente.BTCLIENTENUMERO  "+
                             " left JOIN bstntrn.btclientecorreo as correos ON correos.BTCLIENTECORREONOCTEID = cliente.BTCLIENTENUMERO "+
                             " where 1 = 1 and cliente.btclienteNUMERO!=0 ";
@@ -176,3 +181,4 @@ module.exports.consultarCombosEdad ="SELECT idbtedadnaf ID,concat(idbtedadnaf,' 
 module.exports.consultarCombosGenero ="SELECT idbtsexonaf ID,concat(idbtsexonaf,' - ',btsexonafDsc) DSC FROM crmnafbd.btsexonaf; ";
 module.exports.consultarCombosActividad ="SELECT idbtactnaf ID,concat(idbtactnaf,' - ',btactnafDsc) DSC FROM crmnafbd.btactnaf; ";
 module.exports.consultarCombosMedio ="SELECT idbtmedcon ID,concat(idbtmedcon,' - ',btmedconnafDsc) DSC FROM crmnafbd.btmedconnaf; ";
+module.exports.buscarRfc = "SELECT COUNT(*) rfcs FROM bstntrn.btcliente WHERE btclienterfc = ? ;"

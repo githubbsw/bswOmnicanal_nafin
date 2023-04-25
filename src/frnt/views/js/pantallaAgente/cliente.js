@@ -56,7 +56,7 @@ function pintarBusquedaDeCliente(){
                      </select>
                   </div>
                   <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left "  >Municipio
-                     <select id="comboMunicipioPersona" class="custom-select form-control" onchange="metodoInsertar()">
+                     <select id="comboMunicipioPersona" class="custom-select form-control" >
                      </select>
                   </div>
                  
@@ -71,7 +71,7 @@ function pintarBusquedaDeCliente(){
                               id="telefonoFijoInput" title="Teléfono" maxlength="10"  disabled></div>          
                   </div>
                   <div class="CRMPRINCIPALES col-12 float-left altaCRM text-left ">Correo<input class="col"
-                     id="clineteCorreoInput" title="Correo" onblur="metodoInsertar()" ></div>                
+                     id="clineteCorreoInput" title="Correo" ></div>                
                   <div class="CRMPRINCIPALES col-12 float-left altaCRM text-left deshabilitado">Nombre completo<input class="col"
                      id="nombreCompletoInput" title="Nombre" disabled style="text-transform: uppercase;"  ></div>
                      
@@ -257,7 +257,7 @@ function pintarBusquedaDeCliente2(){
                      </select>
                   </div>
                   <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left "  >Municipio
-                     <select id="comboMunicipioPersona" class="custom-select form-control" onchange="metodoInsertar()">
+                     <select id="comboMunicipioPersona" class="custom-select form-control" >
                      </select>
                   </div>
                  
@@ -272,7 +272,7 @@ function pintarBusquedaDeCliente2(){
                               id="telefonoFijoInput" title="Teléfono" maxlength="10"  disabled></div>          
                   </div>
                   <div class="CRMPRINCIPALES col-12 float-left altaCRM text-left ">Correo<input class="col"
-                     id="clineteCorreoInput" title="Correo" onblur="metodoInsertar()" ></div>                
+                     id="clineteCorreoInput" title="Correo"  ></div>                
                   <div class="CRMPRINCIPALES col-12 float-left altaCRM text-left deshabilitado">Nombre completo<input class="col"
                      id="nombreCompletoInput" title="Nombre" disabled style="text-transform: uppercase;"  ></div>
                      

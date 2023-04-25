@@ -183,54 +183,10 @@ function modalidad() {
             $("#teclado_out").addClass("d-flex");
             $("#teclado_out").removeClass("d-none");
         }
-        /*if (agenteOk.btcmasiva == "S" && agenteOk.btcindividual == "N" && agenteOk.btcmodalidad == "SA" && agenteOk.btcasigancion == "A") {
-            //$("#marcadorSide").remove()
-            $("#marcadorSide-etiqueta").remove()
-            $("#marcadorSide-etiqueta2").remove()
-
-        } else if (agenteOk.btcmasiva == "S" && agenteOk.btcindividual == "S" && agenteOk.btcmodalidad == "SA" && agenteOk.btcasigancion == "A") {
-            //$("#marcadorSide").remove()
-            $("#marcadorSide-etiqueta").remove()
-            $("#marcadorSide-etiqueta2").remove()
-            alert("CASO 2 -  No disponible");
-            ipcRenderer.send('CerrarSesion', { idAgente: agenteOk.id, tipoCierre: "CIERRE_SESION" })
-            //ipcRenderer.send('CerrarSesion', agenteOk.id);
-
-        } else if (agenteOk.btcmasiva == "S" && agenteOk.btcindividual == "N" && agenteOk.btcmodalidad == "CA" && agenteOk.btcasigancion == "A") {
-
-            ipcRenderer.send('consultarContactos', agenteOk.id)
-            $("#teclado").remove()
-            $("#listaContactos").css("height", "calc(100% - 52px)")
-            $("#contactosDiv").css("height", "100%")
-
-        } else if (agenteOk.btcmasiva == "S" && agenteOk.btcindividual == "N" && agenteOk.btcmodalidad == "CA" && agenteOk.btcasigancion == "M") {
-
-            marcacionManual4 = true;
-            ipcRenderer.send('consultarContactos', agenteOk.id)
-            $("#contactosDiv").css("height", "calc(100% - 400px)")
-            $("#listaContactos").css("height", "calc(100% - 52px)")
-            console.log(agenteOk.id)
-
-        } else if (agenteOk.btcmasiva == "N" && agenteOk.btcindividual == "S" && agenteOk.btcmodalidad == "NA" && agenteOk.btcasigancion == "NA") {
-
-            marcacionManual5 = true;
-            $("#contactosDiv").remove()
-            $("#marcadorSide-etiqueta").find("img").attr("src", "img/key2.png")
-            $("#marcadorSide-etiqueta").find("div").html("Teclado")
-            $("#btnBuscarClienteOut").show()
-            $("#marcadorSide-etiqueta").remove()
-            $("#marcadorSide-etiqueta2").remove()
-            $("#marcadorSide").css("background", "transparent")
-            pintarBusquedaDeCliente2()
-        }
-        */
     } else {
 
         marcacionCallback = true;
         $("#btnBuscarClienteOut").show()
-        //$("#marcadorSide").remove()
-        //$("#marcadorSide-etiqueta").remove()
-        //$("#marcadorSide-etiqueta2").remove()
         pintarBusquedaDeCliente()
 
     }
@@ -402,7 +358,6 @@ function script() {
     $("#quitarTipificacion").show()
     $("#displayTipificacion").show()
     $("#displayUsuario").hide()
-    //$("#displayLlamada").hide()
     $("#buscarCliente").hide()
     if (versTip == "V1") {
 
@@ -437,11 +392,6 @@ function script() {
     $("#displayTipificacion").html(
         '<webview id="webviewTipificacion" src="' + url + parametros + '" style="display:inline-flex; width:100%; height:100%;" localStorage="true" partition="persist:simplifica"></webview>'
     );
-    /*if ($("#mydiv").hasClass("d-none") && oSipSessionCall) {
-        $("#mydiv").removeClass("d-none")
-    }
-    $("#mydiv").css( "top", $("body").height()-510)
-    $("#mydiv").css( "left", "15px")*/
 }
 
 function tipificacion() {
@@ -464,7 +414,6 @@ function tipificacion() {
     $("#quitarTipificacion").show()
     $("#displayTipificacion").show()
     $("#displayUsuario").hide()
-    //$("#displayLlamada").hide()
     $("#buscarCliente").hide()
     if (versTip == "V1") {
 
@@ -498,11 +447,6 @@ function tipificacion() {
     $("#displayTipificacion").html(
         '<webview id="webviewTipificacion" src="' + url + parametros + '" style="display:inline-flex; width:100%; height:100%;" localStorage="true" partition="persist:simplifica"></webview>'
     );
-    /*if ($("#mydiv").hasClass("d-none") && oSipSessionCall) {
-        $("#mydiv").removeClass("d-none")
-    }
-    $("#mydiv").css( "top", $("body").height()-510)
-    $("#mydiv").css( "left", "15px")*/
 }
 
 function reemplazaPalabras(camposResv) {
@@ -750,12 +694,6 @@ ipcRenderer.on('consultarMovimientosResult', (event, datos) => {
 ipcRenderer.on('solicitarRecesoResult', (event, datos) => {
     $('#exampleModal').modal('hide');
     solicitarRecAnterior = "SOL";
-   /* $("#success-alert").html("<strong>Aviso.</strong> Solicitud de receso enviada");
-    $("#success-alert").fadeTo(2000, 500).slideUp(500, function () {
-        $("#success-alert").slideUp(500);
-    });*/
-  /*  $("#alertPrincipal").html("<strong>Aviso.</strong> Solicitud de receso enviada");
-        document.getElementById("alertPrincipal").style.display = "block";*/
 
         $("#alertPrincipal").html("<strong>Aviso.</strong> Solicitud de receso enviada");
         $("#alertPrincipal").fadeTo(2000, 500).slideUp(500, function () {
@@ -763,9 +701,6 @@ ipcRenderer.on('solicitarRecesoResult', (event, datos) => {
         });
 
     entroaReceso = false;
-
-
-   // socket.emit('solicitarReceso',usuarioOk.CNUSERID);
 })
 
 /*Timer de tiempo acumulado*/
@@ -902,15 +837,6 @@ this.terminarReceso = function () {
 ipcRenderer.on('terminarRecesoResult', (event, datos) => {
     console.log("terminarRecesoResult");
     ipcRenderer.send('recargarPantalla', "");
-    
-    /*
-    enReceso=false;
-    timpoReceso="";
-    connectarSipml();
-    document.getElementById("alertPrincipal").style.display="none";               
-    $('#pausaModal').modal('hide')
-    document.getElementById("solicitarRec").style.display="block";
-    */
 })
 
 function tiempoEnPausa() {
@@ -1134,18 +1060,6 @@ ipcRenderer.on('consultarActCRMResult', (event, datos) => {
                 </div>
                 </div>
             `)
-            /*
-            $("#actividadesPendientes").append(
-                `<div data-toggle="collapse" href="#collapse-${act.folioOrigen}" role="button" aria-expanded="false" aria-controls="collapse-${act.folioOrigen}" class="alert ${bg} text-left" role="alert">
-                    <h4  class="alert-heading" style="font-size: larger;">${act.actividad}</h4>
-                    <p class="mb-0">${act.otros}</p>
-                    <p style="font-weight: 400;">${(act.fecha + " " + act.hora ) }</p>
-                    <div class="collapse" id="collapse-${act.folioOrigen}">
-                        <hr>
-                        <p class="mb-0">${act.numeroCliente + " - " + act.nombreCliente }</p>
-                    </div>
-                </div>`
-            )*/
         })
 
     }
@@ -1159,21 +1073,8 @@ ipcRenderer.on('consultarActCRMResult', (event, datos) => {
 
 
 function filtrarRespuestas() {
-
-   // const result = tipoDeRespuestas.filter(tipo => (tipo.bstrtDsc.indexOf($("#inputBuscarResp").val()) > -1) && (tipo.bstrttipo == $("#selectRespTipo").val()));
    const result = tipoDeRespuestas.filter(tipo => tipo.bstrttipo == $("#selectRespTipo").val()); 
    $("#listRespuestas").html("");
-   
-   /* result.forEach((resp) => {
-        $("#listRespuestas").append(`
-        <li onclick="verScript(${resp.bstrtId})" class="list-group-item" style="cursor: pointer;">
-        <div style="font-weight: 700;">${resp.bstrtDsc}</div>
-        <div style="width: 100%; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">${resp.bstrtrrespTipo}</div>
-    </li>
-        `)
-    })
-
-    */
    result.forEach((resp) => {
     $("#listRespuestas").append(`<option value="${resp.bstrtId}">${resp.bstrtDsc}</option>`)
    })
@@ -1302,9 +1203,7 @@ ipcRenderer.on('consultarCampanaOCResult', async (event, datos) => {
 
 
 function ejecutarWebSocket(puesto){   
-   /* if(campanaPertenece==""){
-        campanaPertenece= agenteOk.campanaid;
-    }*/
+   // debug de socket
     //socket = new io.connect( "http://localhost:2001", { query: 'username=' + agenteOk.id + '&puesto=' + puesto + 
 
    socket = new io.connect( urls.dirCRM + ':' + "2001", { query: 'username=' + agenteOk.id + '&puesto=' + puesto + 
@@ -1329,12 +1228,6 @@ function ejecutarWebSocket(puesto){
             cerrarSesion();   
         }      
     });
-  /*  socket.on('recesosEstatusResult', function() {
-        console.log("Successfully connected!");
-       // if(!oSipSessionCall){        
-            consultaRecesoAuto();   
-        //}      
-    });*/
 
     
     socket.on('solicitarEstatusAgentes2', function(datos) {
@@ -1420,16 +1313,6 @@ var lenguajeEsp = {
 
 }
 
-/* function abrirAltaCita(){
-    if ($.isEmptyObject(clienteSeleccionado)) {
-        alert("Es necesario tener un cliente Seleccionado")
-        return
-    }else{
-        ipcRenderer.send('abrirAltaCita', {clienteSeleccionado, llamadaOk, urls})
-    }
-    //ipcRenderer.send('abrirAltaCita', {clienteSeleccionado, llamadaOk})
-} */
-
 ipcRenderer.on('seCerroCRM', async (event, datos) => {
 
    //tipificacion()
@@ -1500,19 +1383,6 @@ ipcRenderer.on('consultarTipificacionLlamadaResult', async (event, datos) => {
 var sucursales = []
 function cmboEstadoPersonaBuscar() {
 
-    /*
-    $.ajax({
-        url: urls.dirTomcat + "/SIO_FNC_WS/services/ServicioCatalogos/consulta",
-        data: {},
-        type: "post",
-        dataType: 'json',
-        success: function (response) {
-            sucursales = response.sucursales
-            cmboEstadoPersona(response.estados)
-        }
-    });
-
-    */
    ipcRenderer.send('consultarEstados', "")
 }
 
@@ -1521,10 +1391,6 @@ ipcRenderer.on('consultarEstadosResult', async (event, datos) => {
     cmboEstadoPersona(datos)
 
 })
-
-
-
-
 
 function cmboEstadoPersona(datos) {
     $("#comboEstadoPersona").html("")

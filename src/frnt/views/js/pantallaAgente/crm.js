@@ -24,11 +24,12 @@ function abrirBuscarCliente() {
         $("#cancelarSeleccion").show();
         $("#buscarCliente").show();
         $("#displayClienteNuevo").hide();
-        $("#displayScript").hide()
-        $("#altadecitaContenedor").hide()
-        $("#displayTipificacion").hide()
-        $("#quitarTipificacion").hide()
-        $("#webviewTipificacion").remove()
+        $("#displayScript").hide();
+        $("#altadecitaContenedor").hide();
+        $("#displayTipificacion").hide();
+        $("#quitarTipificacion").hide();
+        $("#webviewTipificacion").remove();
+        $("#divRFC").show();
         pintarGrid([])
     }
 }
@@ -192,20 +193,10 @@ function pintarGrid(valores){
         data.push("");
         data.push('<button type="button" class="btn btn-sm col btn-info" onclick="verCliente('+valor.id+')" >'+valor.id+'</button>');
         data.push(valor.nombrecompleto);
+        data.push(valor.rfc);
+        data.push(valor.pyme);
         data.push(valor.correoElectronico);
         data.push(valor.telefonos);
-       /* data.push(valor.regimen);
-        data.push(valor.rfc);
-        data.push(valor.curp);
-        data.push(valor.nss);
-        data.push(valor.codigoPostal);
-        data.push(valor.calle);
-        data.push(valor.numeroExterior);
-        data.push(valor.numeroInterior);
-        data.push(valor.colonia);
-        data.push(valor.ciudad);
-        data.push(valor.estado);
-        data.push(valor.pais);*/
         dataSet.push(data)
 
     });
@@ -225,20 +216,10 @@ function pintarGrid(valores){
             { title: "" },
             { title: "Id" },
             { title: "Nombre" },
+            { title: "RFC" },
+            { title: "PyME" },
             { title: "Correo electrónico" },
             { title: "Teléfono" },
-          /*  { title: "Regimen" },
-            { title: "RFC" },
-            { title: "CURP" },
-            { title: "NSS" },
-            { title: "CP" },
-            { title: "Calle" },
-            { title: "Número Ext" },
-            { title: "Número Int" },
-            { title: "Colonia" },
-            { title: "Ciudad" },
-            { title: "Estado" },
-            { title: "País" },*/
             
         ]
     } );
@@ -334,12 +315,14 @@ function llenarDatosCliente(datos){
     if ($.isEmptyObject(datos)) {
         $("#idCliente").html("");
         $("#nombreCliente").html("");
+        $("#datoRfc").val("");
+        $("#pyme").val("");
         $("#correoCliente").html("");
         $("#telefonoCliente").html("");
      
         $("#generoCtoIput").val("");
         $("#fechaNacimientoCtoInput").val("");
-        $("#curpCtoInput").val("");
+        
         $("#afiliadoCtoInput").val("");
        $("#telefonoFijoInput").val("");
        $("#telefonoAlternativoInput").val("");
@@ -357,6 +340,8 @@ function llenarDatosCliente(datos){
     }else{
         $("#idCliente").html(datos.id);
         $("#nombreCliente").html(datos.nombrecompleto);
+        $("#datoRfc").html(datos.rfc);
+        $("#pyme").html(datos.pyme);
         if (datos.correoElectronico == "" || datos.correoElectronico == null || datos.correoElectronico == undefined) {
             $("#clineteCorreoInput").val(correotxt);
             $("#correoCliente").html(correotxt);    
@@ -397,26 +382,7 @@ function llenarDatosCliente(datos){
 
        
     }
-    /*$("#rfcCliente").html(datos.rfc);
-    $("#nssCliente").html(datos.nss);
-    $("#curpCliente").html(datos.curp);
-    $("#cpCliente").html(datos.codigoPostal);
-    if(datos.calle==undefined){
-        datos.calle="";
-    }
-    if(datos.numeroInterior==undefined){
-        datos.numeroInterior="";
-    }
-    if(datos.numeroExterior==undefined){
-        datos.numeroExterior="";
-    }
-    $("#direccionCliente").html(datos.calle + " "+ datos.numeroInterior + " " + datos.numeroExterior);
-    $("#coloniaCliente").html(datos.colonia);
-    $("#ciudadCliente").html(datos.ciudadDSC);
-    $("#estadoCliente").html(datos.estadoDSC);
-    $("#fechaNacimientoCliente").html(datos.fechaNacimiento);
-    $("#generoCliente").html(datos.genero);
-    $("#paisCliente").html(datos.pais);*/
+
 }
 
 
@@ -428,25 +394,10 @@ function crearNombreCompleto(clase){
     
     nombrecompleto2= $("#apellidoPaternoInput").val() + " " + $("#apellidoMaternoInput").val()+" ";
     nombrecompleto2+=   $("#primerNombreInput").val(); 
-   /* var segundoNombreIn=$("#segundoNombreInput").val()
-    if(segundoNombreIn=="")
-    {
-
-    }
-    else
-    {
-        nombreComp+=segundoNombreIn+" ";
-        nombrecompleto2+=" "+segundoNombreIn;
-    }*/
     nombreComp += $("#apellidoPaternoInput").val() + " " + $("#apellidoMaternoInput").val();
-    var entrarametodocliente=false;
-    if( $("#nombreCompletoInput").val() != nombreComp){
-        entrarametodocliente=true;
-    }
+    
     $("#nombreCompletoInput").val(nombreComp) 
-   if(entrarametodocliente==true){
-    metodoInsertar();
-   }
+   
 
     
 }
@@ -458,14 +409,13 @@ function validarTelefono(telefono){
     if ($("#telefonoMovilInput").val().toUpperCase() =="NO PROPORCIONA" && $("#telefonoAlternativoInput").val().toUpperCase() =="NO PROPORCIONA" ){
         $('#'+telefono.id).val("");
     }
-    metodoInsertar();
 }
 function metodoInsertar(){    
    
     if ($('#CRMINSCLIENTE').is(':visible') ) {    
         if(recargarcliente == false )     {
         if($("#nombreCompletoInput").val().trim()!="")     {
-            insertarCte();  
+            insertarCliente();  
         }
     }
     }     
@@ -474,7 +424,7 @@ function metodoInsertar(){
 /** Funciones para HTML **/
 function Letras (string){//Solo letras
     var out = '';
-    var filtro = 'abcdefghijklmnÃ±opqrstuvwxyzABCDEFGHIJKLMNÃ‘OPQRSTUVWXYZ ';//Caracteres validos
+    var filtro = 'abcdefghijklmnÃ±opqrstuvwxyzABCDEFGHIJKLMNÃ‘OPQRSTUVWXYZ1234567890 ';//Caracteres validos
     
     //Recorrer el texto y verificar si el caracter se encuentra en la lista de validos 
     for (var i=0; i<string.length; i++)
@@ -560,8 +510,8 @@ function nuevoCliente(){
 function editarCliente(){
     cmboEstadoPersonaBuscar()
     criteriosSeleccionEditarCliente=clientePreSeleccionado;
-   // consultarEstados();  
-   quitarTipificacion(); 
+ 
+    quitarTipificacion(); 
     pestanasCRM("CRMPRINCIPALES");
     $("#displayClienteNuevo").hide();
     $("#displayScript").hide()
@@ -571,10 +521,13 @@ function editarCliente(){
     $("#displayScript").hide()
    
     $("#primerNombreInput").val(clientePreSeleccionado.primerNombre);
-   // $("#segundoNombreInput").val(clientePreSeleccionado.segundoNombre);
     $("#apellidoPaternoInput").val(clientePreSeleccionado.apellidoPaterno); 
     $("#apellidoMaternoInput").val(clientePreSeleccionado.apellidoMaterno); 
     $("#idClienteInput").val(clientePreSeleccionado.id);
+    $("#pYMEInput").val(clientePreSeleccionado.razonsocial);
+    $("#telefonoInput").val(clientePreSeleccionado.telefonos);
+    $("#clineteCorreoInput").val(clientePreSeleccionado.correo);
+    $("#ExtesionInput").val(clientePreSeleccionado.ext);
     setTimeout(() => {
         $("#comboEstadoPersona").val(clientePreSeleccionado.estado)
         cmboMuncipioPersonaBuscar();
@@ -585,135 +538,15 @@ function editarCliente(){
         $("#comboMunicipioPersona").val(clientePreSeleccionado.municipio );
         $("#nombreCompletoInput").val(clientePreSeleccionado.nombrecompleto);
     }, 3000);
-/*
-    setTimeout(() => {
-        $("#comboSucursalesPersona").val(clientePreSeleccionado.sucursal)
-    }, 4500);*/
     $("#displayClienteNuevo").show();
     $("#displayScript").hide()
-   
-  /*  $("#rfcInput").val(clientePreSeleccionado.rfc);
-    $("#nssInput").val(clientePreSeleccionado.nss);
-    $("#curpInput").val(clientePreSeleccionado.curp);
-    $("#codigoPostalInput").val(clientePreSeleccionado.codigoPostal);
-    $("#coloniaInput").val(clientePreSeleccionado.colonia);
-   
-    $("#fechaNacimientoInput").val(clientePreSeleccionado.fechaNacimiento);
-    $("#generoIput").val(clientePreSeleccionado.genero);
-    $("#paisInput").val(clientePreSeleccionado.pais);
-
-    $("#estadoInput").val(clientePreSeleccionado.estado);
-    $("#numeroInteriorInput").val(clientePreSeleccionado.numeroInterior);
-    $("#numeroExteriorInput").val(clientePreSeleccionado.numeroExterior);
-    $("#calleInput").val(clientePreSeleccionado.calle);
-    
-    
-   */
-  
- 
-     
-
+    $("#divRFC").hide();
 }
 
-function insertarCte()
-{
- var telefonoMovilInput= $("#telefonoMovilInput").val();
- var telefonoAlternativoInput=  $("#telefonoAlternativoInput").val();
- if($("#clineteCorreoInput").val().trim()==""){
-    $("#clineteCorreoInput").val("");
- }
-   
- if($("#telefonoMovilInput").val().toUpperCase() =="NO PROPORCIONA" && $("#telefonoAlternativoInput").val().toUpperCase() =="NO PROPORCIONA" ){
-    telefonoMovilInput="";
-}
 
-if(($("#telefonoMovilInput").val().trim().length!= 10 && $("#telefonoMovilInput").val().toUpperCase() !="NO PROPORCIONA" ) ){ 
-    telefonoMovilInput="";
-}
-if( $("#telefonoAlternativoInput").val().trim().length!= 10  && $("#telefonoAlternativoInput").val().toUpperCase() !="NO PROPORCIONA" ) { 
-    telefonoAlternativoInput="";
-}
-
-   // $("#CRMINSCLIENTE").hide();
-   if( new RegExp('^[0-9]*$').test($("#telefonoMovilInput").val().trim()) == false  && $("#telefonoMovilInput").val().toUpperCase() !="NO PROPORCIONA" ){ 
-    telefonoMovilInput="";
-}
-if( new RegExp('^[0-9]*$').test($("#telefonoAlternativoInput").val().trim()) == false  && $("#telefonoAlternativoInput").val().toUpperCase() !="NO PROPORCIONA"  ){ 
-    telefonoAlternativoInput="";
-}
-
-    var obj2 = $(".CRMPRINCIPALES input");
-    var obj_ = $(".CRMPRINCIPALES select");    
-    var obj = {
-        idLlamada: llamadaOk.idLlamada,
-        idAgente: usuarioOk.CNUSERID,
-        telefonoCliente:llamadaOk.telefonoCliente,      
-        idFolio: llamadaOk.idFolio,
-        urls: urls.ipCRM,
-        nombreAgente: llamadaOk.nombreAgente,
-        extension: llamadaOk.extension,
-        canalId: llamadaOk.canalId,
-        rutaIVR: llamadaOk.rutaIVR,
-
-        primerNombre: $("#primerNombreInput").val(), 
-        apellidoPaterno: $("#apellidoPaternoInput").val(),  
-        apellidoMaterno: $("#apellidoMaternoInput").val(),  
-        nombreCompleto: $("#nombreCompletoInput").val(),  
-        estado: $("#comboEstadoPersona").val(), 
-        municipio: $("#comboMunicipioPersona").val(), 
-        sucursal: $("#comboSucursalesPersona").val(), 
-      
-        correoElectronico:  $("#clineteCorreoInput").val(),
-        correo:$("#clineteCorreoInput").val(),
-        nir: $("#nirInput").val(),
-        serie: $("#serieInput").val(),
-        razon: $("#compaInput").val(),
-        telefono: $("#telefonoInput").val().trim(),
-        tipo: $("#tipoTelefonoIput").val(),
-        nombrecompleto2:nombrecompleto2,
-        /*datos contacto*/
-        telefonoFijoInput: $("#telefonoFijoInput").val().trim(),
-        telefonoAlternativoInput: telefonoAlternativoInput ,
-        telefonoMovilInput:telefonoMovilInput,
-        generoCtoIput: $("#generoCtoIput").val(),
-        fechaNacimientoCtoInput: $("#fechaNacimientoCtoInput").val(),
-        curpCtoInput: $("#curpCtoInput").val(),
-        afiliadoCtoInput: $("#afiliadoCtoInput").val(),       
-        
-    };
-
-    if($("#idClienteInput").val()=="")
-    {
-        ipcRenderer.send('insertarCte', obj);
-    }
-    else
-    {
-        obj.id=$("#idClienteInput").val();
-        ipcRenderer.send('actualizarCte', obj)
-    }    
-}
 
 
 ipcRenderer.on('insertarCteResult', (event, datos) => {
-   
-    $("#CRMINSCLIENTE").show();
-    
-    if($("#idClienteInput").val()=="")
-    {
-     //   $("#actuaGuarda").html("<Strong>Aviso.</Strong> Persona se guardado");
-    }
-    else
-    {
-       // $("#actuaGuarda").html("<Strong>Aviso.</Strong> Persona se actualizado");
-    }
-    
-   /* $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
-    {
-        $("#actuaGuarda").slideUp(3000);
-    });*/
-    
-    llenarCamposAltainsertarCte(datos.valores);
-    clientePreSeleccionado = datos.resultado;
     if(datos.result!="OK"){
         clientePreSeleccionado = {}
         $("#actuaGuarda").html("<Strong>Aviso.</Strong>"+datos.result+"");
@@ -723,6 +556,9 @@ ipcRenderer.on('insertarCteResult', (event, datos) => {
          });
          return;
     }
+    $("#CRMINSCLIENTE").show();    
+    llenarCamposAltainsertarCte(datos.valores);
+    clientePreSeleccionado = datos.resultado;
 })
 
 function llenarCamposAltainsertarCte( datos){
@@ -762,58 +598,142 @@ function insertarCliente(numero)
     var obj2 = $(".CRMPRINCIPALES input");
     var obj_ = $(".CRMPRINCIPALES select");
     for(var i = 0; i < obj2.length; i++ ){
-        if(obj2[i].id =="primerNombreInput" && obj2[i].value =="" ){
-            $("#CRMINSCLIENTE").show();
-            $("#actuaGuarda").html("<Strong>Aviso.</Strong> Es necesario llenar el campo nombre");
-            $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
-            {
-                $("#actuaGuarda").slideUp(3000);
-            });
-            return;
-        }
-        if(obj2[i].id == "apellidoPaternoInput" && obj2[i].value ==""){
-            $("#actuaGuarda").html("<Strong>Aviso.</Strong> Es necesario llenar el campo Apellido paterno");
-            $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
-            {
-                $("#actuaGuarda").slideUp(3000);
-            });
-            $("#CRMINSCLIENTE").show();
-            return;
-        }
-    }
-    for(var i = 0; i < obj_.length; i++ ){
-        if(obj_[i].id == "REGIMENInput" &&  (obj_[i].value ==""  || obj_[i].value == "NOSELECT") ){
-            $("#actuaGuarda").html("<Strong>Aviso.</Strong> Es necesario seleccionar un Estado");
-            $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
-            {
-                $("#actuaGuarda").slideUp(3000);
-            });
-            $("#CRMINSCLIENTE").show();
-            return;
-        }
 
-
-        
-        if(obj_[i].id == "sectorInput" &&  (obj_[i].value ==""  || obj_[i].value == "NOSELECT") ){
-            $("#actuaGuarda").html("<Strong>Aviso.</Strong> Es necesario seleccionar un Estado");
-            $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
+        if(obj2[i].id == "pYMEInput")
+        {
+            if(obj2[i].value =="")
             {
-                $("#actuaGuarda").slideUp(3000);
-            });
-            $("#CRMINSCLIENTE").show();
-            return;
+                $("#CRMINSCLIENTE").show();
+                $("#actuaGuarda").html("<Strong>Aviso.</Strong> Es necesario llenar el campo razón social");
+                $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
+                {
+                    $("#actuaGuarda").slideUp(3000);
+                });
+                return;
+            }
+            else if(RegExp('^[a-zA-Z0-9 ]*$').test(obj2[i].value)==false)
+            {
+                $("#CRMINSCLIENTE").show();
+                $("#actuaGuarda").html("<Strong>Aviso.</Strong> Para razón social, solo se aceptan letras y numeros");
+                $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
+                {
+                    $("#actuaGuarda").slideUp(3000);
+                });
+                return;
+            }
         }
-
-        if(obj_[i].id == "comboEstadoPersona" &&  (obj_[i].value ==""  || obj_[i].value == "NOSELECT") ){
-            $("#actuaGuarda").html("<Strong>Aviso.</Strong> Es necesario seleccionar un Estado");
-            $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
+        if(obj2[i].id =="primerNombreInput"){
+            if(obj2[i].value =="")
             {
-                $("#actuaGuarda").slideUp(3000);
-            });
-            $("#CRMINSCLIENTE").show();
-            return;
+                $("#CRMINSCLIENTE").show();
+                $("#actuaGuarda").html("<Strong>Aviso.</Strong> Es necesario llenar el campo nombre");
+                $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
+                {
+                    $("#actuaGuarda").slideUp(3000);
+                });
+                return;
+            }
+            else if(RegExp('^[a-zA-ZñÑ0-9 ]*$').test(obj2[i].value)==false)
+            {
+                $("#CRMINSCLIENTE").show();
+                $("#actuaGuarda").html("<Strong>Aviso.</Strong> Para los nombres, No se acepta caracteres especiales");
+                $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
+                {
+                    $("#actuaGuarda").slideUp(3000);
+                });
+                return;
+            }
         }
         
+        if(obj2[i].id == "apellidoPaternoInput"){
+            
+            if(obj2[i].value =="")
+            {
+                $("#CRMINSCLIENTE").show();
+                $("#actuaGuarda").html("<Strong>Aviso.</Strong> Es necesario llenar el campo Apellido paterno");
+                $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
+                {
+                    $("#actuaGuarda").slideUp(3000);
+                });
+                return;
+            }
+            else if(RegExp('^[a-zA-ZñÑ0-9 ]*$').test(obj2[i].value)==false)
+            {
+                $("#CRMINSCLIENTE").show();
+                $("#actuaGuarda").html("<Strong>Aviso.</Strong> Para el apellido paterno, No se acepta caracteres especiales");
+                $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
+                {
+                    $("#actuaGuarda").slideUp(3000);
+                });
+                return;
+            }
+        }
+
+        if(obj2[i].id == "apellidoMaternoInput"){
+            
+            if(obj2[i].value =="")
+            {
+                $("#CRMINSCLIENTE").show();
+                $("#actuaGuarda").html("<Strong>Aviso.</Strong> Es necesario llenar el campo Apellido materno");
+                $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
+                {
+                    $("#actuaGuarda").slideUp(3000);
+                });
+                return;
+            }
+            else if(RegExp('^[a-zA-ZñÑ0-9 ]*$').test(obj2[i].value)==false)
+            {
+                $("#CRMINSCLIENTE").show();
+                $("#actuaGuarda").html("<Strong>Aviso.</Strong> Para el apellido materno, no se acepta caracteres especiales");
+                $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
+                {
+                    $("#actuaGuarda").slideUp(3000);
+                });
+                return;
+            }
+        }
+
+        if(obj2[i].id == "RFCInput"){
+            
+            if(obj2[i].value =="")
+            {
+                $("#CRMINSCLIENTE").show();
+                $("#actuaGuarda").html("<Strong>Aviso.</Strong> Es necesario llenar el campo RFC");
+                $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
+                {
+                    $("#actuaGuarda").slideUp(3000);
+                });
+                return;
+            }
+            else if(RegExp('^[a-zA-Z\-0-9]*$').test(obj2[i].value)==false)
+            {
+                $("#CRMINSCLIENTE").show();
+                $("#actuaGuarda").html("<Strong>Aviso.</Strong> Para el RFC, solo se aceptan letras, guion medio y numeros");
+                $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
+                {
+                    $("#actuaGuarda").slideUp(3000);
+                });
+                return;
+            }
+        }
+
+        if(obj2[i].id == "clineteCorreoInput")
+        {
+            var validEmail =  /^\w+([.-_+]?\w+)*@\w+([.-]?\w+)*(\.\w{2,10})+$/;
+
+            if(validEmail.test(obj2[i].value)==false)
+            {
+                $("#CRMINSCLIENTE").show();
+                $("#actuaGuarda").html("<Strong>Aviso.</Strong> Formato de correo incorrecto");
+                $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
+                {
+                    $("#actuaGuarda").slideUp(3000);
+                });
+                return;
+            }
+        }
+
+       
     }
 
     if($("#telefonoInput").val() ==""  ){
@@ -926,8 +846,17 @@ function insertarCliente(numero)
 
 ipcRenderer.on('insertarDatosClienteResult', (event, datos) => {
   
+    if(datos.result!="OK"){
+        clientePreSeleccionado = {}
+        $("#actuaGuarda").html("<Strong>Aviso.</Strong>"+datos.result+"");
+        $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
+        {
+            $("#actuaGuarda").slideUp(3000);
+         });
+         return;
+    }
     $("#CRMINSCLIENTE").show();
-    //$("#btnCancelarAltaCliente").show();
+
     if($("#idClienteInput").val()=="")
     {
         $("#actuaGuarda").html("<Strong>Aviso.</Strong> Persona se guardado");
@@ -943,15 +872,6 @@ ipcRenderer.on('insertarDatosClienteResult', (event, datos) => {
     });
     llenarCamposAlta(datos.valores);
     clientePreSeleccionado = datos.resultado;
-    if(datos.result!="OK"){
-        clientePreSeleccionado = {}
-        $("#actuaGuarda").html("<Strong>Aviso.</Strong>"+datos.result+"");
-        $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
-        {
-            $("#actuaGuarda").slideUp(3000);
-         });
-         return;
-    }
 })
 
 ipcRenderer.on('consultarTelefonosResult', (event, datos) =>

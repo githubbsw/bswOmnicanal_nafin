@@ -8,45 +8,9 @@ module.exports.consultar = async (criterios, datosPaginacion) => {
 
         var criteriosSeleccion = "";
         var criteriosSeleccion2 = "";
-        if (/^([a-zA-Z0-9\s])*$/.test(criterios) && (criterios.length>=12 && criterios.length<=13) ) {
+        if (/^([a-zA-Z0-9\s])*$/.test(criterios)) {
             criteriosSeleccion = " and  cliente.btclienterfc like CONCAT('%','" + criterios + "','%')  group by id  order by telefonos,  id desc limit ? , ? ";
             criteriosSeleccion2 = " and cliente.btclienterfc like CONCAT('%','" + criterios + "','%')";
-        }
-        else if (/^([a-zA-ZñÑáéíóúÁÉÍÓÚ.,#&%//?¡¿! 0-9\s])*$/.test(criterios)) {
-            criteriosSeleccion = " and  cliente.btclienterazonsocial like CONCAT('%','" + criterios + "','%')  group by id  order by telefonos,  id desc limit ? , ? ";
-            criteriosSeleccion2 = " and cliente.btclienterazonsocial like CONCAT('%','" + criterios + "','%')";
-        }
-        else if (/^([0-9\s])*$/.test(criterios)) {
-
-            if (criterios.length == 10) {
-                criteriosSeleccion = " and tel.BTCLIENTETELNO like  CONCAT('%','" + criterios + "','%') group by id  order by telefonos,  id desc limit ? , ? ";
-                criteriosSeleccion2 = " and tel.BTCLIENTETELNO like  CONCAT('%','" + criterios + "','%') ";
-            } else {
-                criteriosSeleccion = " and cliente.BTCLIENTENUMERO like  CONCAT('%','" + criterios + "','%') group by id  order by telefonos, id desc limit ? , ? ";
-                criteriosSeleccion2 = " and cliente.BTCLIENTENUMERO like  CONCAT('%','" + criterios + "','%') ";
-            }
-
-        }
-        else if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,4})+$/.test(criterios)) {
-
-            criteriosSeleccion = " and correos.BTCLIENTECORREO like  CONCAT('%','" + criterios + "','%') group by id  order by telefonos , id desc limit ? , ? ";
-            criteriosSeleccion2 = " and correos.BTCLIENTECORREO like  CONCAT('%','" + criterios + "','%') ";
-
-        } else if (criterios[0] == "+") {
-            criteriosSeleccion = " and tel.BTCLIENTETELNO like  CONCAT('%','" + criterios.substring(1, criterios.length - 1) + "','%') group by id  order by telefonos, id desc limit ? , ? ";
-            criteriosSeleccion2 = " and tel.BTCLIENTETELNO like  CONCAT('%','" + criterios.substring(1, criterios.length - 1) + "','%') ";
-        }
-        else if (/^([a-zA-ZñÑáéíóúÁÉÍÓÚ.,#&%//?¡¿!\s])*$/.test(criterios)) {
-            criteriosSeleccion = " and cliente.BTCLIENTENCOMPLETO like CONCAT('%','" + criterios + "','%') "
-            +" OR  cliente.btclienterfc like CONCAT('%','" + criterios + "','%')  group by id  order by telefonos,  id desc limit ? , ? ";
-            criteriosSeleccion2 = " and cliente.BTCLIENTENCOMPLETO like CONCAT('%','" + criterios + "','%') "
-            +" OR  cliente.btclienterfc like CONCAT('%','" + criterios + "','%')";
-        }
-        if (criteriosSeleccion == "") {
-            criteriosSeleccion = " and cliente.BTCLIENTENCOMPLETO like CONCAT('%','" + criterios + "','%')"
-             +" OR  cliente.btclienterfc like CONCAT('%','" + criterios + "','%') group by id  order by telefonos, id desc limit ? , ? ";
-            criteriosSeleccion2 = " and cliente.BTCLIENTENCOMPLETO like CONCAT('%','" + criterios + "','%') "
-            +" OR cliente.btclienterfc like CONCAT('%','" + criterios + "','%') ";
         }
         
 
@@ -87,21 +51,37 @@ module.exports.consultarTotal = async (criterios) => {
 }
 
 module.exports.insertar = async (obj) => {
-    const id = await pool.query(querys.calcularId, []);
-    await pool.query(querys.insertar, [id[0].id,
-    obj.primerNombre,
-    obj.apellidoPaterno,
-    obj.apellidoMaterno,
-    obj.nombreCompleto,
-    obj.correoElectronico, 
-    obj.nombrecompleto2,
-    obj.genero,
-    "",
-    "",
-    "", obj.estado, "", "",obj.rfc,obj.pyme,obj.regimen,obj.sector,obj.edad,
-    obj.telefono,obj.tipotelefono,obj.Extesion,obj.codigoPostal,
-    obj.Actividad,obj.ActividadOtro,
-    obj.Medio,obj.OtroCanal]);
+    if(obj.rfc!=""){
+
+        var existeRfc =  await pool.query(querys.buscarRfc, [obj.rfc]);
+        if(existeRfc[0].rfcs==0)
+        {
+            const id = await pool.query(querys.calcularId, []);
+            await pool.query(querys.insertar, [id[0].id,
+            obj.primerNombre,
+            obj.apellidoPaterno,
+            obj.apellidoMaterno,
+            obj.nombreCompleto,
+            obj.correoElectronico, 
+            obj.nombrecompleto2,
+            obj.genero,
+            "",
+            "",
+            "", obj.estado, "", "",obj.rfc,obj.pyme,obj.regimen,obj.sector,obj.edad,
+            obj.telefono,obj.tipotelefono,obj.Extesion,obj.codigoPostal,
+            obj.Actividad,obj.ActividadOtro,
+            obj.Medio,obj.OtroCanal]);
+        }
+        else
+        {
+            var result = {
+                result: "Este cliente ya fue dado de alta.",
+                valores: "{}",
+                resultado:"{}"
+            }
+            return result;
+        }
+    }
 
     //inserta telefono
     var exiTel=0;

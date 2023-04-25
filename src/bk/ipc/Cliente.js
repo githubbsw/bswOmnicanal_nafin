@@ -30,11 +30,6 @@ const helper = require('../helpers/Cliente.js');
 
   });
 
-  ipcMain.on('insertarCte', async(event, obj) => {
-    const clienteObj = await helper.insertar(obj); 
-    event.reply("insertarCteResult", clienteObj);
-  });
-
   ipcMain.on('actualizarCte', async(event, obj) => {
     const clienteObj = await helper.actualizar(obj); 
     event.reply("insertarCteResult", clienteObj);
@@ -44,13 +39,6 @@ const helper = require('../helpers/Cliente.js');
 
     const clienteObj = await helper.consultarPorLlaves(llave); 
     event.reply("consultarPorLlavesResult", clienteObj);
-
-  });
-
-  ipcMain.on('insertar', async(event, objClien) => {
-
-    const clienteObj = await helper.insertar(objClien, ); 
-    event.reply("insertarResult", clienteObj);
 
   });
 

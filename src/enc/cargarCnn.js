@@ -40,7 +40,7 @@ var conf = {
     {
       id: 2,
       select: false,
-      nombre: "41.145/41.144",
+      nombre: "10.142/10.144",
       canalDefault: "IBD",
       vers: "SDB-10",
       mysql: {
@@ -51,13 +51,13 @@ var conf = {
           baseDatos: "siogen01",
         },
         cc:{    
-          ip: "10.25.10.145",
+          ip: "10.25.10.142",
           usuario: "bswcc_user",
           contrasena: "Entrada2020$",
           baseDatos: "asteriskcdrdb",
         },
         cco:{    
-          ip: "10.25.10.145",
+          ip: "10.25.10.142",
           usuario: "bswcc_user",
           contrasena: "Entrada2020$",
           baseDatos: "asteriskcdrdb",

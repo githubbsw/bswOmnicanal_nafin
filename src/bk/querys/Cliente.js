@@ -5,11 +5,11 @@ module.exports.consultar =   " 	SELECT  "+
                             " cliente.btclienterazonsocial pyme,  "+
                             " btclienteCORRELEC correo," +
                             " btclientetelefono telefonos,"  +
-
+                            " btclienteRFC rfc,btclienterazonsocial pyme," +
                             " cliente.btclientePNOMBRE primerNombre,  "+
                             " cliente.btclienteAPATERNO apellidoPaterno,  "+
                             " cliente.btclienteAMATERNO apellidoMaterno, btclienteestadoid estado, btclienteciudadid municipio , btclientesuc sucursal, "+
-                            " ifnull(( select BTCLIENTECORREO from bstntrn.btclientecorreo where BTCLIENTECORREONOCTEID = cliente.btclienteNUMERO order by BTCLIENTECORREOID desc limit 1),'')  correoElectronico,  "+
+                            " BTCLIENTECORRELEC  correoElectronico,  "+
                             " btclienteextension ext,"+
                             " cliente.btclientegenid generoCtoIput,  "+
                             " cast(cast(cliente.btclientefnac  as date) as char(10)) fechaNacimientoCtoInput,  "+                          
@@ -50,28 +50,20 @@ module.exports.calcularId =  "SELECT IFNULL(MAX(btclienteNUMERO),0)+1 AS id FROM
 
 module.exports.actualizar =" UPDATE bstntrn.btcliente SET"
                     + " btclientePNOMBRE = UPPER(?), "
-                 //   + " btclienteSNOMBRE = ?, "
                     + " btclienteAPATERNO = UPPER(?), "
                     + " btclienteAMATERNO = UPPER(?), "
                     + " btclienteNCOMPLETO = UPPER(?), "
-                 /*   + " btclienteRFC = ?, "
-                    + " btclienteNSS = ? ,"
-                    + " btclienteCURP = ?, "
-                    + " btclienteCPID = ?, "
-                    + " btclienteNEXTERIOR = ?, "
-                    + " btclienteNINTERIOR = ?, "
-                    + " btclienteCALLE = ?, "
-                    + " btclienteCOLONIA = ?, "
-                    + " BTCLIENTECIUDADID = ?, "
-                    + " BTCLIENTEESTADOID = ?, "
-                    + " btclientePAIS = ?, "
-                    + " btclienteDCOMPLETA = ?, " */
-                    + " btclienteCORRELEC = ? ,BTCLIENTENCOMPLETO2=? , "
-                  /*  +" btclientegenero= ? , btclientefnac= ?  "*/             
+                    + " btclienteRFC = ?, "
+                    + " btclienterazonsocial = ?,"
+                    + " btclienteCORRELEC = ? , "
+                    + " BTCLIENTENCOMPLETO2=? , "            
                     + " btclientegenid = ? ,  "
                     + " btclientefnac= ? ,  "
                     + " btclientecurp= ? ,  "
-                    +  " btclientectoafiliado= ? , btclienteestadoid = ?, btclienteciudadid = ?, btclientesuc = ? "
+                    + " btclientectoafiliado= ? , "
+                    + " btclienteestadoid = ?, "
+                    + " btclienteciudadid = ?, " 
+                    + " btclientesuc = ? "
                     + " WHERE btclienteNUMERO = ? ";
 
 
@@ -81,16 +73,15 @@ module.exports.consultarPorLlaves =  " SELECT "
                     + " btclienteAPATERNO apellidoPaterno, "
                     + " btclienteAMATERNO apellidoMaterno, "
                     + " btclienteNCOMPLETO nombreCompleto, "
-                    + " ( select BTCLIENTECORREO from bstntrn.btclientecorreo where BTCLIENTECORREONOCTEID = A.btclienteNUMERO order by BTCLIENTECORREOID desc limit 1)   correoElectronico , "
-                 
+                    + " btclienteRFC rfc,btclienterazonsocial pyme,"
+                    + " BTCLIENTECORRELEC  correoElectronico , "                
                     + " btclientegenid generoCtoIput,  "
                     + "  cast(cast(btclientefnac as date) as char(10)) fechaNacimientoCtoInput,  "
                     + " btclientecurp curpCtoInput,  "
                     + " btclientectoafiliado afiliadoCtoInput,  "  
                     + " ( select BTCLIENTETELNO from bstntrn.btclientetel where BTCLIENTETELNOCTEID = A.btclienteNUMERO and BTCLIENTETELTIPO='PERSONAL'order by BTCLIENTETELCONSID desc limit 1) telefonoFijoInput , "  
                     + " ( select BTCLIENTETELNO from bstntrn.btclientetel where BTCLIENTETELNOCTEID = A.btclienteNUMERO and BTCLIENTETELTIPO='ALTERNATIVO'order by BTCLIENTETELCONSID desc limit 1) telefonoAlternativoInput , "  
-                    + " ( select BTCLIENTETELNO from bstntrn.btclientetel where BTCLIENTETELNOCTEID = A.btclienteNUMERO and BTCLIENTETELTIPO='MOVIL'order by BTCLIENTETELCONSID desc limit 1) telefonoMovilInput "  
-                    
+                    + " ( select BTCLIENTETELNO from bstntrn.btclientetel where BTCLIENTETELNOCTEID = A.btclienteNUMERO and BTCLIENTETELTIPO='MOVIL'order by BTCLIENTETELCONSID desc limit 1) telefonoMovilInput "            
                     + " FROM bstntrn.btcliente A "
                  + " WHERE btclienteNUMERO  = ? and btclienteNUMERO!=0 ";                 
 
@@ -127,7 +118,7 @@ module.exports.actualizarCorreo =  " update bstntrn.btclientecorreo  cross join 
  ifnull(A.btContactoTipoTel01,'') tipoTele,ifnull(A.btContactoTel02,'') contactoTele2 ,  ifnull(A.btContactoTipoTel02,'') tipoTele2 ,  
  ifnull(A.btContactoTel03,'') contactoTele3,  ifnull(A.btContactoTipoTel03,'') tipoTele3 , A.btContactoNombreCliente nombreCliente, 
  ifnull(A.btcontactoMotivo,'') motivo, A.btContactoConsecutivo consecutivo, A.btcontactoNoCliente idCliente, A.btContactoCountTel01 intentos,  
- btcontactoNoCliente Nocliente, btcontactoRFC RFC, btcontactoCURP CURP, btcontactoNSS NSS 
+ btcontactoNoCliente Nocliente, btclienteRFC rfc,btclienterazonsocial pyme, btcontactoCURP CURP, btcontactoNSS NSS 
  FROM bstntrn.btcontacto AS A  
  WHERE btcontactoagenteid = ?`;
 
@@ -151,17 +142,14 @@ module.exports.actualizarCorreo =  " update bstntrn.btclientecorreo  cross join 
 module.exports.consultarClientes =   " 	SELECT  "+
                             " cliente.btclienteNUMERO id,  "+
                             " cliente.btclientePNOMBRE primerNombre,  "+
-                           // " cliente.btclienteSNOMBRE segundoNombre,  "+
                             " cliente.btclienteAPATERNO apellidoPaterno,  "+
                             " cliente.btclienteAMATERNO apellidoMaterno, btclienteestadoid estado, btclienteciudadid municipio , btclientesuc sucursal, "+
-                            " ( select BTCLIENTECORREO from bstntrn.btclientecorreo where BTCLIENTECORREONOCTEID = cliente.btclienteNUMERO order by BTCLIENTECORREOID desc limit 1)  correoElectronico,  "+
-
+                            " BTCLIENTECORRELEC correoElectronico,  "+
                             " cliente.BTCLIENTENCOMPLETO nombrecompleto,  "+
+                            " btclienteRFC rfc,btclienterazonsocial pyme," +
                             " CONCAT(( select BTCLIENTETELNO from bstntrn.btclientetel where BTCLIENTETELNOCTEID = cliente.btclienteNUMERO and BTCLIENTETELTIPO='PERSONAL'order by BTCLIENTETELCONSID desc limit 1), ' (PERSONAL)', "  +
                             " ( select BTCLIENTETELNO from bstntrn.btclientetel where BTCLIENTETELNOCTEID = cliente.btclienteNUMERO and BTCLIENTETELTIPO='ALTERNATIVO'order by BTCLIENTETELCONSID desc limit 1)  , ' (ALTERNATIVO)' , "  +
-                            " ( select BTCLIENTETELNO from bstntrn.btclientetel where BTCLIENTETELNOCTEID = cliente.btclienteNUMERO and BTCLIENTETELTIPO='MOVIL'order by BTCLIENTETELCONSID desc limit 1) , ' (MOVIL)' ) telefonos ,"  +
-
-                          
+                            " ( select BTCLIENTETELNO from bstntrn.btclientetel where BTCLIENTETELNOCTEID = cliente.btclienteNUMERO and BTCLIENTETELTIPO='MOVIL'order by BTCLIENTETELCONSID desc limit 1) , ' (MOVIL)' ) telefonos ,"  +                         
                             " cliente.btclientegenid generoCtoIput,  "+
                             " cast(cast(cliente.btclientefnac  as date) as char(10)) fechaNacimientoCtoInput,  "+
                             " cliente.btclientecurp curpCtoInput,  "+

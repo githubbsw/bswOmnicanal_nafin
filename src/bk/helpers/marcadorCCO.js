@@ -169,8 +169,15 @@ module.exports.marcacionManual = async (datos) => {
 }
 
 module.exports.GenerarLlamada = async (objAgt) => {
-    this.generarllamada_out(objAgt.extension,objAgt.servidor,objAgt.telefono,objAgt.campana,objAgt.idinteraccion,objAgt.url);
-    return "ok";
+    const enreus = await pool.query(querys.consultarReus, [objAgt.telefono,objAgt.campana]);
+    if (enreus[0].enreus == 0) {
+        this.generarllamada_out(objAgt.extension,objAgt.servidor,objAgt.telefono,objAgt.campana,objAgt.idinteraccion,objAgt.url);
+        return "ok";
+    }
+    else
+    {
+        return "enreus";
+    }
 }
 
 module.exports.generarllamada_out = async (extension,servidor,telefono,campana,idinteraccion,urlgenerarllamada) => {

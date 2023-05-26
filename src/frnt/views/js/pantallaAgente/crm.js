@@ -324,9 +324,9 @@ function llenarDatosCliente(datos){
         $("#fechaNacimientoCtoInput").val("");
         
         $("#afiliadoCtoInput").val("");
-       $("#telefonoFijoInput").val("");
-       $("#telefonoAlternativoInput").val("");
-       $("#clineteCorreoInput").val("");
+        $("#telefonoFijoInput").val("");
+        $("#telefonoAlternativoInput").val("");
+        $("#clineteCorreoInput").val("");
         $("#clineteCorreoInput").val("");
         $("#telefonoMovilInput").val("");
         $("#datoCURP").val("");
@@ -504,6 +504,9 @@ function nuevoCliente(){
     $("#apellidoPaternoInput").val("");
     $("#apellidoMaternoInput").val("");
     $("#nombreCompletoInput").val("");
+    $("#RFCInput").val("");
+    $("#pYMEInput").val("");
+    $("#RFCInput").prop('disabled', false);
 }
 
 
@@ -525,6 +528,7 @@ function editarCliente(){
     $("#apellidoMaternoInput").val(clientePreSeleccionado.apellidoMaterno); 
     $("#idClienteInput").val(clientePreSeleccionado.id);
     $("#pYMEInput").val(clientePreSeleccionado.razonsocial);
+    $("#RFCInput").val(clientePreSeleccionado.rfc);
     $("#telefonoInput").val(clientePreSeleccionado.telefonos);
     $("#clineteCorreoInput").val(clientePreSeleccionado.correo);
     $("#ExtesionInput").val(clientePreSeleccionado.ext);
@@ -540,7 +544,7 @@ function editarCliente(){
     }, 3000);
     $("#displayClienteNuevo").show();
     $("#displayScript").hide()
-    $("#divRFC").hide();
+    $("#RFCInput").prop('disabled', true);
 }
 
 
@@ -720,16 +724,18 @@ function insertarCliente(numero)
         if(obj2[i].id == "clineteCorreoInput")
         {
             var validEmail =  /^\w+([.-_+]?\w+)*@\w+([.-]?\w+)*(\.\w{2,10})+$/;
-
-            if(validEmail.test(obj2[i].value)==false)
+            if(obj2[i].value!="")
             {
-                $("#CRMINSCLIENTE").show();
-                $("#actuaGuarda").html("<Strong>Aviso.</Strong> Formato de correo incorrecto");
-                $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
+                if(validEmail.test(obj2[i].value)==false)
                 {
-                    $("#actuaGuarda").slideUp(3000);
-                });
-                return;
+                    $("#CRMINSCLIENTE").show();
+                    $("#actuaGuarda").html("<Strong>Aviso.</Strong> Formato de correo incorrecto");
+                    $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
+                    {
+                        $("#actuaGuarda").slideUp(3000);
+                    });
+                    return;
+                }
             }
         }
 
@@ -773,13 +779,13 @@ function insertarCliente(numero)
         canalId: llamadaOk.canalId,
         rutaIVR: llamadaOk.rutaIVR,
         rfc: $("#RFCInput").val(),
-        pyme:$("#pYMEInput").val(),
+        pyme:$("#pYMEInput").val().toUpperCase(),
         regimen:$("#REGIMENInput").val(),
         sector:$("#sectorInput").val(),
-        primerNombre: $("#primerNombreInput").val(),      
-        apellidoPaterno: $("#apellidoPaternoInput").val(),  
-        apellidoMaterno: $("#apellidoMaternoInput").val(),  
-        nombreCompleto: $("#nombreCompletoInput").val(),
+        primerNombre: $("#primerNombreInput").val().toUpperCase(),      
+        apellidoPaterno: $("#apellidoPaternoInput").val().toUpperCase(),  
+        apellidoMaterno: $("#apellidoMaternoInput").val().toUpperCase(),  
+        nombreCompleto: $("#nombreCompletoInput").val().toUpperCase(),
         correo:$("#clineteCorreoInput").val(),
         edad:$("#edadInput").val(),  
         estado: $("#comboEstadoPersona").val(), 
@@ -794,20 +800,6 @@ function insertarCliente(numero)
         ActividadOtro:$("#ActividadOtroInput").val(),
         Medio:$("#MedioInput").val(),
         OtroCanal:$("#OtroCanalInput").val(),
-       /*   
-        nss: $("#nssInput").val(),  
-        curp: $("#curpInput").val(),  
-          
-        numeroExterior: $("#numeroExteriorInput").val(),  
-        numeroInterior: $("#numeroInteriorInput").val(),  
-        calle: $("#calleInput").val(),  
-        colonia: $("#coloniaInput").val(),  
-        ciudad: $("#ciudadInput").val(),  
-         
-        fechaNacimiento: $("#fechaNacimientoInput").val(),  
-         
-        pais: $("#paisInput").val(),  
-        direccion: "",  */
         correoElectronico: "",
         nir: $("#nirInput").val(),
         serie: $("#serieInput").val(),
@@ -856,21 +848,17 @@ ipcRenderer.on('insertarDatosClienteResult', (event, datos) => {
          return;
     }
     $("#CRMINSCLIENTE").show();
+    llenarCamposAlta(datos.valores);
 
-    if($("#idClienteInput").val()=="")
-    {
-        $("#actuaGuarda").html("<Strong>Aviso.</Strong> Persona se guardado");
-    }
-    else
-    {
-        $("#actuaGuarda").html("<Strong>Aviso.</Strong> Persona se actualizado");
-    }
+    $("#actuaGuarda").html("<Strong>Aviso.</Strong> Datos de cliente guarda.");
+
+    
     
     $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
     {
         $("#actuaGuarda").slideUp(3000);
     });
-    llenarCamposAlta(datos.valores);
+
     clientePreSeleccionado = datos.resultado;
 })
 
@@ -1018,43 +1006,25 @@ function llenarCamposAlta( datos){
         datos = {
             apellidoMaterno: "",
             apellidoPaterno: "",
-           /* calle: "",
-            ciudad: "",
-            codigoPostal: "",
-            colonia: "",*/
             correoElectronico: "",
             correo:"",
-        /* curp: "",
-            estado: "", */
             id: "",
             nombrecompleto: "",
-        /*  nss: "",
-            numeroExterior: "",
-            numeroInterior: "",
-            pais: "", */
             primerNombre: "",
             generoCtoIput:"",
             fechaNacimientoCtoInput: "",
             curpCtoInput: "",
             afiliadoCtoInput: "",           
-        /*  regimen: "",
+            regimen: "",
             rfc: "", 
-            segundoNombre: "", */
             telefonos: "",
-        /*  fechaNacimiento:"",
-            genero:"", */
             telefonoFijoInput:"",
             telefonoAlternativoInput:"",
-
-            telefonoMovilInput:"",
-           
+            telefonoMovilInput:"",          
         }
-
-      /*  $("#fechaNacimientoInput").val("");  
-        $("#generoIput").val("");  
-        $("#estadoInput").val("");  
-        $("#ciudadInput").val("");  */
-
+        $("#pYMEInput").val("");
+        $("#RFCInput").val("");
+        $("#ExtesionInput").val("");
         $("#telefonoInput").val("");   
         $("#compaInput").val(""); 
         $("#serieInput").val(""); 
@@ -1062,28 +1032,19 @@ function llenarCamposAlta( datos){
         $("#clineteCorreoInput").val("");  
         $("#gridTelefonos").html("");
         $("#gridCorreos").html("");
-
          $("#generoCtoIput").val("");
          $("#fechaNacimientoCtoInput").val("");
          $("#curpCtoInput").val("");
          $("#afiliadoCtoInput").val("");
          $("#telefonoFijoInput").val("");
          $("#telefonoAlternativoInput").val(""),
-
           $("#telefonoMovilInput").val("");
-     //   $("#nirInputPrinci").val(""),
-      //  $("#serieInputPrinci").val(""),
-     //   $("#compaInputPrinci").val(""),
-       // $("#telefonoInputPrinci").val(""),
-     //   $("#tipoTelefonoIputPrinci").val(""),
-    
     }
 
    
 
     $("#idClienteInput").val(datos.id);  
-    $("#primerNombreInput").val(datos.primerNombre);   
-   // $("#segundoNombreInput").val(datos.segundoNombre); 
+    $("#primerNombreInput").val(datos.primerNombre);    
     $("#apellidoPaternoInput").val(datos.apellidoPaterno); 
     $("#apellidoMaternoInput").val(datos.apellidoMaterno); 
     $("#nombreCompletoInput").val(datos.nombreCompleto); 
@@ -1095,21 +1056,8 @@ function llenarCamposAlta( datos){
      $("#telefonoAlternativoInput").val(datos.telefonoAlternativoInput),
      $("#telefonoMovilInput").val(datos.telefonoMovilInput);
      $("#clineteCorreoInput").val(datos.correoElectronico);
-   /* $("#rfcInput").val(datos.rfc); 
-    $("#nssInput").val(datos.nss); 
-    $("#curpInput").val(datos.curp); 
-    $("#codigoPostalInput").val(datos.codigoPostal); 
-    $("#numeroExteriorInput").val(datos.numeroExterior); 
-    $("#numeroInteriorInput").val(datos.numeroInterior); 
-    $("#calleInput").val(datos.calle); 
-    $("#coloniaInput").val(datos.colonia); 
-    $("#ciudadInput").val(datos.ciudad); 
-    $("#estadoInput").val(datos.estado); 
-    $("#fechaNacimientoInput").val(datos.fechaNacimiento); 
-    $("#generoIput").val(datos.genero); 
-    $("#paisInput").val(datos.pais); 
-    $("#direccionInput").val(datos.primerNombre); 
-*/
+     $("#rfcInput").val(datos.rfc);
+ 
 
 recargarcliente=false;
 

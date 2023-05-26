@@ -8,7 +8,7 @@ module.exports.consultar = async (criterios, datosPaginacion) => {
 
         var criteriosSeleccion = "";
         var criteriosSeleccion2 = "";
-        if (/^([a-zA-Z0-9\s])*$/.test(criterios)) {
+        if (/^([a-zA-Z\-0-9\s])*$/.test(criterios)) {
             criteriosSeleccion = " and  cliente.btclienterfc like CONCAT('%','" + criterios + "','%')  group by id  order by telefonos,  id desc limit ? , ? ";
             criteriosSeleccion2 = " and cliente.btclienterfc like CONCAT('%','" + criterios + "','%')";
         }
@@ -51,75 +51,174 @@ module.exports.consultarTotal = async (criterios) => {
 }
 
 module.exports.insertar = async (obj) => {
-    if(obj.rfc!=""){
+    var id=null;
+    var result= null;
+    try
+    {
+        if(obj.rfc!=""){
 
-        var existeRfc =  await pool.query(querys.buscarRfc, [obj.rfc]);
-        if(existeRfc[0].rfcs==0)
-        {
-            const id = await pool.query(querys.calcularId, []);
-            await pool.query(querys.insertar, [id[0].id,
-            obj.primerNombre,
-            obj.apellidoPaterno,
-            obj.apellidoMaterno,
-            obj.nombreCompleto,
-            obj.correoElectronico, 
-            obj.nombrecompleto2,
-            obj.genero,
-            "",
-            "",
-            "", obj.estado, "", "",obj.rfc,obj.pyme,obj.regimen,obj.sector,obj.edad,
-            obj.telefono,obj.tipotelefono,obj.Extesion,obj.codigoPostal,
-            obj.Actividad,obj.ActividadOtro,
-            obj.Medio,obj.OtroCanal]);
-        }
-        else
-        {
-            var result = {
-                result: "Este cliente ya fue dado de alta.",
-                valores: "{}",
-                resultado:"{}"
+            var existeRfc =  await pool.query(querys.buscarRfc, [obj.rfc]);
+            if(existeRfc[0].rfcs==0)
+            {
+                id = await pool.query(querys.calcularId, []);
+                await pool.query(querys.insertar, [id[0].id,
+                obj.primerNombre,
+                obj.apellidoPaterno,
+                obj.apellidoMaterno,
+                obj.nombreCompleto,
+                obj.correoElectronico, 
+                obj.nombrecompleto2,
+                obj.genero,
+                "",
+                "",
+                "", obj.estado, "", "",obj.rfc,obj.pyme,obj.regimen,obj.sector,obj.edad,
+                obj.telefono,obj.tipotelefono,obj.Extesion,obj.codigoPostal,
+                obj.Actividad,obj.ActividadOtro,
+                obj.Medio,obj.OtroCanal]);
             }
-            return result;
-        }
-    }
-
-    //inserta telefono
-    var exiTel=0;
-    if(obj.telefono!=""){
-        exiTel =  await pool.query(querys.actualizarTelefono, [id[0].id, obj.telefono, 'PERSONAL']);
-        if(exiTel.affectedRows==0){ 
-            await pool.query(querys.insertarTelefono, [id[0].id, "", "","", obj.telefono, 'PERSONAL']);
-        }
-    }
-    //insertar correo    
-    if(obj.correo!=""){
-     exiCorreo = await pool.query(querys.actualizarCorreo, [id[0].id, obj.correo]);
-    if (exiCorreo.affectedRows==0){ 
-        await pool.query(querys.insertarCorreo, [id[0].id, obj.correo]);
-    } 
-    }
-    
-    const valores = await this.consultarPorLlaves(id[0].id)
-    const resultado = await pool.query(querys.consultarClientes , [id[0].id]);
-    var result = {
-        result: "OK",
-        valores: valores[0],
-        resultado: resultado[0]
-    }
-
-    const clienteCRM12 = await pool.query(querys.consultarClienteCRM12, [obj.idFolio]);
-    if (parseInt(clienteCRM12[0].total) == 0 || clienteCRM12[0].cliente==id[0].id  ) {
-        var actualizo = await pool.query(querys.actualizarCrm, [id[0].id, obj.idFolio]);
-        if(actualizo.affectedRows==0){ 
-            await pool.query(querys.insertarCrm, [id[0].id , obj.idLlamada, obj.idAgente, obj.nombreAgente, obj.extension, obj.telefonoCliente, obj.canalId, obj.rutaIVR,  obj.urls, obj.idLlamada]);
+            else
+            {
+                result = {
+                    result: "Este cliente ya fue dado de alta.",
+                    valores: "{}",
+                    resultado:"{}"
+                }
+                return result;
             }
-        await pool.query(querys.guardarNombre, ['EN LLAMADA',obj.idLlamada, obj.telefonoCliente, obj.nombreCompleto, obj.idAgente]);
-    } else {      
-        var result = {
-            result: "Esta llamada ya fue tipificada, no es posible cambiar el cliente seleccionado.",
+        }
+
+        //inserta telefono
+        var exiTel=0;
+        if(obj.telefono!=""){
+            exiTel =  await pool.query(querys.actualizarTelefono, [id[0].id, obj.telefono, 'PERSONAL']);
+            if(exiTel.affectedRows==0){ 
+                await pool.query(querys.insertarTelefono, [id[0].id, "", "","", obj.telefono, 'PERSONAL']);
+            }
+        }
+        //insertar correo    
+        if(obj.correo!=""){
+        exiCorreo = await pool.query(querys.actualizarCorreo, [id[0].id, obj.correo]);
+        if (exiCorreo.affectedRows==0){ 
+            await pool.query(querys.insertarCorreo, [id[0].id, obj.correo]);
+        } 
+        }
+        
+        const valores = await this.consultarPorLlaves(id[0].id)
+        const resultado = await pool.query(querys.consultarClientes , [id[0].id]);
+        result = {
+            result: "OK",
             valores: valores[0],
             resultado: resultado[0]
-        }    
+        }
+
+        if(obj.idFolio!=null && obj.idFolio!=undefined)
+        {
+            const clienteCRM12 = await pool.query(querys.consultarClienteCRM12, [obj.idFolio]);
+            if (parseInt(clienteCRM12[0].total) == 0 || clienteCRM12[0].cliente==id[0].id  ) {
+                var actualizo = await pool.query(querys.actualizarCrm, [id[0].id, obj.idFolio]);
+                if(actualizo.affectedRows==0){ 
+                    await pool.query(querys.insertarCrm, [id[0].id , obj.idLlamada, obj.idAgente, obj.nombreAgente, obj.extension, obj.telefonoCliente, obj.canalId, obj.rutaIVR,  obj.urls, obj.idLlamada]);
+                    }
+                await pool.query(querys.guardarNombre, ['EN LLAMADA',obj.idLlamada, obj.telefonoCliente, obj.nombreCompleto, obj.idAgente]);
+            } else {      
+                result = {
+                    result: "Esta llamada ya fue tipificada, no es posible cambiar el cliente seleccionado.",
+                    valores: valores[0],
+                    resultado: resultado[0]
+                }    
+            }
+        }
+    }
+    catch(error)
+    {
+        result = {
+            result: "Huvo un error, en el alta del cliente.",
+            valores: "{}",
+            resultado:error
+        }
+        console.error("error alta cliente - " + error);
+    }
+
+
+    return result;
+}
+
+module.exports.insertarEdicion = async (obj) => {
+    var id=null;
+    var result= null;
+    try
+    {
+        if(obj.rfc!=""){
+
+
+                id = await pool.query(querys.calcularId, []);
+                await pool.query(querys.insertar, [id[0].id,
+                obj.primerNombre,
+                obj.apellidoPaterno,
+                obj.apellidoMaterno,
+                obj.nombreCompleto,
+                obj.correoElectronico, 
+                obj.nombrecompleto2,
+                obj.genero,
+                "",
+                "",
+                "", obj.estado, "", "",obj.rfc,obj.pyme,obj.regimen,obj.sector,obj.edad,
+                obj.telefono,obj.tipotelefono,obj.Extesion,obj.codigoPostal,
+                obj.Actividad,obj.ActividadOtro,
+                obj.Medio,obj.OtroCanal]);
+            
+        }
+
+        //inserta telefono
+        var exiTel=0;
+        if(obj.telefono!=""){
+            exiTel =  await pool.query(querys.actualizarTelefono, [id[0].id, obj.telefono, 'PERSONAL']);
+            if(exiTel.affectedRows==0){ 
+                await pool.query(querys.insertarTelefono, [id[0].id, "", "","", obj.telefono, 'PERSONAL']);
+            }
+        }
+        //insertar correo    
+        if(obj.correo!=""){
+        exiCorreo = await pool.query(querys.actualizarCorreo, [id[0].id, obj.correo]);
+        if (exiCorreo.affectedRows==0){ 
+            await pool.query(querys.insertarCorreo, [id[0].id, obj.correo]);
+        } 
+        }
+        
+        const valores = await this.consultarPorLlaves(id[0].id)
+        const resultado = await pool.query(querys.consultarClientes , [id[0].id]);
+        result = {
+            result: "OK",
+            valores: valores[0],
+            resultado: resultado[0]
+        }
+
+        if(obj.idFolio!=null && obj.idFolio!=undefined)
+        {
+            const clienteCRM12 = await pool.query(querys.consultarClienteCRM12, [obj.idFolio]);
+            if (parseInt(clienteCRM12[0].total) == 0 || clienteCRM12[0].cliente==id[0].id  ) {
+                var actualizo = await pool.query(querys.actualizarCrm, [id[0].id, obj.idFolio]);
+                if(actualizo.affectedRows==0){ 
+                    await pool.query(querys.insertarCrm, [id[0].id , obj.idLlamada, obj.idAgente, obj.nombreAgente, obj.extension, obj.telefonoCliente, obj.canalId, obj.rutaIVR,  obj.urls, obj.idLlamada]);
+                    }
+                await pool.query(querys.guardarNombre, ['EN LLAMADA',obj.idLlamada, obj.telefonoCliente, obj.nombreCompleto, obj.idAgente]);
+            } else {      
+                result = {
+                    result: "Esta llamada ya fue tipificada, no es posible cambiar el cliente seleccionado.",
+                    valores: valores[0],
+                    resultado: resultado[0]
+                }    
+            }
+        }
+    }
+    catch(error)
+    {
+        result = {
+            result: "Huvo un error, en el alta del cliente.",
+            valores: "{}",
+            resultado:error
+        }
+        console.error("error alta cliente - " + error);
     }
 
 
@@ -132,8 +231,10 @@ module.exports.actualizar = async (obj) => {
         obj.apellidoPaterno,
         obj.apellidoMaterno,
         obj.nombreCompleto,
+        obj.rfc,
+        obj.pyme,
         obj.correoElectronico,
-        obj.nombrecompleto2,       
+        obj.nombrecompleto2, 
         obj.generoCtoIput,
         obj.fechaNacimientoCtoInput,
         obj.curpCtoInput,
@@ -141,28 +242,26 @@ module.exports.actualizar = async (obj) => {
         obj.id]);
 
     var exiTel=0;
-    if(obj.telefonoFijoInput!=""){
+    if(obj.telefonoFijoInput!="" && obj.telefonoFijoInput!=undefined){
         exiTel =  await pool.query(querys.actualizarTelefono, [obj.id, obj.telefonoFijoInput, 'PERSONAL']);
         if(exiTel.affectedRows==0){ 
             await pool.query(querys.insertarTelefono, [obj.id, obj.nir, obj.serie, obj.razon, obj.telefonoFijoInput, 'PERSONAL']);
         }
     }
-    if(obj.telefonoMovilInput!=""){
+    if(obj.telefonoMovilInput!="" && obj.telefonoFijoInput!=undefined){
         exiTel =  await pool.query(querys.actualizarTelefono, [obj.id, obj.telefonoMovilInput, 'MOVIL']);
         if(exiTel.affectedRows==0){ 
             await pool.query(querys.insertarTelefono, [obj.id, obj.nir, obj.serie, obj.razon, obj.telefonoMovilInput, 'MOVIL']);
         } 
     }
-    if(obj.telefonoAlternativoInput!=""){
+    if(obj.telefonoAlternativoInput!="" && obj.telefonoFijoInput!=undefined){
         exiTel =  await pool.query(querys.actualizarTelefono, [obj.id, obj.telefonoAlternativoInput, 'ALTERNATIVO']);
         if(exiTel.affectedRows==0){ 
             await pool.query(querys.insertarTelefono, [obj.id, obj.nir, obj.serie, obj.razon, obj.telefonoAlternativoInput, 'ALTERNATIVO']);
         } 
     }
-
-
     //insertar correo    
-    if(obj.correoElectronico!=""){
+    if(obj.correoElectronico!="" && obj.telefonoFijoInput!=undefined){
      exiCorreo = await pool.query(querys.actualizarCorreo, [obj.id, obj.correoElectronico]);
     if (exiCorreo.affectedRows==0){ 
         await pool.query(querys.insertarCorreo, [obj.id, obj.correoElectronico]);
@@ -177,19 +276,22 @@ module.exports.actualizar = async (obj) => {
         resultado: resultado[0]
     }
 
-    const clienteCRM12 = await pool.query(querys.consultarClienteCRM12, [obj.idFolio]);
-    if (parseInt(clienteCRM12[0].total) == 0 || clienteCRM12[0].cliente==obj.id ) {
-        var actualizo = await pool.query(querys.actualizarCrm, [obj.id, obj.idFolio]);
-        if(actualizo.affectedRows==0){ 
-            await pool.query(querys.insertarCrm, [obj.id , obj.idLlamada, obj.idAgente, obj.nombreAgente, obj.extension, obj.telefonoCliente, obj.canalId, obj.rutaIVR,  obj.urls, obj.idLlamada]);
-            }
-        await pool.query(querys.guardarNombre, ['EN LLAMADA',obj.idLlamada, obj.telefonoCliente, obj.nombreCompleto, obj.idAgente]);
-    } else {      
-        var result = {
-            result: "Esta llamada ya fue tipificada, no es posible cambiar el cliente seleccionado.",
-            valores: valores[0],
-            resultado: resultado[0]
-        }    
+    if(obj.idFolio!=null && obj.idFolio!=undefined)
+    {
+        const clienteCRM12 = await pool.query(querys.consultarClienteCRM12, [obj.idFolio]);
+        if (parseInt(clienteCRM12[0].total) == 0 || clienteCRM12[0].cliente==obj.id ) {
+            var actualizo = await pool.query(querys.actualizarCrm, [obj.id, obj.idFolio]);
+            if(actualizo.affectedRows==0){ 
+                await pool.query(querys.insertarCrm, [obj.id , obj.idLlamada, obj.idAgente, obj.nombreAgente, obj.extension, obj.telefonoCliente, obj.canalId, obj.rutaIVR,  obj.urls, obj.idLlamada]);
+                }
+            await pool.query(querys.guardarNombre, ['EN LLAMADA',obj.idLlamada, obj.telefonoCliente, obj.nombreCompleto, obj.idAgente]);
+        } else {      
+            var result = {
+                result: "Esta llamada ya fue tipificada, no es posible cambiar el cliente seleccionado.",
+                valores: valores[0],
+                resultado: resultado[0]
+            }    
+        }
     }
 
 

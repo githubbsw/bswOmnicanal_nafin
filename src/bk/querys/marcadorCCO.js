@@ -98,3 +98,8 @@ module.exports.GuardarTipificacionCAbeceroAutomatica = `INSERT INTO bstntrn.btcr
     crmsemaforizacionestatusid, BTCRM1IPSERVIDOR,btcrm1idllamadaalt,btcrm1cmp ) 
     VALUES ((SELECT IFNULL(MAX(BTCRM1FOLIO),0)+1 FROM bstntrn.btcrm1 as BTCRM1FOLIO), ?, 
     ?,?,?,?,?,?,?,?,'2', ?,?,? )`;
+
+module.exports.consultarReus = `SELECT case when btbuscarreus = 'SI' 
+then (select count(*) from bstntrn.listareus where listareus_telefono = ? limit 1)
+else 0 end enreus  FROM bstntrn.btcampanas
+where btcampanaid = ? and bstnCanalId = 'OBD';`;

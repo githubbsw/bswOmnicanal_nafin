@@ -230,7 +230,7 @@ function ventanaMain() {
     show: false,
     frame: false
   })
-  //modulos.webContents.openDevTools();
+  modulos.webContents.openDevTools();
   if (test) {
     if (canalDefault == "OBD") {
       modulos.loadFile('src/frnt/views/outbound.html')

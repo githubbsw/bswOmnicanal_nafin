@@ -84,13 +84,13 @@ var conf = {
           baseDatos: "siogen01",
         },
         cc:{    
-          ip: "192.168.100.71",
+          ip: "192.168.100.72",
           usuario: "bswcc_user",
           contrasena: "Entrada2020$",
           baseDatos: "asteriskcdrdb",
         },
         cco:{    
-          ip: "192.168.100.71",
+          ip: "192.168.100.72",
           usuario: "bswcc_user",
           contrasena: "Entrada2020$",
           baseDatos: "asteriskcdrdb",

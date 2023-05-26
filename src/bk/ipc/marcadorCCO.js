@@ -44,7 +44,7 @@ ipcMain.on('marcacionManual', async(event, obj) => {
 
 ipcMain.on('GenerarLlamada', async(event, datos) => {
   const act = await helper.GenerarLlamada(datos); 
-  //event.reply("actulizarAgenteResult", act);
+  event.reply("GenerarLlamadaResult", act);
 });
 
 

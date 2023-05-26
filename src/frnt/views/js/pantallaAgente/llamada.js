@@ -1950,14 +1950,6 @@ function marcar_out(numero) {
 }
 
 function sipMarcar() {
-    //var marcar = {
-    //    marcionManual: urls.marcionManual,
-    //    agente: agenteOk.id,
-    //    extension: areaIniciada == "IBD" ? agenteOk.extension : agenteOk.extension,
-    //    folio: "",
-    //    telefono: $("#numeroMarcar").val()
-    //};
-    //ipcRenderer.send('marcacionManual', marcar)
     if (!oSipSessionCall && $("#numeroMarcar_out").val() != '' ) {
         var s_destination = $("#numeroMarcar_out").val();
         let date = new Date();
@@ -1973,6 +1965,15 @@ function sipMarcar() {
         
     }
 }
+
+ipcRenderer.on('GenerarLlamadaResult', (event, datos) => {
+    if(datos == "enreus"){
+        $("#alertPrincipal").html("<strong>Aviso.</strong> El telefono se encuentra en REUS.");
+        $("#alertPrincipal").fadeTo(16000, 500).slideUp(500, function () {
+            $("#alertPrincipal").slideUp(16000);
+        });
+    }
+});
 
 function clearMarcador_out() {
 

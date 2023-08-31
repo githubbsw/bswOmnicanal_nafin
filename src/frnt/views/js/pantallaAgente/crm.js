@@ -709,7 +709,7 @@ function insertarCliente(numero)
                 });
                 return;
             }
-            else if(RegExp('^[a-zA-Z\-0-9]*$').test(obj2[i].value)==false)
+            /*else if(RegExp('^[a-zA-Z\-0-9]*$').test(obj2[i].value)==false)
             {
                 $("#CRMINSCLIENTE").show();
                 $("#actuaGuarda").html("<Strong>Aviso.</Strong> Para el RFC, solo se aceptan letras, guion medio y numeros");
@@ -718,12 +718,15 @@ function insertarCliente(numero)
                     $("#actuaGuarda").slideUp(3000);
                 });
                 return;
-            }
+            }*/
         }
 
         if(obj2[i].id == "clineteCorreoInput")
         {
-            var validEmail =  /^\w+([.-_+]?\w+)*@\w+([.-]?\w+)*(\.\w{2,10})+$/;
+            // email sin caracteres especiales
+            //var validEmail = /^\w+([.-_+]?\w+)*@\w+([.-]?\w+)*(\.\w{2,10})+$/;
+            // email con caracteres especiales
+            var validEmail = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/;
             if(obj2[i].value!="")
             {
                 if(validEmail.test(obj2[i].value)==false)

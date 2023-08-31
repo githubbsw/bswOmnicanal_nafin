@@ -25,13 +25,13 @@ const helper = require('../helpers/Cliente.js');
 
   ipcMain.on('actualizarDatosCliente', async(event, obj) => {
 
-    const clienteObj = await helper.insertarEdicion(obj); 
+    const clienteObj = await helper.actualizar(obj); 
     event.reply("insertarDatosClienteResult", clienteObj);
 
   });
 
   ipcMain.on('actualizarCte', async(event, obj) => {
-    const clienteObj = await helper.insertarEdicion(obj); 
+    const clienteObj = await helper.actualizar(obj); 
     event.reply("insertarCteResult", clienteObj);
   });
 

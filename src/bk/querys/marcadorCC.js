@@ -34,7 +34,7 @@ module.exports.ActualizaridLlamada = " UPDATE bstntrn.BTESTAGNT SET BTESTAGNTCAL
 
 module.exports.ActualizarEstatusLlamada = "UPDATE bstntrn.bstnstatusllamada set estatusLlamada = ? ,IdLlamada = ?  where userid = ? "
 
-module.exports.consultarRutaIVR = " SELECT ifnull(registrodeivrruta,'')rutaIVR,ifnull(registrodeivrcamp01,'')campo01,ifnull(registrodeivrcamp02,'')campo02,ifnull(registrodeivrcamp03,'')campo03," +
+module.exports.consultarRutaIVR = " SELECT concat(registrodeivrruta,'|',registrodeivrcamp01,'|',registrodeivrcamp02)rutaIVR,ifnull(registrodeivrcamp01,'')campo01,ifnull(registrodeivrcamp02,'')campo02,ifnull(registrodeivrcamp03,'')campo03," +
     " ifnull(registrodeivrcamp04,'')campo04,ifnull(registrodeivrcamp05,'')campo05,ifnull(registrodeivrcamp06,'')campo06,ifnull(registrodeivrcamp07,'')campo07 " +
     " FROM registrodeivr where registrodeidllamada=? and cast(registrodeivrfecha as date) =cast(now() as date) order by registrodeivrfecha desc limit 1 ";
 

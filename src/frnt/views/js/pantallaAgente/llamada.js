@@ -166,8 +166,8 @@ ipcRenderer.on('consultaridllamivrcrmResult', (event, datos) => {
     $("#horaLlamada").html("Hora llamada: " + llamadaOk.horaLlamada);
     $("#idLlamada").html("Id de interacción: <br>" + llamadaOk.idLlamada);
     $("#idLlamada_").html("Id de interacción: <br> " + llamadaOk.idLlamada);
-    $("#navegacionIvr").html(llamadaOk.rutaIVR);    
-    document.getElementById("navegacionIvr").style.visibility = "hidden"; 
+    $("#navegacionIvr").html("RUTA IVR: "+llamadaOk.rutaIVR);    
+    document.getElementById("navegacionIvr").style.display = "block"; 
     if(timerTiempoEnLlamada != 0){timerTiempoEnLlamada.parar()}
     timerTiempoEnLlamada = new TimerBsw("#tiempoEnLlamada", llamadaOk.fecha, llamadaOk.fecha, 1000)
     timerTiempoEnLlamada.iniciar();
@@ -206,7 +206,7 @@ ipcRenderer.on('consultaridllamOutResult', (event, datos) => {
     if (datos == "LLAMADA_NO_REALIZADA") {
         ipcRenderer.send('recargarPantalla', "")
     } else {
-        document.getElementById("navegacionIvr").style.visibility = "hidden"; 
+        document.getElementById("navegacionIvr").style.display = "none"; 
         llamadaOk = datos;
         var d = new Date(llamadaOk.fecha);
         llamadaOk.fechaLlamada = formatoFecha(d);
@@ -1258,6 +1258,7 @@ function onSipEventStack(e /*SIPml.Stack.Event*/) {
                     oSipSessionCall = e.newSession;
                     // start listening for events
                     oSipSessionCall.setConfiguration(oConfigCall);
+                    //showNotification("Llamada","Entro una llamada");
                     startRingTone();
                     ipcRenderer.send('consultarRespuestas', { campana: agenteOk.campana, canal: areaIniciada });
                     $("#preguntaTitulo").html("...");
@@ -2000,3 +2001,7 @@ function maxLengthCheck(object)
       object.value = object.value.slice(0, object.maxLength)
       //console.log(object.value)
 }
+
+function showNotification (Title,Body) {
+    //new Notification({ title: Title, body: Body }).show()
+  }

@@ -184,7 +184,8 @@ function ventanaLogin() {
       nodeIntegrationInWorker: false,
     },
     show: false,
-    frame: false
+    frame: false,
+
   })
   //login.webContents.openDevTools()
   login.loadFile('src/frnt/views/login.html')
@@ -225,12 +226,15 @@ function ventanaMain() {
       nodeIntegration: true,
       nodeIntegrationInWorker: false,
       webviewTag: true,
-      plugins: true
+      plugins: true,
+      
     },
     show: false,
-    frame: false
+    frame: false,
+    backgroundThrottling: false,
+    minimizable: false
   })
-  modulos.webContents.openDevTools();
+  //modulos.webContents.openDevTools();
   if (test) {
     if (canalDefault == "OBD") {
       modulos.loadFile('src/frnt/views/outbound.html')

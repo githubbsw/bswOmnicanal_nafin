@@ -332,7 +332,7 @@
             <div id="horaLlamada" class="text-white mb-2" style="font-size: 20px;"></div>
             <div id="idLlamada" class="text-white" style="font-size: 20px;"></div>
             <button type="button" id="btnRecuperarDatosLlamada" style="display: none;" onclick="recuperarDatosLlamada()" class="btn btn-info">Recuperar datos de llamada</button>
-            <div id="navegacionIvr" class="text-white" style="font-size: 0px;" style='visibility:hidden'></div>
+            <div id="navegacionIvr" class="text-white" style="font-size: 17px;" style='display: none;'></div>
 
             <div class="col-8 col-md-6 col-lg-8 mx-auto d-flex justify-content-around px-3 pt-2">
                <div class="col-12 float-left altaCRM text-center p-2"> 
@@ -800,9 +800,10 @@
               
              </div>
              <div class="modal-footer" style="flex-wrap: inherit;">
-               <button type="button" onclick="cancelarLlamadaPor('Llamada cancelada por desconexion')" class="btn btn-dark">Llamada cancelada por desconexion</button>
-               <button type="button" onclick="cancelarLlamadaPor('Llamada sin audio')" class="btn btn-dark">Llamada sin audio</button>
-               <button type="button" onclick="cancelarLlamadaPor('Llamada de prueba')" class="btn btn-dark">Llamada de prueba</button>
+               <button type="button" onclick="cancelarLlamadaPor('Sin contacto')" class="btn btn-dark">Sin contacto</button>
+               <!--<button type="button" onclick="cancelarLlamadaPor('Llamada cancelada por desconexion')" class="btn btn-dark">Llamada cancelada por desconexion</button>-->
+               <!--<button type="button" onclick="cancelarLlamadaPor('Llamada sin audio')" class="btn btn-dark">Llamada sin audio</button>-->
+               <!--<button type="button" onclick="cancelarLlamadaPor('Llamada de prueba')" class="btn btn-dark">Llamada de prueba</button>-->
 
              </div>
            </div>

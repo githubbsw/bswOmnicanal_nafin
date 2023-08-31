@@ -57,9 +57,9 @@ module.exports.insertar = async (obj) => {
     {
         if(obj.rfc!=""){
 
-            var existeRfc =  await pool.query(querys.buscarRfc, [obj.rfc]);
-            if(existeRfc[0].rfcs==0)
-            {
+            //var existeRfc =  await pool.query(querys.buscarRfc, [obj.rfc]);
+            //if(existeRfc[0].rfcs==0)
+            //{
                 id = await pool.query(querys.calcularId, []);
                 await pool.query(querys.insertar, [id[0].id,
                 obj.primerNombre,
@@ -75,16 +75,16 @@ module.exports.insertar = async (obj) => {
                 obj.telefono,obj.tipotelefono,obj.Extesion,obj.codigoPostal,
                 obj.Actividad,obj.ActividadOtro,
                 obj.Medio,obj.OtroCanal]);
-            }
-            else
-            {
-                result = {
-                    result: "Este cliente ya fue dado de alta.",
-                    valores: "{}",
-                    resultado:"{}"
-                }
-                return result;
-            }
+            //}
+            //else
+            //{
+                //result = {
+                //    result: "Este cliente ya fue dado de alta.",
+                //    valores: "{}",
+                //    resultado:"{}"
+                //}
+                //return result;
+            //}
         }
 
         //inserta telefono

@@ -12,15 +12,17 @@ module.exports.CerrarSesion = async (datos) => {
             await pool.query(querys.CerrarSesion, [datos.idAgente]);   
             let date =  await pool.query(`select  date_format(now(), "%Y-%m-%d") fecha, date_format(now(), "%H:%i:%s") hora`);
             await pool.query(querys.updateMovimientosUsuario, [date[0].fecha, date[0].hora, datos.idAgente]);  
-            const max=await pool.query(querys.calcularIdmonacH, []);  
-            await pool.query(querys.InsertarSesionTrabajoHistorial, [max[0].id,datos.idAgente,"","2",""]); 
+ 
+            await pool.query(querys.InsertarSesionTrabajoHistorial, [datos.idAgente,"","2",""]); 
             await pool.query(querys.actulizarAgenteOutbound, ["NO DISPONIBLE","N",datos.idAgente]);
             await pool.query(querys.actulizarAgenteInboundNoIp, ["NO DISPONIBLE","N",datos.idAgente]);     
             await pool.query(querys.actualizarMulticanal, [datos.idAgente])  
             await pool.query(querys.ActualizarEstatusLlamada, ["sin llamada", "", datos.idAgente]); 
         }
         return "ok"
-    }else{
+    }
+    else
+    {
             //var estatusAgente = await pool.query(querys.consultarEstAgente, [datos.idAgente]); 
 
 
@@ -49,8 +51,8 @@ module.exports.CerrarSesion = async (datos) => {
                     await pool.query(querys.CerrarSesion, [datos.idAgente]);   
                     let date =  await pool.query(`select  date_format(now(), "%Y-%m-%d") fecha, date_format(now(), "%H:%i:%s") hora`);
                     await pool.query(querys.updateMovimientosUsuario, [date[0].fecha, date[0].hora, datos.idAgente]);  
-                    const max=await pool.query(querys.calcularIdmonacH, []);  
-                    await pool.query(querys.InsertarSesionTrabajoHistorial, [max[0].id,datos.idAgente,"","2",""]); 
+
+                    await pool.query(querys.InsertarSesionTrabajoHistorial, [datos.idAgente,"","2",""]); 
                     await pool.query(querys.actulizarAgenteOutbound, ["NO DISPONIBLE","N",datos.idAgente]);
                     await pool.query(querys.actulizarAgenteInboundNoIp, ["NO DISPONIBLE","N",datos.idAgente]);  
                     await pool.query(querys.actualizarMulticanal, [datos.idAgente])      

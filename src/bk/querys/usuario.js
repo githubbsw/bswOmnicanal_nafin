@@ -32,7 +32,7 @@ module.exports.InsertarSesionTrabajoHistorial= "INSERT INTO bstntrn.monach"
 +"  monacIDEQUIPO,"
 +"  monacRAN)"
 +"  VALUES"
-+" (?,?,'Agente',CURDATE(),current_time(),'Programa del agente',?,?,'',?,'0')";
++" ((SELECT COALESCE(MAX(monacHID)+1,1) AS id FROM bstntrn.monach as id),?,'Agente',CURDATE(),current_time(),'Programa del agente',?,?,'',?,'0')";
 
 module.exports.actulizarAgenteOutbound="UPDATE bstntrn.btagenteoutbound SET btagenteOutStsExt = ?,btAgenteOutSesion = ? WHERE btAgenteOutId = ? ";
 

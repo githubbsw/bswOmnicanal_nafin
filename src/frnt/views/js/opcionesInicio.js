@@ -29,8 +29,7 @@ setTimeout(() => {
 function cerrarSesion(){
   $('.modal-body').hide()
   $('#loader').show()
-  ipcRenderer.send('CerrarSesion', { idAgente: usuario, tipoCierre: "CIERRE_SESION" })
-  //ipcRenderer.send('CerrarSesion', usuario)   
+  ipcRenderer.send('CerrarSesion', { idAgente: usuario, tipoCierre: "CIERRE_SESION" })  
 }
 
 

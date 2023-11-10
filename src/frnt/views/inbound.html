@@ -11,9 +11,10 @@
    <link rel="stylesheet" href="css/altacita2.css">
    <script src="release/SIPml-api.js" type="text/javascript"> </script>
    <link rel="stylesheet" type="text/css" href="css/datatables/datatables.min.css" />
+
 </head>
 
-<body class="text-center bg-secondary position-absolute h-100 col-12 px-0" style="display: none;">
+<body class="text-center bg-secondary position-absolute h-100 col-12 px-0" style="display: none;" >
    <input type="hidden" value="IBD" id="AREAINICIADA_">
    <div class="container-fluid px-0">
       <nav class="navbar navbar-dark bg-dark">
@@ -49,9 +50,13 @@
                class="btn btn-light float-rigth mx-2"><span class="icon-calendar"></span></button>
             <button onclick="verPantallaCRM()" type="button" title="Abrir CRM"
                class="btn btn-light float-rigth mx-2"><span class="icon-folder-open"></span></button>
-               <button id="btnCita" onclick="pitarLocalizacion()" title="Horarios y Ubicaciones" type="button"
+            <button id="btnCita" onclick="pitarLocalizacion()" title="Horarios y Ubicaciones" type="button"
                class="btn btn-light float-rigth mx-2"><span class="icon-location2"></span></button>
-            <div id="alertPrincipal" class="alert alert-primary mb-0 px-3 py-1" role="alert" style="display: none;"> Se
+
+               <button id="btnCita" onclick="showNotification()" title="Llamada" type="button"
+               class="btn btn-light float-rigth mx-2"><span class="icon-location2"></span></button>
+            
+               <div id="alertPrincipal" class="alert alert-primary mb-0 px-3 py-1" role="alert" style="display: none;"> Se
                autorizo tu receso...!</div>
             <!--<button onclick="abrirBuscarCliente()" type="button" class="btn btn-danger float-rigth mx-1"><span class="icon-home"></span></button>-->
          </div>
@@ -580,6 +585,32 @@
             </div>
          </div>
       </div>
+
+      <!-- Modal -->
+      <div class="modal fade" id="modalLLAMADA" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" 
+      data-backdrop="static" data-keyboard="false" aria-hidden="true" >
+         <div class="modal-dialog" role="document">
+            <div class="modal-content">
+               <div class="modal-header bg-dark text-white">
+                  <h5 class="modal-title" id="exampleModalLabel">Llamada entrante</h5>
+                  <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body text-left">
+                  <div id="LlamadaCuerpo">
+                     <div class="form-group">
+                        <div id="LeText"><h5>Atender llamada</h5></div>                    
+                     </div>                    
+                  </div>
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="timerstartcall.stop();">Cerrar</button>              
+               </div>
+            </div>
+         </div>
+      </div>
+
       <div style="display: none;">
          <input type="text" style="display: none;" id="txtDisplayName" value="">
          <input type="text" style="display: none;" id="txtPrivateIdentity" value="">

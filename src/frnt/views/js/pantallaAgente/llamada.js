@@ -19,10 +19,9 @@ var precierre = false;
 var timerFin = 0;
 var timerFin_ = 0;
 var entroAfinLlamada = false;
-
 var timerTiempoEnLlamada = 0;
 var contactoseleccionado = {};
-const { ipcRenderer, dialog } = require('electron');
+const { ipcRenderer, dialog,Notification } = require('electron');
 
 var _s1 = 0;
 var _m1 = 0;
@@ -955,7 +954,9 @@ function sipSendDTMF(c) {
 }
 
 function startRingTone() {
-    try { ringtone.play(); }
+    try { ringtone.play();
+        
+     }
     catch (e) { }
 }
 
@@ -1245,7 +1246,7 @@ function onSipEventStack(e /*SIPml.Stack.Event*/) {
                 txtRegStatus.innerHTML = bFailure ? "<i>Disconnected: <b>" + e.description + "</b></i>" : "<i>Disconnected</i>";
                 circulo_estatus.style.background = "red";
                 if (motivoDesco == "")
-                    alertaConexionLlamada(false, "llamada")
+                    //alertaConexionLlamada(false, "llamada")
                 break;
             }
         case 'i_new_call':
@@ -1253,6 +1254,7 @@ function onSipEventStack(e /*SIPml.Stack.Event*/) {
                 if (oSipSessionCall) {
                     // do not accept the incoming call if we're already 'in call'
                     e.newSession.hangup(); // comment this line for multi-line support
+                    
                 }
                 else {
                     oSipSessionCall = e.newSession;
@@ -1260,6 +1262,7 @@ function onSipEventStack(e /*SIPml.Stack.Event*/) {
                     oSipSessionCall.setConfiguration(oConfigCall);
                     //showNotification("Llamada","Entro una llamada");
                     startRingTone();
+                    StartCall();
                     ipcRenderer.send('consultarRespuestas', { campana: agenteOk.campana, canal: areaIniciada });
                     $("#preguntaTitulo").html("...");
                     $("#respuestaText").html("...");
@@ -2005,3 +2008,54 @@ function maxLengthCheck(object)
 function showNotification (Title,Body) {
     //new Notification({ title: Title, body: Body }).show()
   }
+
+  function timerStartCall(fn, t) {
+    var timerObj = setInterval(fn, t);
+
+    this.stop = function() {
+       if (timerObj) {
+             clearInterval(timerObj);
+             timerObj = null;
+       }
+       return this;
+    }
+
+    this.start = function() {
+       if (!timerObj) {
+             this.stop();
+             timerObj = setInterval(fn, t);
+       }
+       return this;
+    }
+
+    this.reset = function(newT = t) {
+       t = newT;
+       return this.stop().start();
+    }
+ }
+
+ var timerstartcall = new timerStartCall(function() {
+    var f = document.getElementById('LeText');
+    f.style.visibility = (f.style.visibility == 'hidden' ? '' : 'hidden');     
+ },1000)
+
+ function StartCall()
+ {
+    //timerstartcall.start();
+    //$('#modalLLAMADA').modal('show');   
+    showNotification(); 
+ }
+
+ function showNotification () {
+    const notification = new window.Notification(
+        'Entro llamada',
+        {
+          body: 'Atender llamada',
+        }
+      );
+      
+  }
+
+  
+
+ 

@@ -46,3 +46,8 @@ ipcMain.on('limpiarReceso', async(event, usuarioid) => {
   var limpiaR = await helper.updateRecesos(usuarioid); 
   event.reply("limpiarRecesoResult", limpiaR);
 });
+
+ipcMain.on('consultaMotivosCancelacion', async(event) => {
+  var limpiaR = await helper.consultaMotivosCancelacion(); 
+  event.reply("consultaMotivosCancelacionResult", limpiaR);
+});

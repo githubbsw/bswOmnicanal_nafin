@@ -162,3 +162,5 @@ WHERE SIOUSUARIOID = ?  and BTMPERSONALRECID <> "SBSC" AND  btmpersonalFFIN IS N
 
 
 module.exports.updateRecesos = `UPDATE bstntrn.btestagnt SET BTESTAGNTT = ? WHERE BTESTAGNTUSR = ? `;
+
+module.exports.consultaMotivosCancelacion = `SELECT btmotivocancelallamid id, btmotivocancelallamdsc dsc FROM bstntrn.btmotivocancelallam`;

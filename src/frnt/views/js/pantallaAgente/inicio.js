@@ -1494,6 +1494,21 @@ ipcRenderer.on('insertarCanalResult', async (event, canal) => {
     ipcRenderer.send('estatusExtension', canal)
 });
 
+ipcRenderer.on('consultaMotivosCancelacionResult', (event, datos) => {
+    const list = document.getElementById("listMotivosCancelarLlamada");
+        while (list.hasChildNodes()) {
+          list.removeChild(list.firstChild);
+        }
+    if (datos.length == 0) {
+      //  $("#verRespuestasTipoP").remove();
+    }else
+    { 
+        datos.forEach(element => {
+        $("#listMotivosCancelarLlamada").append($('<li  class="btn btn-dark" onclick="cancelarLlamadaPor(\''+element.dsc+'\')" style=" margin-right: 10px;margin-top: 10px;"> ').text(element.dsc));
+        });
+    }
+  })
+
 
 
 

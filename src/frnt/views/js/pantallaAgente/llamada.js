@@ -910,6 +910,7 @@ function cancelarLlamada() {
       '<div class="alert alert-danger" role="alert" style="background: transparent; border: none;"> Cancelar tipificacion </div>'
 
     );*/
+    
     $(".loader").hide();
     $("#mensajeModal").html("Cancelar tipificacion:");
     $("#modalCancelarLlam").modal({ backdrop: 'static', keyboard: false}, 'show' );
@@ -1260,6 +1261,8 @@ function onSipEventStack(e /*SIPml.Stack.Event*/) {
                     oSipSessionCall.setConfiguration(oConfigCall);
                     //showNotification("Llamada","Entro una llamada");
                     startRingTone();
+                    StartCall();
+                    ipcRenderer.send('consultaMotivosCancelacion', { });
                     ipcRenderer.send('consultarRespuestas', { campana: agenteOk.campana, canal: areaIniciada });
                     $("#preguntaTitulo").html("...");
                     $("#respuestaText").html("...");
@@ -2002,6 +2005,19 @@ function maxLengthCheck(object)
       //console.log(object.value)
 }
 
-function showNotification (Title,Body) {
-    //new Notification({ title: Title, body: Body }).show()
-  }
+function StartCall()
+ {  
+    showNotification(); 
+ }
+
+ function showNotification () 
+ {
+    const notification = new window.Notification(
+        'Llamada entrante',
+        {
+          body: 'Atender llamada',
+          icon: '../../../../img/agente.png',
+        }
+      );
+      
+}

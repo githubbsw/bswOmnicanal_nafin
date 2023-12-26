@@ -166,3 +166,9 @@ module.exports.updateRecesos = async (usuarioid) => {
     
     return "ok";
 }
+
+module.exports.consultaMotivosCancelacion = async () => {
+
+    const motivosCancelarLlamada = await pool.query(querys.consultaMotivosCancelacion);
+    return motivosCancelarLlamada;
+}

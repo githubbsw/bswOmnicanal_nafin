@@ -112,7 +112,7 @@ ipcRenderer.on('validarUsuarioResult', (event, datos) => {
     datos.usuarioid = $("#inputUsuario").val();
     datos.pssw = $("#inputContrasena").val();
     ipcRenderer.send('consultarPorId', { id: datos.usuarioid, marcador: opcionesProceso.ipCRM} )
-   
+  
 
   }else{
 
@@ -303,3 +303,4 @@ function fileExists(url) {
         return false;
     }
 }
+

@@ -56,6 +56,9 @@
                <button id="btnLocalizacion" onclick="pitarLocalizacion()" title="Horarios y Ubicaciones" type="button"
                class="btn btn-light float-rigth mx-2"><span class="icon-location2"></span></button>
 
+            <button type="button" class="btn btn-dark float-rigth mx-1" style="background-color: #7D3C98;"
+               data-whatever='LLAMADA' data-numero='' data-toggle="modal" data-target="#modalLLAMADA">Llamada</button>
+
             <div id="alertPrincipal" class="alert alert-primary mb-0 px-3 py-1" role="alert" style="display: none;"> Se
                autorizo tu receso...!</div>
             <!--<button onclick="abrirBuscarCliente()" type="button" class="btn btn-danger float-rigth mx-1"><span class="icon-home"></span></button>-->
@@ -614,6 +617,31 @@
                </div>
                <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+               </div>
+            </div>
+         </div>
+      </div>
+
+      <!-- Modal -->
+      <div class="modal fade" id="modalLLAMADA" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         data-backdrop="static" data-keyboard="false" aria-hidden="true">
+         <div class="modal-dialog" role="document">
+            <div class="modal-content">
+               <div class="modal-header bg-dark text-white">
+                  <h5 class="modal-title" id="exampleModalLabel">Llamada entrante</h5>
+                  <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body text-left">
+                  <div id="LlamadaCuerpo">
+                     <div class="form-group">
+                        <h5>Atender llamada</h5>                        
+                     </div>                    
+                  </div>
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>             
                </div>
             </div>
          </div>

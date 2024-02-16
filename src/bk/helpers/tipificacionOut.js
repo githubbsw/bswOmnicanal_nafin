@@ -27,7 +27,7 @@ module.exports.consultarTipificacion = async (idEstatus,idcampania) =>
     return tipificacion; 
 }
 
-module.exports.GuardarEstatus = async (obj) => 
+module.exports.GuardarEstatus  = async (obj) => 
 {
     console.log(obj)
     await pool.query(querys.GuardarTipificacionContacto,[obj.estatusLlamada,obj.consecutivo,obj.campana]);	

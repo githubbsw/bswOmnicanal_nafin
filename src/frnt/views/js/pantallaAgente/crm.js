@@ -826,14 +826,34 @@ function insertarCliente(numero)
     
     correotxt = $("#clineteCorreoInput").val();
 
+    //recuperar datos anteriores para validar si hay cambios
+    var nombre_ = clientePreSeleccionado.primerNombre;
+    var appPaterno_ = clientePreSeleccionado.apellidoPaterno;
+    var appMaterno_ = clientePreSeleccionado.apellidoMaterno;
+    var pYMEInput_ = clientePreSeleccionado.razonsocial;
+    var RFCInput_ = clientePreSeleccionado.rfc;
+
+
+    var nombreActual_=$("#primerNombreInput").val().toUpperCase();  
+    var apellidoPaterno_ = $("#apellidoPaternoInput").val().toUpperCase(); 
+    var apellidoMaterno_ = $("#apellidoMaternoInput").val().toUpperCase();
+    var pyme_ = $("#pYMEInput").val().toUpperCase();
+    var rfc_ = $("#RFCInput").val();
+        
+
     if($("#idClienteInput").val()=="")
     {
         ipcRenderer.send('insertarDatosCliente', obj);
-    }
-    else
+    }else
     {
-        obj.id=$("#idClienteInput").val();
-        ipcRenderer.send('actualizarDatosCliente', obj)
+        if( nombre_ != nombreActual_ || appPaterno_ != apellidoPaterno_ || appMaterno_!=apellidoMaterno_ ||
+            pYMEInput_ != pyme_ || RFCInput_ != rfc_ )
+            ipcRenderer.send('insertarDatosCliente', obj);
+        else
+        {
+            obj.id=$("#idClienteInput").val();
+            ipcRenderer.send('actualizarDatosCliente', obj);
+        }
     }
     
 }

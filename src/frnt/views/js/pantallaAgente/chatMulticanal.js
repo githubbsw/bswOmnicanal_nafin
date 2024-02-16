@@ -5,7 +5,7 @@ var agenteActual = {}
 var sisVar = {};
 var medidaIndica = 40;
 var opcPrcSMS = [];
-
+var timer;
 
 
 
@@ -344,9 +344,22 @@ function pintarContactosMulti(datos) {
 		if (aux.int[i].imcesnuevo == "0") {
 			aux.nuevoContacto = "<div style=' width: 10px; height: 10px; position: absolute; top: 9px; left: 20px; background: #20c997; border-radius: 50%; '></div>";
 			sisVar.totalContactosNuevos = sisVar.totalContactosNuevos + 1;
+			//startRingTone();
+			//showNotification();
+			//function startRingTone() {
+			//	try { ringtone.play(); }
+			//	catch (e) { }
+			//}
 		}
-
-
+		// solo la primera vez, va y cambia el estatus, para saber que ese chat ya se notifico al agente
+		if (aux.int[i].imcasignadoalprograma == "0") {
+			//mostrar notificación
+			showNotificationChat();
+			startRingToneChat();
+			//cambiar estatus
+			cambiarEstatusNotificadoEnelPrograma(aux.int[i].imcidn);
+			
+		}
 		if (aux.int[i].inmccanalid == "F" && agenteActual.canales.indexOf("F") != -1) {
 
 			$("#listaContactos").append(
@@ -555,8 +568,50 @@ ipcRenderer.on('cambiarEstatusNuevoResult', (event, datos) => {
 
 
 })
+function cambiarEstatusNotificadoEnelPrograma(idIteraccion) {
+	ipcRenderer.send('cambiarEstatusNotificadoEnelPrograma', idIteraccion)
+}
 
 
+ipcRenderer.on('cambiarEstatusNotificadoEnelProgramaResult', (event, datos) => {
+
+
+})
+function startRingToneChat() {
+		try { ringtoneChat.play(); }
+		catch (e) { }
+
+		timer = setInterval(function () {
+			stopRingToneChat();
+		}
+			, 3000);
+
+		
+}
+function stopRingToneChat() {
+    try { ringtoneChat.pause(); }
+    catch (e) { }
+}
+function showNotificationChat () 
+ {
+    const notification = new window.Notification(
+        'Nuevo chat',
+        {
+          body: 'Atender chat',
+          icon: '../../../../img/agente.png',
+        }
+      );
+      
+}
+/*
+ipcMain.on('getCanalesM', async (event, arg) => {
+	var dato = {};
+	dato.canalesM = canalesM[0].canales;
+	dato.agente = datosAgente;
+	dato.areaIniciada = areaIniciada;
+	event.reply('getCanalesMResult', dato)
+  });
+*/
 function cortarTextoConPuntos(texto, limite) {
 	var puntosSuspensivos = "...";
 	if (texto.length > limite) {

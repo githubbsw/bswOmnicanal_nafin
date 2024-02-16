@@ -591,6 +591,7 @@
          <audio id="ringtone" loop src="sounds/telefono_tono.mp3"> </audio>
          <audio id="ringbacktone" loop src="sounds/ringbacktone.wav"> </audio>
          <audio id="dtmfTone" src="sounds/dtmf.wav"> </audio>
+         <audio id="ringtoneChat" loop src="sounds/tono_whatsapp.mp3"> </audio>
          <table style='width: 100%;'>
             <tr>
                <td id="tdVideo" class='tab-video'>
@@ -782,10 +783,15 @@
             </div>
          </div>
       </div>
+      <div id="timerParaFin" name="timerParaFin" ></div>
+      <div id="divFinalizarLlamada" style="display: none;">
+            <button type="button" class="btn btn-danger" style="width: 169px;" id="btnEndCall"  onclick='finalizarTiempoDeEspera()' >
+               <span class="glyphicon glyphicon-star"></span>Finalizar
+            </button>
+         </div>  
+      <!--<div id="timerParaFin" >
 
-      <div id="timerParaFin" >
-
-      </div>
+      </div>-->
       <!-- Modal -->
       <div class="modal fade" id="modalCancelarLlam" tabindex="-1" role="dialog" aria-labelledby="modalCancelarLlamLabel" aria-hidden="true">
          <div class="modal-dialog" role="document">

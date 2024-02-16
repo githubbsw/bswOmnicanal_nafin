@@ -162,3 +162,17 @@ module.exports.FINTIPIF3CRM = `update  crmbd.crmrespcabecero
     BTCRM1FECINTERACCIONDURSEG= (SELECT TIME_TO_SEC(TIMEDIFF(cast(now() as datetime) ,concat(BTCRM1INTERACCIONFECINI,' ',BTCRM1INTERACCIONHORINI ) )))
     where SUBSTRING_INDEX(crmrespcabeceroidllam,'.',2)   =   SUBSTRING_INDEX(?,'.',2) and cast(crmrespcabecerofecmon as date) >= cast(now() as date)  ;`
 
+    module.exports.consultarIdLlamadaSinExtensionTransf = "select llamadasEntrantesIdn idN, llamadasEntrantesId id , llamadasEntrantesFecha fecha, CAST(llamadasEntrantesFecha AS DATE) fechaI, DATE_FORMAT(llamadasEntrantesFecha,'%H:%i:%s') horaI, llamadasEntranteidivr idivr "+ 
+    "  from llamadasentrantes "
+    + " where cast( llamadasEntrantefecha as date) = ?  and llamadasEntranteIdUsado  = '0'  and llamadasEntrantesNum=? "
+    + " order by llamadasEntrantefecha desc limit 1 ";
+
+
+    module.exports.insertarllamadastransferencia = " INSERT INTO llamadastransferencia ( " +
+    " llamadastransferenciaId,    llamadastransferenciaExt,    llamadastransferenciaNum,    llamadastransferenciaFecha) " +
+    " VALUE( " +
+    " ?, ?, ?, NOW() );";
+
+    module.exports.updateExtensionEntrantes = `UPDATE llamadasentrantes SET llamadasEntrantesExt = ? WHERE llamadasEntrantesIdn = ? and llamadasEntrantesId = ? ;`    
+
+    

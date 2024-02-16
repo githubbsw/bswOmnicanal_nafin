@@ -90,6 +90,18 @@ module.exports.consultaridllamivrcrm = async (datos) => {
              llamada = await poolMarcador.query(querys.consultarIdLlamadaSinTelefono, [date[0].fecha, datos.extension]);
         }
         if (llamada.length == 0) {
+            // sí entra aqui, es porque la llamada es una transferencia y no los datos no  tienen extension
+            llamada = await poolMarcador.query(querys.consultarIdLlamadaSinExtensionTransf, [date[0].fecha, datos.telefonoCliente]);
+            
+            if (llamada.length != 0) {
+                //insertar en las tablas de transferencia
+                //await poolMarcador.query(querys.insertarllamadastransferencia, [llamada[0].id, datos.extension, datos.telefonoCliente]);
+                //actualizar la extension en llamadas entrantes
+                await poolMarcador.query(querys.updateExtensionEntrantes, [datos.extension, llamada[0].idN, llamada[0].id]);
+            }
+            
+       }
+        if (llamada.length == 0) {
             var llamada2 = await poolMarcador.query(querys.fechas____, []);
             datos.idLlamada_ = ""
             datos.idivr="";
@@ -207,4 +219,15 @@ module.exports.consultarAcumulado = async (datos) => {
     } else {
         return acumulado[0].ACUM;
     }
+}
+module.exports.insertarTransferencia = async (datos) => { 
+    try {       
+        //datos.motivo
+        var hora =   await poolMarcador.query(querys.insertarllamadastransferencia, [datos.idLlamada, datos.extension, datos.telefonoCliente]);
+        return "OK"
+    } catch (error) {
+
+        return "NO"
+    }
+
 }

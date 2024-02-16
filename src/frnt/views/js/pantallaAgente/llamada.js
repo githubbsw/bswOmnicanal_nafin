@@ -19,7 +19,7 @@ var precierre = false;
 var timerFin = 0;
 var timerFin_ = 0;
 var entroAfinLlamada = false;
-
+var timeTiempoparaFin=0;
 var timerTiempoEnLlamada = 0;
 var contactoseleccionado = {};
 const { ipcRenderer, dialog } = require('electron');
@@ -887,6 +887,11 @@ function sipToggleMute() {
 function sipHangUp(motivoColgar) {
     llamadaOk.motivoColgar=motivoColgar;
     if (oSipSessionCall) {
+
+        /****sí es transferencia, guardar en tabla de transferencias */
+        if(motivoColgar=="Transferencia"){
+            transferirLlamadaGuardar();
+        }
         txtCallStatus.innerHTML = '<i>Terminating the call...</i>';
         txtCallStatus_.innerHTML = '<i>Terminating the call...</i>';
         setTimeout(function () {
@@ -897,6 +902,21 @@ function sipHangUp(motivoColgar) {
     }
 }
 
+//guardar transferir llamada
+function transferirLlamadaGuardar() {
+    
+    // id_: llamadaOk.idLlamada_, id: llamadaOk.idLlamada, telefono: llamadaOk.telefonoCliente, extension: agenteOk.extension, 
+    
+    var objAgente = {
+        idLlamada: llamadaOk.idLlamada,
+        extension: areaIniciada == "IBD" ? agenteOk.extension : agenteOk.extension,
+        telefonoCliente: llamadaOk.telefonoCliente,
+    }
+    ipcRenderer.send('insertarTransferencia', objAgente)
+}
+ipcRenderer.on('insertarTransferenciaResult', (event, datos) => {
+ 
+});
 // cancelar llamada
 
 function cancelarLlamada() {
@@ -1153,7 +1173,7 @@ function uiCallTerminated(s_description) {
         var tiempoParaFin = areaIniciada == "IBD" ? agenteOk.tiempoTip : agenteOk.tiempoFRM;
         timerFinalizarLlamadaacw=tiempoParaFin;
         if (tiempoParaFin > 0) {
-
+            $("#divFinalizarLlamada").show();
             $("#timerParaFin").show();
             timerFin_ = tiempoParaFin;
             timerFin = setInterval(function () {
@@ -1162,13 +1182,14 @@ function uiCallTerminated(s_description) {
 
             }, 1000);
 
-            setTimeout(function () {
+            timeTiempoparaFin=setTimeout(function () {
                 finalizarLlamadas(s_description)
                 $("#timerParaFin").html("");
                 $("#timerParaFin").hide();
-                clearInterval(timerFin)
+                $("#divFinalizarLlamada").hide();
+                clearInterval(timerFin);
+                clearTimeout(timeTiempoparaFin);
                 entroAfinLlamada = false;
-
             }, (tiempoParaFin + 1) * 1000);
         } else {
 
@@ -1813,7 +1834,15 @@ function mostrarChats() {
         $("#chats").hide()
     }
 }
-
+function finalizarTiempoDeEspera(){
+    finalizarLlamadas("");
+    $("#timerParaFin").html("");
+    $("#timerParaFin").hide();
+    $("#divFinalizarLlamada").hide();
+    clearInterval(timerFin);
+    clearTimeout(timeTiempoparaFin);
+    entroAfinLlamada = false;    
+}
 function finalizarLlamadas(s_description) {   
     enLlamada = false;
     sRemoteNumbervar = "";
@@ -2020,4 +2049,8 @@ function StartCall()
         }
       );
       
+}
+function terminarTiempoEspera() {
+    finalizarLlamadas(s_description)
+    entroAfinLlamada = false;
 }

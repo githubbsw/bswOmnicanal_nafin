@@ -27,3 +27,8 @@ const helper = require('../helpers/chatMulticanal');
     const mandarSMS = await helper.mandarSMS(datos); 
     event.reply("mandarSMSResult", mandarSMS);
   });
+
+  ipcMain.on('cambiarEstatusNotificadoEnelPrograma', async(event, idInteraccion) => {
+    const estatusNUevo = await helper.cambiarEstatusNotificadoEnelPrograma(idInteraccion); 
+    event.reply("cambiarEstatusNotificadoEnelProgramaResult", estatusNUevo);
+  });

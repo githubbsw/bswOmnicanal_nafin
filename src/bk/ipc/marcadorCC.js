@@ -79,3 +79,9 @@ ipcMain.on('actualizarPausa', async(event, obj) => {
   const result = await helper.actualizarPausa(obj); 
   event.reply("actualizarPausaResult", result);
 });
+
+ipcMain.on('insertarTransferencia', async(event, datos) => {
+  var result = await helper.insertarTransferencia(datos);
+  event.reply("insertarTransferenciaResult", result);
+  
+});

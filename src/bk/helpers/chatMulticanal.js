@@ -105,7 +105,11 @@ module.exports.cambiarEstatusNuevo = async ( idInteraccion) =>
     return "ok "+resultado;
 }
 
-
+module.exports.cambiarEstatusNotificadoEnelPrograma = async ( idInteraccion) => 
+{
+    const resultado = await pool.query(querys.actualizaNotificadoAlPrograma ,[idInteraccion]);
+    return "ok "+resultado;
+}
 
 module.exports.mandarSMS = async (datos) => {
     var url = `${datos.datosSMS.url}?username=${datos.datosSMS.user}&password=${datos.datosSMS.pssw}&number=${datos.datosSMS.prefijoSMS+datos.datosSMS.telefono}&message=${datos.datosSMS.mensaje}`

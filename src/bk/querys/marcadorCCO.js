@@ -68,7 +68,7 @@ module.exports.consultarClienteSalida = `select c.btContactoConsecutivo id,c.btC
 
 module.exports.consultarCamposReservados = "SELECT sptcamposcriptpr,sptcamposcriptvalor,sptcamposcripttipo FROM bstntrn.sptcamposcript where sptcamposcriptnocli = ? and sptcamposcriptcmpid = ? and sptcamposcriptconsc = ? ; ";
 
-module.exports.consultarIdLlamadaOut = "select llamadasEntrantesIdn idN,  llamadasEntrantesId id , llamadasEntrantesFecha fecha, CAST(llamadasEntrantesFecha AS DATE) fechaI, DATE_FORMAT(llamadasEntrantesFecha,'%H:%i:%s') horaI FROM llamadasentrantes WHERE llamadasEntrantesNum = ? and llamadasEntrantesFecha >= curdate() and llamadasEntranteIdUsado  = '0' order by  llamadasEntrantesIdn desc limit 1 ";
+module.exports.consultarIdLlamadaOut = "select llamadasEntrantesIdn idN,  llamadasEntrantesId id , llamadasEntrantesFecha fecha, CAST(llamadasEntrantesFecha AS DATE) fechaI, DATE_FORMAT(llamadasEntrantesFecha,'%H:%i:%s') horaI FROM llamadasentrantes WHERE llamadasEntrantesNum = ? and llamadasEntrantesFecha >= adddate(now(), interval -2 minute) and llamadasEntranteIdUsado  = '0' order by  llamadasEntrantesIdn desc limit 1 ";
 
 module.exports.guardarTipificacionLlamada = "insert into bstntrn.btcontactotip (btcontactotipfecha,btcontactotipclienteid,btcontactotipidllam,btcontactotipusr,btcontactotipext,btcontactotiptel,btcontactotipcamp, " +
     "btcontactotip1,btcontactotip1dsc,btcontactotip2,btcontactotip2dsc,btcontactotipobs) " +

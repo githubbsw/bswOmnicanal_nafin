@@ -1,4 +1,4 @@
-module.exports.consultarInteracciones = " SELECT imcidn, inmccanalid, inmcestid, imcfecha, imchora, imcagente, imccliente, imctelefono, imccorreo, imcduracion, imcfechainiatn, imchorainiatn, imcclienteid, imcesnuevo,imcsesionid " + 
+module.exports.consultarInteracciones = " SELECT imcidn, inmccanalid, inmcestid, imcfecha, imchora, imcagente, imccliente, imctelefono, imccorreo, imcduracion, imcfechainiatn, imchorainiatn, imcclienteid, imcesnuevo,imcsesionid, ifnull(imcasignadoalprograma,0) imcasignadoalprograma " + 
 " FROM inmc.imc WHERE imcagente = ? and inmcestid = 1 ";
 
 
@@ -64,3 +64,10 @@ module.exports.opcPrcSMS = "SELECT bdsmsopcprocid, bdsmsopcprocdsc, bdsmsopcproc
 module.exports.ACTCRMSMS = `UPDATE bstntrn.btcrm1 SET btcrm1smscode = ? , btcrm1smsfecha = now(), btcrm1smsnumero = ? WHERE BTCRM1IDLLAMADA= ? AND BTCRM1ATENDIO = ?;`
 
 module.exports.consultarPrioridades = `SELECT * FROM bdnrh.nrhemdbmc where NRHEMUSERID  = ? order by nrhemdbmcprioridad asc;`;
+
+module.exports.actualizaCaidoAlPrograma = " SELECT imcidn, inmccanalid, inmcestid, imcfecha, imchora, imcagente, imccliente, imctelefono, imccorreo, imcduracion, imcfechainiatn, imchorainiatn, imcclienteid, imcesnuevo,imcsesionid " + 
+" FROM inmc.imc WHERE imcagente = ? and inmcestid = 1 ";
+
+module.exports.actualizaNotificadoAlPrograma="UPDATE inmc.imc " + 
+"SET imcasignadoalprograma = 1 " + 
+"WHERE imcidn = ? ";

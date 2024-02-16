@@ -40,6 +40,11 @@ module.exports.consultaridllamOut = async (datos) => {
             datosSalida.camposReservados = camposReservados
             const llamada = await poolMarcadorCCO.query(querys.consultarIdLlamadaOut, [datos.telefonoCliente]);
             if (llamada.length == 0) {
+                //volver a consultar el ide de llamada, porque le agregamos un filtro de hora, para que no tomara el id del registro de cola
+                const llamada = await poolMarcadorCCO.query(querys.consultarIdLlamadaOut, [datos.telefonoCliente]);
+               
+            }
+            if (llamada.length == 0) {
                 await pool.query(querys.ActualizarAgenteOut, ["DISPONIBLE", datos.telefonoCliente, datos.idAgente]);
                 return "LLAMADA_NO_REALIZADA";
             }

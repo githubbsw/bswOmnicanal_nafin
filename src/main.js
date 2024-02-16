@@ -548,7 +548,7 @@ function mostrarIframe(url, cliente, canal, imcclienteid) {
       icon: __dirname + "/icons/ICON" + canal + ".png",
     });
     console.log(ventana);
-  //  ventanasCanales[imcclienteid].webContents.openDevTools();
+    //ventanasCanales[imcclienteid].webContents.openDevTools();
 
 
     ventanasCanales[imcclienteid].on('closed', () => {

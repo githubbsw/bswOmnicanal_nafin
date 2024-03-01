@@ -729,6 +729,7 @@ function insertarCliente(numero)
             var validEmail = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/;
             if(obj2[i].value!="")
             {
+                /* se comenta porque nafin solicito quitar la validación de correo
                 if(validEmail.test(obj2[i].value)==false)
                 {
                     $("#CRMINSCLIENTE").show();
@@ -739,6 +740,7 @@ function insertarCliente(numero)
                     });
                     return;
                 }
+                */
             }
         }
 

@@ -118,7 +118,7 @@ module.exports.actualizarCorreo =  " update bstntrn.btclientecorreo  cross join 
  ifnull(A.btContactoTipoTel01,'') tipoTele,ifnull(A.btContactoTel02,'') contactoTele2 ,  ifnull(A.btContactoTipoTel02,'') tipoTele2 ,  
  ifnull(A.btContactoTel03,'') contactoTele3,  ifnull(A.btContactoTipoTel03,'') tipoTele3 , A.btContactoNombreCliente nombreCliente, 
  ifnull(A.btcontactoMotivo,'') motivo, A.btContactoConsecutivo consecutivo, A.btcontactoNoCliente idCliente, A.btContactoCountTel01 intentos,  
- btcontactoNoCliente Nocliente, btclienteRFC rfc,btclienterazonsocial pyme, btcontactoCURP CURP, btcontactoNSS NSS 
+ btcontactoNoCliente Nocliente, btcontactoRFC rfc,btContactoNombreCliente pyme, btcontactoCURP CURP, btcontactoNSS NSS 
  FROM bstntrn.btcontacto AS A  
  WHERE btcontactoagenteid = ?`;
 

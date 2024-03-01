@@ -91,7 +91,7 @@
             style="background: #00000091;overflow-y: scroll;display:none">
             <input id="buscar" onblur="consultarCliente('listClientes', '')" onkeypress="return runScript(event)"
                style="margin-bottom: 10px; width: 100%;padding: 11px;border: none;border-bottom: solid 5px #28a745;outline: none;"
-               placeholder="Inserte RFC">
+               placeholder="Inserte RFC"  pattern="[A-Za-z0-9_-]{1,15}">
             <div class="d-flex justify-content-between">
                <button onclick="nuevoCliente()" id="btnNuevoCliente" type="button" class="btn col btn-info mb-3">Nueva
                   persona</button>

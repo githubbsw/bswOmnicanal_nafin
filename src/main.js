@@ -698,6 +698,7 @@ function requerirIpc() {
   require('./bk/ipc/usuario');
   require('./bk/ipc/tipificacionOut');
   require('./bk/ipc/chatMulticanal');
+  require('./bk/ipc/notificacionColaEspera');
 }
 
  // funcion para mover archivos 

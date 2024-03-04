@@ -2,10 +2,10 @@ const { ipcRenderer } = require('electron');
 
 var numeroEntrante;
 
-function NotificationQueueStart() 
+function NotificationQueueStart(agenteId) 
  {
     setInterval(() => {
-        ipcRenderer.send('consultQueue', {});
+        ipcRenderer.send('consultQueue', agenteId);
     }, 5000);
     
     
@@ -32,4 +32,3 @@ ipcRenderer.on('consultQueueResult', async (event, numero) => {
         }
 });
 
-NotificationQueueStart();

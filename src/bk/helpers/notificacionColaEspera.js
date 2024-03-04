@@ -1,5 +1,4 @@
 const querys = require('../querys/notificacionColaEspera');
-const poolCC = require('../cnn/databaseCC');
 const poolCRM = require('../cnn/database');
 
 const util = require('util');
@@ -9,21 +8,14 @@ module.exports.consultQueue = async (agenteId) => {
     
     if(QueueOut.length!=0)
     {
-        var cmp=QueueOut[0].cmp;
-        var ResultQueue= await poolCC.query(querys.consultQueue ,[cmp]);
-        if(ResultQueue.length != 0 )
-        {
-            return ResultQueue;
-            
-        }  
-        else{
-            ResultQueue = '[{cuantos:0,numero:0}]';
-        }
+        
+        return QueueOut;
+
     }
     else
     {
-        ResultQueue = '[{cuantos:0,numero:0}]';
+        QueueOut = '[{cuantos:0,numero:0}]';
     }   
-    return ResultQueue;
+    return QueueOut;
 
 }

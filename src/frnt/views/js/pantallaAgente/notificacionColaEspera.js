@@ -12,12 +12,12 @@ function NotificationQueueStart(agenteId)
       
 }
 
-function showNotificationQueue () 
+function showNotificationQueue (mensaje) 
  { 
     const notification = new window.Notification(
         'Llamada en espera',
         {
-          body: 'Llamada en espera',
+          body: mensaje,
           icon: '../../../../img/agente.png',
         }
       );    
@@ -28,7 +28,7 @@ ipcRenderer.on('consultQueueResult', async (event, numero) => {
         if(numeroEntrante!=numero[0].numero)
         {
             numeroEntrante=numero[0].numero;
-            showNotificationQueue();
+            showNotificationQueue(numero[0].mensaje);
         }
 });
 

@@ -187,7 +187,7 @@ function ventanaLogin() {
     frame: false,
 
   })
-  login.webContents.openDevTools()
+  //login.webContents.openDevTools()
   login.loadFile('src/frnt/views/login.html')
   login.on('closed', () => { login = null })
   login.once('ready-to-show', () => { login.show() })
@@ -209,7 +209,7 @@ function abrirPantallaConfig() {
     show: false,
     frame: false,
   })
-  pantallaConfig.webContents.openDevTools()
+  //pantallaConfig.webContents.openDevTools()
   pantallaConfig.loadFile('src/frnt/views/conexiones.html')
   pantallaConfig.on('closed', () => { pantallaConfig = null })
   pantallaConfig.once('ready-to-show', () => { pantallaConfig.show() })
@@ -234,7 +234,7 @@ function ventanaMain() {
     backgroundThrottling: false,
     minimizable: false
   })
-  modulos.webContents.openDevTools();
+  //modulos.webContents.openDevTools();
   if (test) {
     if (canalDefault == "OBD") {
       modulos.loadFile('src/frnt/views/outbound.html')
@@ -455,7 +455,7 @@ ipcMain.on('insertarCanal', async (event, arg) => {
 //Limpiar cache de app 
 ipcMain.on('limpiarCache', async (event, arg) => {
 
-  const appName = app.getName();
+  const appName = app.name;
   const getAppPath = path.join(app.getPath('appData'), appName);
   console.log(getAppPath)
   rimraf(getAppPath, function () {
@@ -471,7 +471,7 @@ ipcMain.on('limpiarCache', async (event, arg) => {
 //Limpiar cache de app 
 ipcMain.on('limpiarCacheSinCerrar', async (event, arg) => {
 
-  const appName = app.getName();
+  const appName = app.name;
   const getAppPath = path.join(app.getPath('appData'), appName);
   console.log(getAppPath)
   rimraf(getAppPath, function () {
@@ -548,7 +548,7 @@ function mostrarIframe(url, cliente, canal, imcclienteid) {
       icon: __dirname + "/icons/ICON" + canal + ".png",
     });
     console.log(ventana);
-    ventanasCanales[imcclienteid].webContents.openDevTools();
+    //ventanasCanales[imcclienteid].webContents.openDevTools();
 
 
     ventanasCanales[imcclienteid].on('closed', () => {

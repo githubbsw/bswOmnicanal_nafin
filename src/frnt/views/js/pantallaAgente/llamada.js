@@ -22,7 +22,7 @@ var entroAfinLlamada = false;
 var timeTiempoparaFin=0;
 var timerTiempoEnLlamada = 0;
 var contactoseleccionado = {};
-const { ipcRenderer, dialog } = require('electron');
+
 
 var _s1 = 0;
 var _m1 = 0;

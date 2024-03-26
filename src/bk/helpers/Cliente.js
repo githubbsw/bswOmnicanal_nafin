@@ -8,14 +8,20 @@ module.exports.consultar = async (criterios, datosPaginacion) => {
 
         var criteriosSeleccion = "";
         var criteriosSeleccion2 = "";
-        if (/^([a-zA-Z\-0-9\s])*$/.test(criterios)) {
+        /*if (/^([&a-zA-Z\-0-9\s])*$/.test(criterios)) {
             criteriosSeleccion = " and  cliente.btclienterfc like CONCAT('%','" + criterios + "','%')  group by id  order by telefonos,  id desc limit ? , ? ";
             criteriosSeleccion2 = " and cliente.btclienterfc like CONCAT('%','" + criterios + "','%')";
+        }*/
+        if (criterios!="") {
+            criteriosSeleccion2 = " and cliente.btclienterfc like CONCAT('%','" + criterios + "','%')";
+            criteriosSeleccion = " and  cliente.btclienterfc like CONCAT('%','" + criterios + "','%') " +
+            "order by btclienterfc ";
         }
-        
 
         const resultado1 = await pool.query(querys.consultarTotal + criteriosSeleccion2);
-        const resultado = await pool.query(querys.consultar + criteriosSeleccion, [datosPaginacion.inicio, datosPaginacion.limite]);
+        //const resultado = await pool.query(querys.consultar + criteriosSeleccion + " limit 0, 20", [datosPaginacion.inicio, datosPaginacion.limite]);
+        const resultado = await pool.query(querys.consultar + criteriosSeleccion + " limit ? , ? ", [datosPaginacion.inicio, datosPaginacion.limite]);
+        
         objResult.valor = resultado;
         objResult.total = resultado1[0].total;
         return objResult;

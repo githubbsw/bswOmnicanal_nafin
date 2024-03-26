@@ -1,4 +1,4 @@
-module.exports.consultar =   " 	SELECT  "+
+/*module.exports.consultar =   " 	SELECT  "+
                             " cliente.btclienteNUMERO id,  "+
                             " cliente.BTCLIENTENCOMPLETO nombrecompleto,  "+ 
                             " cliente.BTCLIENTERFC rfc,  "+
@@ -20,8 +20,30 @@ module.exports.consultar =   " 	SELECT  "+
                             " ifnull(( select BTCLIENTETELNO from bstntrn.btclientetel where BTCLIENTETELNOCTEID = cliente.btclienteNUMERO and BTCLIENTETELTIPO='MOVIL'order by BTCLIENTETELCONSID desc limit 1),'') telefonoMovilInput, "  +
                             " ifnull(cliente.btclientecmp,'') campana "  +
                             " FROM bstntrn.btcliente  as cliente  "+
-                            " left JOIN bstntrn.btclientetel as tel ON tel.BTCLIENTETELNOCTEID = cliente.BTCLIENTENUMERO  "+
-                            " left JOIN bstntrn.btclientecorreo as correos ON correos.BTCLIENTECORREONOCTEID = cliente.BTCLIENTENUMERO "+
+                            " where 1 = 1 and cliente.btclienteNUMERO!=0 ";
+*/
+module.exports.consultar =   " 	SELECT  "+
+                            " cliente.btclienteNUMERO id,  "+
+                            " cliente.BTCLIENTENCOMPLETO nombrecompleto,  "+ 
+                            " cliente.BTCLIENTERFC rfc,  "+
+                            " cliente.btclienterazonsocial pyme,  "+
+                            " btclienteCORRELEC correo," +
+                            " btclientetelefono telefonos,"  +
+                            " btclienteRFC rfc,btclienterazonsocial pyme," +
+                            " cliente.btclientePNOMBRE primerNombre,  "+
+                            " cliente.btclienteAPATERNO apellidoPaterno,  "+
+                            " cliente.btclienteAMATERNO apellidoMaterno, btclienteestadoid estado, btclienteciudadid municipio , btclientesuc sucursal, "+
+                            " BTCLIENTECORRELEC  correoElectronico,  "+
+                            " btclienteextension ext,"+
+                            " cliente.btclientegenid generoCtoIput,  "+
+                            " cast(cast(cliente.btclientefnac  as date) as char(10)) fechaNacimientoCtoInput,  "+                          
+                            " cliente.btclienterazonsocial razonsocial,  "+
+                            " cliente.btclientectoafiliado afiliadoCtoInput, "+          
+                            " '' telefonoFijoInput , "  +
+                            " '' telefonoAlternativoInput , "  +
+                            " '' telefonoMovilInput, "  +
+                            " ifnull(cliente.btclientecmp,'') campana "  +
+                            " FROM bstntrn.btcliente  as cliente  "+
                             " where 1 = 1 and cliente.btclienteNUMERO!=0 ";
 
 

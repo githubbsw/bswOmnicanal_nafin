@@ -1,6 +1,4 @@
 node_modules/*
-cnn2020.json
+src/unit-test-with-jest/*
 release-builds/*
-package-lock.json
-package.json
-log.txt
+*.json

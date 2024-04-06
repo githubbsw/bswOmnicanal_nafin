@@ -173,6 +173,7 @@ module.exports.FINTIPIF3CRM = `update  crmbd.crmrespcabecero
     " VALUE( " +
     " ?, ?, ?, NOW() );";
 
-    module.exports.updateExtensionEntrantes = `UPDATE llamadasentrantes SET llamadasEntrantesExt = ? WHERE llamadasEntrantesIdn = ? and llamadasEntrantesId = ? ;`    
+    module.exports.updateExtensionEntrantes = `UPDATE llamadasentrantes SET llamadasEntrantesExt = ? WHERE llamadasEntrantesIdn = ? and llamadasEntrantesId = ? ;`  
+    module.exports.consultarTipxQueue =   `SELECT NRHEM07ID valorCampo FROM bdnrh.nrhemdb where NRHEMUSERID = ?; `;
 
     

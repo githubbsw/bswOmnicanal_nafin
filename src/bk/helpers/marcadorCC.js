@@ -87,6 +87,7 @@ module.exports.consultaridllamivrcrm = async (datos) => {
        
         var llamada = await poolMarcador.query(querys.consultarIdLlamada, [date[0].fecha, datos.extension,datos.telefonoCliente]);
         if (llamada.length == 0) {
+            // sí entra aqui, es porque la llamada no tiene numero telefono y va a buscar por extension
              llamada = await poolMarcador.query(querys.consultarIdLlamadaSinTelefono, [date[0].fecha, datos.extension]);
         }
         if (llamada.length == 0) {
@@ -126,9 +127,15 @@ module.exports.consultaridllamivrcrm = async (datos) => {
         await pool.query(querys.ActualizarAgente, ["EN LLAMADA", datos.telefonoCliente, datos.idLlamada, datos.idAgente]);
         await pool.query(querys.ActualizaridLlamada, [datos.idLlamada, datos.idAgente]);
         await pool.query(querys.ActualizarEstatusLlamada, ["llamada", datos.idLlamada, datos.idAgente]);
-        const resultado = await poolMarcador.query(querys.consultarRutaIVR, [datos.idivr]);
-        if (resultado.length > 0) {
-            datos = Object.assign(datos, resultado[0]);
+        
+        const datosIvr = await poolMarcador.query(querys.consultarRutaIVR, [datos.idivr]);
+        if (datosIvr.length > 0) {
+            datos = Object.assign(datos, datosIvr[0]);
+        }
+        datos.tipxQueue = "";
+        const tipxQueue = await pool.query(querys.consultarTipxQueue, [datos.idAgente]);
+        if (tipxQueue.length > 0){
+            datos.tipxQueue = tipxQueue[0].valorCampo;
         }   
 
         try {

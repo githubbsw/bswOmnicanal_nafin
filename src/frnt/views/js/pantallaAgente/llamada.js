@@ -22,6 +22,7 @@ var entroAfinLlamada = false;
 var timeTiempoparaFin=0;
 var timerTiempoEnLlamada = 0;
 var contactoseleccionado = {};
+var tipxQueue=""
 
 
 var _s1 = 0;
@@ -166,7 +167,8 @@ ipcRenderer.on('consultaridllamivrcrmResult', (event, datos) => {
     $("#horaLlamada").html("Hora llamada: " + llamadaOk.horaLlamada);
     $("#idLlamada").html("Id de interacción: <br>" + llamadaOk.idLlamada);
     $("#idLlamada_").html("Id de interacción: <br> " + llamadaOk.idLlamada);
-    $("#navegacionIvr").html("RUTA IVR: "+llamadaOk.rutaIVR);    
+    $("#navegacionIvr").html("RUTA IVR: "+llamadaOk.rutaIVR); 
+    tipxQueue = llamadaOk.tipxQueue;
     document.getElementById("navegacionIvr").style.display = "block"; 
     if(timerTiempoEnLlamada != 0){timerTiempoEnLlamada.parar()}
     timerTiempoEnLlamada = new TimerBsw("#tiempoEnLlamada", llamadaOk.fecha, llamadaOk.fecha, 1000)

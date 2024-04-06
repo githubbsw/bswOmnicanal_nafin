@@ -3,6 +3,7 @@ require('popper.js');
 require('bootstrap');
 require('datatables.net-dt')();
 require('datatables.net-responsive-dt')();
+
 let preguntaCita = ""
 let estatus = "DISPONIBLE"
 
@@ -368,29 +369,30 @@ function script() {
         var url = urls.tipificacion2 + "?";
     }
 
-    var parametros = "CNUSERID=" + usuarioOk.CNUSERID +
-        "&CNMDLSID=" + "CRM" +
-        "&CNOTRMID=" + "CRM00004" +
-        "&CNOTRMVER=" + "1" +
-        "&EJECUTIVO_TC=" + usuarioOk.CNUSERID +
-        "&ID_TC=" + llamadaOk.idLlamada + "S" +
-        "&TIPOMONITOREO_TC=" + obtenerCanal() +
-        "&TELEFONO=" + llamadaOk.telefonoCliente +
-        "&TIPOENCUESTA_TC=" + obtenerVersionScript() +
-        "&RUTAIVR=" + formarIvr() +
-        "&FECHASESIONINI=" + llamadaOk.fechaLlamada +
-        "&FECHAINTERACCION=" + llamadaOk.fechaLlamada +
-        "&HORASESIONINI=" + llamadaOk.horaLlamada +
-        "&HORAINTERACCION=" + llamadaOk.horaLlamada +
-        "&NOMBREPROPORCIONADO=" + encodeURI(clienteSeleccionado.nombrecompleto) +
-        "&FOLIOCTE=" + clienteSeleccionado.id +
-        "&P=" + reemplazaPalabras(llamadaOk.camposReservados).campos +
-        "&PV=" + reemplazaPalabras(llamadaOk.camposReservados).palabras +
-        "&IP=" + urls.ipCRM +
-        "&ESTATUSFINALIZADO=" + "" +
-        "&CAMPANAID=" + obtenerCampana();
+    var parametros = new StringBuilder();
+    parametros.append("CNUSERID=" + usuarioOk.CNUSERID);
+    parametros.append("&CNMDLSID=CRM");
+    parametros.append("&CNOTRMID=CRM00004");
+    parametros.append("&CNOTRMVER=1");
+    parametros.append("&EJECUTIVO_TC=" + usuarioOk.CNUSERID);
+    parametros.append("&ID_TC=" + llamadaOk.idLlamada + "S");
+    parametros.append("&TIPOMONITOREO_TC=" + obtenerCanal());
+    parametros.append("&TELEFONO=" + llamadaOk.telefonoCliente);
+    parametros.append("&TIPOENCUESTA_TC="+ obtenerVersionScript());
+    parametros.append("&RUTAIVR=" + formarIvr());
+    parametros.append("&FECHASESIONINI=" + llamadaOk.fechaLlamada );
+    parametros.append("&FECHAINTERACCION=" + llamadaOk.fechaLlamada);
+    parametros.append("&HORASESIONINI=" + llamadaOk.horaLlamada);
+    parametros.append("&HORAINTERACCION=" + llamadaOk.horaLlamada);
+    parametros.append("&NOMBREPROPORCIONADO=" + encodeURI(clienteSeleccionado.nombrecompleto));
+    parametros.append("&FOLIOCTE=" + clienteSeleccionado.id);
+    parametros.append("&P=" + reemplazaPalabras(llamadaOk.camposReservados).campos);
+    parametros.append("&PV=" + reemplazaPalabras(llamadaOk.camposReservados).palabras);
+    parametros.append("&IP=" + urls.ipCRM);
+    parametros.append("&ESTATUSFINALIZADO=");
+    parametros.append("&CAMPANAID=" + obtenerCampana());
     $("#displayTipificacion").html(
-        '<webview id="webviewTipificacion" src="' + url + parametros + '" style="display:inline-flex; width:100%; height:100%;" localStorage="true" partition="persist:simplifica"></webview>'
+        '<webview id="webviewTipificacion" src="' + url + parametros.toString() + '" style="display:inline-flex; width:100%; height:100%;" localStorage="true" partition="persist:simplifica"></webview>'
     );
 }
 
@@ -423,6 +425,7 @@ function tipificacion() {
 
         var url = urls.tipificacion2 + "?";
     }
+
     var parametros = "CNUSERID=" + usuarioOk.CNUSERID +
         "&CNMDLSID=" + "CRM" +
         "&CNOTRMID=" + "CRM00004" +
@@ -495,6 +498,11 @@ function obtenerCampana() {
 }
 
 function obtenerVersionTip() {
+    if(tipxQueue!="")
+    {
+        return tipxQueue;
+    }
+
     if (areaIniciada == "IBD") {
         return datosInbound.tipificacion;
     } else if (areaIniciada == "OBD") {
@@ -575,7 +583,7 @@ function cerrarTipificacion(datos) {
         "&ID_TC=" + llamadaOk.idLlamada +
         "&TIPOMONITOREO_TC=" + obtenerCanal() +
         "&TELEFONO=" + llamadaOk.telefonoCliente +
-        "&TIPOENCUESTA_TC=" + obtenerVersionTip() +
+        "&TIPOENCUESTA_TC="+ obtenerVersionTip() +
         "&FECHASESIONFIN=" + datos.fecha +
         "&HORASESIONFIN=" + datos.hora +
         "&NOMBREPROPORCIONADO=" + encodeURI(clienteSeleccionado.nombrecompleto) +

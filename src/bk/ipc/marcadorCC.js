@@ -60,6 +60,11 @@ ipcMain.on('consultaridllamivrcrm', async(event, Crmcabecero) => {
   event.reply("consultaridllamivrcrmResult", onfoMarcador);
 });
 
+ipcMain.on('procesoLlamadaEntrante', async(event, Crmcabecero) => {
+  const onfoMarcador = await helper.consultaridllamivrcrm(Crmcabecero); 
+  event.reply("procesoLlamadaEntranteResult", onfoMarcador);
+});
+
 ipcMain.on('actulizarAgente', async(event, objtAgt) => {
   const objAg = await helper.actulizarAgente(objtAgt); 
   event.reply("actulizarAgenteResult", objAg);

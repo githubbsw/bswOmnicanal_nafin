@@ -20,7 +20,7 @@ FROM cdr where uniqueid = ?
 module.exports.consultarFechaHoraServer = `select DATE_FORMAT(ADDDATE(calldate, INTERVAL duration second), "%H:%i:%s") hora, 
     DATE_FORMAT(ADDDATE(calldate, INTERVAL duration second), "%Y-%m-%d") fecha  , uniqueid id 
     FROM cdr where disposition = "ANSWERED" and dcontext = "ext-local" and dst = ? and src = ? 
-    and DATE_FORMAT(calldate, '%Y-%m-%d') = ? order by hora desc limit 1; ;`
+    and DATE_FORMAT(calldate, '%Y-%m-%d') = (select  date_format(now(), "%Y-%m-%d") fecha) order by hora desc limit 1;`
 
 
 module.exports.updateIdFinLlamadaCRM = `UPDATE bstntrn.btcrm1
@@ -89,13 +89,6 @@ module.exports.consultarScript = "SELECT btscript id FROM bstntrn.btcampanas whe
 
 module.exports.actualizarContacto = "UPDATE bstntrn.btcontacto SET btContactoSts = ? WHERE btContactoConsecutivo = ? and btContactoCmpId = ? ;"
 
-
-
-
-
-
-
-
 module.exports.FINTIPIF1= `update bstntrn.btcrm1 
     set BTCRM1FECINI=BTCRM1FECHA, 
     BTCRM1HORINI=BTCRM1HORA, 
@@ -104,8 +97,7 @@ module.exports.FINTIPIF1= `update bstntrn.btcrm1
     btcrm1colgo= ? 
     where  SUBSTRING_INDEX(BTCRM1IDLLAMADA,'.',2)   =   SUBSTRING_INDEX(?,'.',2)
     and BTCRM1INTERACCIONFECINI is null and cast(BTCRM1FECHA as date) >= cast(now() as date)  ;`
-
-    
+  
 module.exports.proposito = `	update   bstntrn.btcrm1    
  set   
  BTCRMTIPIFCAD = 'TIPIFICACION CANCELADA',
@@ -137,9 +129,7 @@ module.exports.FINTIPIF3 = `update  crmbd.crmrespcabecero
     BTCRM1FECINTERACCIONDURSEG= (SELECT TIME_TO_SEC(TIMEDIFF(? ,concat(BTCRM1INTERACCIONFECINI,' ',BTCRM1INTERACCIONHORINI ) )))
     where SUBSTRING_INDEX(crmrespcabeceroidllam,'.',2)   =   SUBSTRING_INDEX(?,'.',2) and cast(crmrespcabecerofecmon as date) >= cast(now() as date)  ;`
 
-
-
-    module.exports.FINTIPIF2CRM = `update bstntrn.btcrm1  
+module.exports.FINTIPIF2CRM = `update bstntrn.btcrm1  
     set BTCRM1FECFIN= cast(now() as date) ,
     BTCRM1HORFIN= cast(cast(now() as time) as char(8)) ,
     BTCRM1DURACION= SUBSTR((SELECT TIMEDIFF( cast(now() as datetime)     ,concat(BTCRM1FECINI,' ',BTCRM1HORINI ) )) ,1,8),
@@ -176,4 +166,6 @@ module.exports.FINTIPIF3CRM = `update  crmbd.crmrespcabecero
     module.exports.updateExtensionEntrantes = `UPDATE llamadasentrantes SET llamadasEntrantesExt = ? WHERE llamadasEntrantesIdn = ? and llamadasEntrantesId = ? ;`  
     module.exports.consultarTipxQueue =   `SELECT NRHEM07ID valorCampo FROM bdnrh.nrhemdb where NRHEMUSERID = ?; `;
 
+    module.exports.SpConsultarIdLlamada = `call SpConsultarIdLlamada (?,?,?,?,?,?)`;
+    module.exports.SpActualizarAgenteInsertaCrm = `call SpActualizarAgenteInsertaCrm (?,?,?,?,?,?)`;
     

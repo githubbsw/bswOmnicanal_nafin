@@ -6,15 +6,13 @@ const fs = require('fs');
 
 module.exports.consultarFechaHora = async (datos) => { 
     try {
-        // datos.motivoColgar
-        var hora = await poolMarcador.query(querys.consultarFechaHora, []);
-        let date =  await poolMarcador.query(`select  date_format(now(), "%Y-%m-%d") fecha, date_format(now(), "%H:%i:%s") hora`);   
+        var hora = await poolMarcador.query(querys.consultarFechaHora, []);  
         var horaLlam = "";
         if (datos.id_ != "") {
             var horaLlam = await poolMarcador.query(querys.consultarFechaHoraServer_, [ datos.id_]);
             await pool.query(querys.updateIdFinLlamadaCRM, [datos.id_,datos.motivoColgar, datos.id]);
         } else {
-            horaLlam = await poolMarcador.query(querys.consultarFechaHoraServer, [datos.extension, datos.telefono, date[0].fecha,]);
+            horaLlam = await poolMarcador.query(querys.consultarFechaHoraServer, [datos.extension, datos.telefono]);
             if (horaLlam.length > 0) {
                 await pool.query(querys.updateIdFinLlamadaCRM, [horaLlam[0].id,datos.motivoColgar, datos.id]);
             }
@@ -25,19 +23,8 @@ module.exports.consultarFechaHora = async (datos) => {
         } else {
             datosNuevos = hora[0];
         }
-        /*console.log('FINTIPIF1 ' + datosNuevos.fecha + " " + datosNuevos.hora)
-        await pool.query(querys.FINTIPIF1, [datos.motivoColgar, datos.id]);
-        console.log('FINTIPIF2 ' + datosNuevos.fecha + " " + datosNuevos.hora)
-        await pool.query(querys.FINTIPIF2, [datosNuevos.fecha, datosNuevos.hora, datosNuevos.fecha + " " + datosNuevos.hora, datosNuevos.fecha + " " + datosNuevos.hora,
-        datosNuevos.fecha, datosNuevos.hora, datosNuevos.fecha + " " + datosNuevos.hora, datosNuevos.fecha + " " + datosNuevos.hora,
-        datos.id]);
-        await pool.query(querys.FINTIPIF3, [datosNuevos.fecha, datosNuevos.hora, datosNuevos.fecha + " " + datosNuevos.hora, datosNuevos.fecha + " " + datosNuevos.hora,
-            "2",
-        datosNuevos.fecha, datosNuevos.hora, datosNuevos.fecha + " " + datosNuevos.hora, datosNuevos.fecha + " " + datosNuevos.hora,
-        datos.id]);*/
         await pool.query(querys.updateIdFinLlamadaCRM, [datos.id_,datos.motivoColgar, datos.id]);
-        await pool.query(querys.FINTIPIF1, [datos.motivoColgar, datos.id]);
-     
+        await pool.query(querys.FINTIPIF1, [datos.motivoColgar, datos.id]);    
         await pool.query(querys.FINTIPIF2CRM, [datos.id]);
         await pool.query(querys.FINTIPIF3CRM, [ "2", datos.id]);
         return "OK"
@@ -51,11 +38,9 @@ module.exports.consultarFechaHora = async (datos) => {
 
 module.exports.cancelarllamada = async (datos) => { 
     try {       
-        //datos.motivo
         await pool.query(querys.proposito, [datos.motivoCancelar, datos.acw, datos.id]);
         return "OK"
     } catch (error) {
-
         return "NO"
     }
 
@@ -63,14 +48,12 @@ module.exports.cancelarllamada = async (datos) => {
 
 module.exports.finalizarCrm = async (datos) => { 
     try {       
-       await pool.query(querys.updateIdFinLlamadaCRM, [datos.id_,datos.motivoColgar, datos.id]);
-        await pool.query(querys.FINTIPIF1, [datos.motivoColgar, datos.id]);
-     
+        await pool.query(querys.updateIdFinLlamadaCRM, [datos.id_,datos.motivoColgar, datos.id]);
+        await pool.query(querys.FINTIPIF1, [datos.motivoColgar, datos.id]);    
         await pool.query(querys.FINTIPIF2CRM, [datos.id]);
         await pool.query(querys.FINTIPIF3CRM, [ "2", datos.id]);
         return "OK"
     } catch (error) {
-
         return "NO"
     }
 
@@ -78,7 +61,6 @@ module.exports.finalizarCrm = async (datos) => {
 
 
 module.exports.consultaridllamivrcrm = async (datos) => {
-    //console.log('tipificacion ' + datos.telefonoCliente)
     try {
         var insertarCabecero=false;
         var date =  await poolMarcador.query(`select  date_format(now(), "%Y-%m-%d") fecha, date_format(now(), "%H:%i:%s") hora`);
@@ -95,8 +77,6 @@ module.exports.consultaridllamivrcrm = async (datos) => {
             llamada = await poolMarcador.query(querys.consultarIdLlamadaSinExtensionTransf, [date[0].fecha, datos.telefonoCliente]);
             
             if (llamada.length != 0) {
-                //insertar en las tablas de transferencia
-                //await poolMarcador.query(querys.insertarllamadastransferencia, [llamada[0].id, datos.extension, datos.telefonoCliente]);
                 //actualizar la extension en llamadas entrantes
                 await poolMarcador.query(querys.updateExtensionEntrantes, [datos.extension, llamada[0].idN, llamada[0].id]);
             }
@@ -167,9 +147,45 @@ module.exports.consultaridllamivrcrm = async (datos) => {
         datos.error="NO"
         return datos;
     }
+}
 
 
+module.exports.procesoLlamadaEntrante = async (datos) => {
+    try {
+        var insertarCabecero=false;
 
+        var llamada = await poolMarcador.query(querys.SpConsultarIdLlamada, [date[0].fecha, datos.extension,datos.telefonoCliente]);
+
+        if (llamada.length == 0) {
+            var llamada2 = await poolMarcador.query(querys.fechas____, []);
+            datos.idLlamada_ = ""
+            datos.idivr="";
+            datos.fecha = llamada[0].fecha;
+            datos.fechaI = llamada2[0].fechaI
+            datos.horaI = llamada2[0].horaI;           
+        } else {          
+            datos.idLlamada_ = llamada[0].id;
+            datos.fecha = llamada[0].fecha;
+            datos.fechaI = llamada[0].fechaI
+            datos.horaI = llamada[0].horaI;
+            datos.idivr = llamada[0].idivr;
+        }
+        if(datos.idLlamada==""){
+            insertarCabecero=false;
+            datos.idLlamada =  new Date().getTime()+"." +datos.extension;
+        }else{
+            insertarCabecero=true;
+        }
+
+        await pool.query(querys.SpActualizarAgenteInsertaCrm, [datos.telefonoCliente, datos.idLlamada, datos.idAgente,datos.idivr]);
+        return datos;
+    } catch (error) {
+        console.log(error)
+        let data = JSON.stringify(error);
+        fs.writeFileSync('log.txt', new Date() + data + '\r\n');
+        datos.error="NO"
+        return datos;
+    }
 }
 
 module.exports.actulizarAgente = async (objAgt) => {
@@ -229,7 +245,6 @@ module.exports.consultarAcumulado = async (datos) => {
 }
 module.exports.insertarTransferencia = async (datos) => { 
     try {       
-        //datos.motivo
         var hora =   await poolMarcador.query(querys.insertarllamadastransferencia, [datos.idLlamada, datos.extension, datos.telefonoCliente]);
         return "OK"
     } catch (error) {

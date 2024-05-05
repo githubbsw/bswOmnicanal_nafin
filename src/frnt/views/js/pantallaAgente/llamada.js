@@ -197,6 +197,52 @@ ipcRenderer.on('consultaridllamivrcrmResult', (event, datos) => {
 
 });
 
+ipcRenderer.on('procesoLlamadaEntranteResult', (event, datos) => {
+    llamadaOk = datos;
+    $("#btnRecuperarDatosLlamada").hide()
+    if (datos.error == "NO") {
+        $("#chats").hide()
+        $("#displayScript").show()
+        $("#displayScript").show()
+        $("#displayCliente").hide()
+        $("#btnRecuperarDatosLlamada").show()
+        return;
+    }
+    $("#chats").hide()
+    var d = new Date(llamadaOk.fecha);
+    llamadaOk.fechaLlamada = formatoFecha(d);
+    llamadaOk.horaLlamada = formatoHora(d);
+    $("#tiempoEnLlamada").html("00:00:00");
+    $("#horaLlamada").html("Hora llamada: " + llamadaOk.horaLlamada);
+    $("#idLlamada").html("Id de interacción: <br>" + llamadaOk.idLlamada);
+    $("#idLlamada_").html("Id de interacción: <br> " + llamadaOk.idLlamada);
+    $("#navegacionIvr").html("RUTA IVR: "+llamadaOk.rutaIVR); 
+    tipxQueue = llamadaOk.tipxQueue;
+    document.getElementById("navegacionIvr").style.display = "block"; 
+    if(timerTiempoEnLlamada != 0){timerTiempoEnLlamada.parar()}
+    timerTiempoEnLlamada = new TimerBsw("#tiempoEnLlamada", llamadaOk.fecha, llamadaOk.fecha, 1000)
+    timerTiempoEnLlamada.iniciar();
+    
+    if (areaIniciada == "IBD") {
+        if (clienteAuto == "true") {
+            abrirBuscarCliente();
+            consultarCliente('listClientes_', llamadaOk.telefonoCliente)
+        }
+    }
+    $("#displayScript").show()
+    $("#displayScript").show()
+    $("#displayCliente").hide()
+   
+    socket.emit('cambioEnllamadaAgente', {});
+    if(llamadaOk.campo01=='QUEJA'){             
+        llamadaOk.telefonoCliente='anonymus';
+        numeroRemoto.innerHTML = llamadaOk.telefonoCliente;  
+        ipcRenderer.send('consultarTipoRespuesta', '7');        
+    }
+    console.log(llamadaOk);
+
+});
+
 ipcRenderer.on('consultaridllamOutResult', (event, datos) => {
     $("#btnRecuperarDatosLlamada").hide();
     if (datos == "NO") {
@@ -432,10 +478,6 @@ function connectarSipml() {
         if (s_mbwd) SIPml.setMaxBandwidthDown(parseFloat(s_mbwd));
         if (s_za) SIPml.setZeroArtifacts(s_za === "true");
         if (s_ndb == "true") SIPml.startNativeDebug();
-
-        //var rinningApps = SIPml.getRunningApps();
-        //var _rinningApps = Base64.decode(rinningApps);
-        //tsk_utils_log_info(_rinningApps);
     }
 
     oReadyStateTimer = setInterval(function () {
@@ -922,16 +964,6 @@ ipcRenderer.on('insertarTransferenciaResult', (event, datos) => {
 // cancelar llamada
 
 function cancelarLlamada() {
-   /*
-    ipcRenderer.send('cancelarllamada', { id_: llamadaOk.idLlamada_, id: llamadaOk.idLlamada, telefono: llamadaOk.telefonoCliente, extension: agenteOk.extension, 
-        url: urls.ipCRM });
-*/
-    /*$(".alert").remove();
-    $("#AREAINICIADA_").before(
-      
-      '<div class="alert alert-danger" role="alert" style="background: transparent; border: none;"> Cancelar tipificacion </div>'
-
-    );*/
     
     $(".loader").hide();
     $("#mensajeModal").html("Cancelar tipificacion:");
@@ -1340,7 +1372,7 @@ function onSipEventStack(e /*SIPml.Stack.Event*/) {
                         llamadaEjec,
                     }
                     if (obtenerCanal() == 1) {
-                        ipcRenderer.send('consultaridllamivrcrm', objAgente)
+                        ipcRenderer.send('procesoLlamadaEntrante', objAgente)
                     } else {
 
                         setTimeout(function () {
@@ -1817,7 +1849,7 @@ function recuperarDatosLlamada() {
     }
     if(timerTiempoEnLlamada != 0){timerTiempoEnLlamada.parar()}
     if (obtenerCanal() == 1) {
-        ipcRenderer.send('consultaridllamivrcrm', objAgente)
+        ipcRenderer.send('procesoLlamadaEntrante', objAgente)
     } else {
         ipcRenderer.send('consultaridllamOut', objAgente)
     }

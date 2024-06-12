@@ -1863,10 +1863,13 @@ function finalizarLlamadas(s_description) {
     numeroRemoto_.innerHTML = "";
     if (areaIniciada == "IBD") { 
         ipcRenderer.send('consultarFechaHora', { id_: llamadaOk.idLlamada_, id: llamadaOk.idLlamada, telefono: llamadaOk.telefonoCliente, extension: agenteOk.extension, 
-            url: urls.ipCRM,  motivoColgar: llamadaOk.motivoColgar })
+            url: urls.ipCRM,  motivoColgar: llamadaOk.motivoColgar });
+            ipcRenderer.send('actulizarAgente', { IdAgente: usuarioOk.CNUSERID, estatus: "DISPONIBLE", areaIniciada })
     } else {
-        ipcRenderer.send('consultarFechaHoraO', llamadaOk.idLlamada)
+        ipcRenderer.send('consultarFechaHoraO', llamadaOk.idLlamada);
+        ipcRenderer.send('actulizarAgenteO', { IdAgente: usuarioOk.CNUSERID, estatus: "DISPONIBLE", areaIniciada })
     }
+    
     if (areaIniciada == "OBD") {
         ipcRenderer.send('consultarContactos', agenteOk.id)
         ipcRenderer.send('consultarActCRM', agenteOk.id)

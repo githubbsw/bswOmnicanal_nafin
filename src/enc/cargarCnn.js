@@ -7,39 +7,6 @@ var conf = {
     {
       id: 1,
       select: false,
-      nombre: "10.145/10.144",
-      canalDefault: "IBD",
-      vers: "SDB-10",
-      mysql: {
-        crm:{
-          ip: "10.25.10.144",
-          usuario: "bswcrm_user",
-          contrasena: "Entrada2020$",
-          baseDatos: "siogen01",
-        },
-        cc:{    
-          ip: "10.25.10.145",
-          usuario: "bswcc_user",
-          contrasena: "Entrada2020$",
-          baseDatos: "asteriskcdrdb",
-        },
-        cco:{    
-          ip: "10.25.10.145",
-          usuario: "bswcc_user",
-          contrasena: "Entrada2020$",
-          baseDatos: "asteriskcdrdb",
-        },
-        mde: {
-          ip: "10.25.10.144",
-          usuario: "bswcrm_user",
-          contrasena: "Entrada2020$",
-          baseDatos: "inmc",
-        }
-      }
-    },
-    {
-      id: 2,
-      select: false,
       nombre: "10.142/10.144",
       canalDefault: "IBD",
       vers: "SDB-10",
@@ -71,7 +38,40 @@ var conf = {
       }
     },
     {
-      id: 4,
+      id: 2,
+      select: false,
+      nombre: "10.149/10.144",
+      canalDefault: "IBD",
+      vers: "SDB-149",
+      mysql: {
+        crm:{
+          ip: "10.25.10.144",
+          usuario: "bswcrm_user",
+          contrasena: "Entrada2020$",
+          baseDatos: "siogen01",
+        },
+        cc:{    
+          ip: "10.25.10.149",
+          usuario: "bswcc_user",
+          contrasena: "Entrada2020$",
+          baseDatos: "asteriskcdrdb",
+        },
+        cco:{    
+          ip: "10.25.10.149",
+          usuario: "bswcc_user",
+          contrasena: "Entrada2020$",
+          baseDatos: "asteriskcdrdb",
+        },
+        mde: {
+          ip: "10.25.10.144",
+          usuario: "bswcrm_user",
+          contrasena: "Entrada2020$",
+          baseDatos: "inmc",
+        }
+      }
+    },
+    {
+      id: 3,
       select: false,
       nombre: "10.141/10.147",
       canalDefault: "IBD",
@@ -104,7 +104,7 @@ var conf = {
       }
     },
     {
-      id: 5,
+      id: 4,
       select: false,
       nombre: "LOCAL",
       canalDefault: "IBD",

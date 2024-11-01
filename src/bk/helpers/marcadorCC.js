@@ -238,3 +238,94 @@ module.exports.insertarTransferencia = async (datos) => {
     }
 
 }
+
+module.exports.recuperarIdLlamadaIn = async (datos) => {
+    try {
+        var insertarCabecero=false;
+        var date =  await poolMarcador.query(`select  date_format(now(), "%Y-%m-%d") fecha, date_format(now(), "%H:%i:%s") hora`);
+        console.log('date ' +[date[0].fecha, datos.extension])
+        var telefonoDesconocido = datos.telefonoCliente;
+       
+        var llamada = await poolMarcador.query(querys.recuperarIdLlamada, [date[0].fecha, datos.extension,datos.telefonoCliente]);
+        if (llamada.length == 0) {
+            // sí entra aqui, es porque la llamada no tiene numero telefono y va a buscar por extension
+             llamada = await poolMarcador.query(querys.recuperarIdLlamadaSinTelefono, [date[0].fecha, datos.extension]);
+        }
+        if (llamada.length == 0) {
+            // sí entra aqui, es porque la llamada es una transferencia y no los datos no  tienen extension
+            llamada = await poolMarcador.query(querys.recuperarIdLlamadaSinExtensionTransf, [date[0].fecha, datos.telefonoCliente]);
+            
+            if (llamada.length != 0) {
+                //insertar en las tablas de transferencia
+                //await poolMarcador.query(querys.insertarllamadastransferencia, [llamada[0].id, datos.extension, datos.telefonoCliente]);
+                //actualizar la extension en llamadas entrantes
+                await poolMarcador.query(querys.updateExtensionEntrantes, [datos.extension, llamada[0].idN, llamada[0].id]);
+            }
+            
+       }
+        if (llamada.length == 0) {
+            var llamada2 = await poolMarcador.query(querys.fechas____, []);
+            datos.idLlamada_ = ""
+            datos.idivr="";
+            datos.fecha = llamada[0].fecha;
+            datos.fechaI = llamada2[0].fechaI
+            datos.horaI = llamada2[0].horaI;           
+
+        } else {
+            
+            datos.idLlamada_ = llamada[0].id;
+            datos.fecha = llamada[0].fecha;
+            datos.fechaI = llamada[0].fechaI
+            datos.horaI = llamada[0].horaI;
+            datos.idivr = llamada[0].idivr;
+        }
+        if(datos.idLlamada==""){
+            insertarCabecero=false;
+            datos.idLlamada =  new Date().getTime()+"." +datos.extension;
+        }else{
+            insertarCabecero=true;
+        }
+        await pool.query(querys.ActualizarAgente, ["EN LLAMADA", datos.telefonoCliente, datos.idLlamada, datos.idAgente]);
+        await pool.query(querys.ActualizaridLlamada, [datos.idLlamada, datos.idAgente]);
+        await pool.query(querys.ActualizarEstatusLlamada, ["llamada", datos.idLlamada, datos.idAgente]);
+        
+        const datosIvr = await poolMarcador.query(querys.consultarRutaIVR, [datos.idivr]);
+        if (datosIvr.length > 0) {
+            datos = Object.assign(datos, datosIvr[0]);
+        }
+        datos.tipxQueue = "";
+        const tipxQueue = await pool.query(querys.consultarTipxQueue, [datos.idAgente]);
+        if (tipxQueue.length > 0){
+            datos.tipxQueue = tipxQueue[0].valorCampo;
+        }   
+
+        try {
+            await pool.query(querys.GuardarTipificacionCAbeceroConRuta, [datos.fechaI, datos.horaI,
+            datos.idCliente, datos.idLlamada, datos.idAgente, datos.nombreAgente, datos.extension,
+            datos.telefonoCliente, datos.canalId, datos.rutaIVR, datos.campo01, datos.campo02,
+            datos.campo03, datos.campo04, datos.campo05, datos.campo06, datos.campo07, datos.ipCRM, datos.idLlamada_,datos.fechaI, datos.horaI,datos.fechaI, datos.horaI
+            ]);
+        } catch (error) {           
+        }
+        
+        const idFolio = await pool.query(querys.ConsultarIdInsercionObjeto, [datos.idCliente, datos.idLlamada, datos.idAgente]);
+        datos.idFolio = idFolio[0].ID;
+        await pool.query(querys.updateIdLlamadaCRM, [datos.idLlamada, datos.rutaIVR, datos.campo01, datos.campo02,
+        datos.campo03, datos.campo04, datos.campo05, datos.campo06, datos.campo07 , datos.idCliente, datos.idFolio, datos.idLlamada]);
+        if (llamada.length > 0) {
+            await poolMarcador.query(querys.updateIdLlamada, [llamada[0].idN, llamada[0].id]);
+        }
+        datos.idLlamada = datos.idLlamada ;
+        await pool.query(querys.ActualizarAgente, ["EN LLAMADA", datos.telefonoCliente, datos.idLlamada, datos.idAgente]);
+        await pool.query(querys.ActualizaridLlamada, [datos.idLlamada, datos.idAgente]);
+        await pool.query(querys.ActualizarEstatusLlamada, ["llamada", datos.idLlamada, datos.idAgente]);
+        datos.motivoColgar="";
+        return datos;
+    } catch (error) {
+        console.log(error)
+        let data = JSON.stringify(error);
+        fs.writeFileSync('log.txt', new Date() + data + '\r\n');
+        datos.error="NO"
+        return datos;
+    }
+}

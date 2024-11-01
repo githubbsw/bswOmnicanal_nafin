@@ -1817,9 +1817,9 @@ function recuperarDatosLlamada() {
     }
     if(timerTiempoEnLlamada != 0){timerTiempoEnLlamada.parar()}
     if (obtenerCanal() == 1) {
-        ipcRenderer.send('consultaridllamivrcrm', objAgente)
+        ipcRenderer.send('recuperarIdLlamadaIn', objAgente)
     } else {
-        ipcRenderer.send('consultaridllamOut', objAgente)
+        ipcRenderer.send('recuperarIdLlamadaOut', objAgente)
     }
 
 }

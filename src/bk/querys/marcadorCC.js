@@ -7,6 +7,11 @@ module.exports.consultarIdLlamadaSinTelefono = "select llamadasEntrantesIdn idN,
 + " where cast( llamadasEntrantefecha as date) = ?  and llamadasEntrantesExt = ? and llamadasEntranteIdUsado  = '0'  "
 + " order by llamadasEntrantefecha desc limit 1 ";
 
+module.exports.consultarIdLlamadaSinExtensionTransf = "select llamadasEntrantesIdn idN, llamadasEntrantesId id , llamadasEntrantesFecha fecha, CAST(llamadasEntrantesFecha AS DATE) fechaI, DATE_FORMAT(llamadasEntrantesFecha,'%H:%i:%s') horaI, llamadasEntranteidivr idivr "+ 
+"  from llamadasentrantes "
++ " where cast( llamadasEntrantefecha as date) = ?  and llamadasEntranteIdUsado  = '0'  and llamadasEntrantesNum=? "
++ " order by llamadasEntrantefecha desc limit 1 ";
+
 module.exports.fechas____ = `select now() fecha,  CAST(now() AS DATE) fechaI, DATE_FORMAT(now(),'%H:%i:%s') horaI ;`
 
 module.exports.consultarFechaHora = "select DATE_FORMAT(now(), '%H:%i:%s') hora, DATE_FORMAT(now(), '%Y-%m-%d') fecha "   ;
@@ -89,13 +94,6 @@ module.exports.consultarScript = "SELECT btscript id FROM bstntrn.btcampanas whe
 
 module.exports.actualizarContacto = "UPDATE bstntrn.btcontacto SET btContactoSts = ? WHERE btContactoConsecutivo = ? and btContactoCmpId = ? ;"
 
-
-
-
-
-
-
-
 module.exports.FINTIPIF1= `update bstntrn.btcrm1 
     set BTCRM1FECINI=BTCRM1FECHA, 
     BTCRM1HORINI=BTCRM1HORA, 
@@ -162,12 +160,6 @@ module.exports.FINTIPIF3CRM = `update  crmbd.crmrespcabecero
     BTCRM1FECINTERACCIONDURSEG= (SELECT TIME_TO_SEC(TIMEDIFF(cast(now() as datetime) ,concat(BTCRM1INTERACCIONFECINI,' ',BTCRM1INTERACCIONHORINI ) )))
     where SUBSTRING_INDEX(crmrespcabeceroidllam,'.',2)   =   SUBSTRING_INDEX(?,'.',2) and cast(crmrespcabecerofecmon as date) >= cast(now() as date)  ;`
 
-    module.exports.consultarIdLlamadaSinExtensionTransf = "select llamadasEntrantesIdn idN, llamadasEntrantesId id , llamadasEntrantesFecha fecha, CAST(llamadasEntrantesFecha AS DATE) fechaI, DATE_FORMAT(llamadasEntrantesFecha,'%H:%i:%s') horaI, llamadasEntranteidivr idivr "+ 
-    "  from llamadasentrantes "
-    + " where cast( llamadasEntrantefecha as date) = ?  and llamadasEntranteIdUsado  = '0'  and llamadasEntrantesNum=? "
-    + " order by llamadasEntrantefecha desc limit 1 ";
-
-
     module.exports.insertarllamadastransferencia = " INSERT INTO llamadastransferencia ( " +
     " llamadastransferenciaId,    llamadastransferenciaExt,    llamadastransferenciaNum,    llamadastransferenciaFecha) " +
     " VALUE( " +
@@ -175,5 +167,18 @@ module.exports.FINTIPIF3CRM = `update  crmbd.crmrespcabecero
 
     module.exports.updateExtensionEntrantes = `UPDATE llamadasentrantes SET llamadasEntrantesExt = ? WHERE llamadasEntrantesIdn = ? and llamadasEntrantesId = ? ;`  
     module.exports.consultarTipxQueue =   `SELECT NRHEM07ID valorCampo FROM bdnrh.nrhemdb where NRHEMUSERID = ?; `;
+
+    module.exports.recuperarIdLlamada = "select llamadasEntrantesIdn idN, llamadasEntrantesId id , llamadasEntrantesFecha fecha, CAST(llamadasEntrantesFecha AS DATE) fechaI, DATE_FORMAT(llamadasEntrantesFecha,'%H:%i:%s') horaI, llamadasEntranteidivr idivr from llamadasentrantes "
+    + " where cast( llamadasEntrantefecha as date) = ?  and llamadasEntrantesExt = ?  and llamadasEntrantesNum=? "
+    + " order by llamadasEntrantefecha desc limit 1 ";
+
+module.exports.recuperarIdLlamadaSinTelefono = "select llamadasEntrantesIdn idN, llamadasEntrantesId id , llamadasEntrantesFecha fecha, CAST(llamadasEntrantesFecha AS DATE) fechaI, DATE_FORMAT(llamadasEntrantesFecha,'%H:%i:%s') horaI, llamadasEntranteidivr idivr  from llamadasentrantes "
++ " where cast( llamadasEntrantefecha as date) = ?  and llamadasEntrantesExt = ?   "
++ " order by llamadasEntrantefecha desc limit 1 ";
+
+module.exports.recuperarIdLlamadaSinExtensionTransf = "select llamadasEntrantesIdn idN, llamadasEntrantesId id , llamadasEntrantesFecha fecha, CAST(llamadasEntrantesFecha AS DATE) fechaI, DATE_FORMAT(llamadasEntrantesFecha,'%H:%i:%s') horaI, llamadasEntranteidivr idivr "+ 
+"  from llamadasentrantes "
++ " where cast( llamadasEntrantefecha as date) = ?  a  and llamadasEntrantesNum=? "
++ " order by llamadasEntrantefecha desc limit 1 ";
 
     

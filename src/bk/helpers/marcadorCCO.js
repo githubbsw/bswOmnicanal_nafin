@@ -199,3 +199,99 @@ module.exports.generarllamada_out = async (extension,servidor,telefono,campana,i
             }
 }
 
+module.exports.recuperarIdLlamadaOut = async (datos) => {
+    try {
+        if (datos.marcacionManulaAct) {
+            await pool.query(querys.ActualizarAgenteOut, ["EN LLAMADA", datos.telefonoCliente, datos.idAgente]);
+            var datosSalida = {};
+            const llamada = await poolMarcadorCCO.query(querys.reparaIdLlamadaOut, [datos.telefonoCliente]);
+            if (llamada.length == 0) {
+                await pool.query(querys.ActualizarAgenteOut, ["DISPONIBLE", datos.telefonoCliente, datos.idAgente]);
+                return "LLAMADA_NO_REALIZADA";
+            }
+            await pool.query(querys.ActualizarEstatusLlamada, ["llamada", llamada[0].id, datos.idAgente])
+            await poolMarcadorCCO.query(querys.updateIdLlamada, [llamada[0].idN, llamada[0].id]);
+            datosSalida.idLlamada = llamada[0].id;
+            datosSalida.fecha = llamada[0].fecha;
+            datosSalida.telefonoCliente = datos.telefonoCliente;
+            return datosSalida;
+
+        } else if (datos.marcacionManual4) { //Marcacion manual con pad numerico
+            await pool.query(querys.InsertarContactos, [datos.idAgente, datos.telefonoCliente,datos.campanaId]);
+            await pool.query(querys.ActualizarAgenteOut, ["EN LLAMADA", datos.telefonoCliente, datos.idAgente]);
+            const ds = await pool.query(querys.consultarClienteSalida, [datos.idAgente, datos.telefonoCliente]);
+            var datosSalida = {};
+            if (ds.length > 0) {
+                datosSalida = ds[0]
+            }
+            const camposReservados = await pool.query(querys.consultarCamposReservados, [datosSalida.noCliente, datosSalida.btAgenteCmpId, datosSalida.id]);
+            datosSalida.camposReservados = camposReservados
+            const llamada = await poolMarcadorCCO.query(querys.consultarIdLlamadaOut, [datos.telefonoCliente]);
+            if (llamada.length == 0) {
+                //volver a consultar el ide de llamada, porque le agregamos un filtro de hora, para que no tomara el id del registro de cola
+                const llamada = await poolMarcadorCCO.query(querys.consultarIdLlamadaOut, [datos.telefonoCliente]);
+               
+            }
+            if (llamada.length == 0) {
+                await pool.query(querys.ActualizarAgenteOut, ["DISPONIBLE", datos.telefonoCliente, datos.idAgente]);
+                return "LLAMADA_NO_REALIZADA";
+            }
+            datosSalida.idLlamada =  new Date().getTime()+"." +datos.extension;
+            datosSalida.idLlamada_ = llamada[0].id;
+            datosSalida.fecha = llamada[0].fecha;
+            await pool.query(querys.ActualizarEstatusLlamada, ["llamada", llamada[0].id, datos.idAgente])
+            await pool.query(querys.guardarTipificacionLlamada, [datosSalida.id, datosSalida.idLlamada, datos.idAgente, datos.extension, datos.telefonoCliente, datosSalida.btAgenteCmpId]);
+            await pool.query(querys.ActualizaridLlamada, [datosSalida.idLlamada, datos.idAgente]);
+            await pool.query(querys.GuardarTipificacionCAbeceroConRutaOut, [
+                llamada[0].fechaI, llamada[0].horaI, datosSalida.noCliente,
+                datosSalida.idLlamada, datos.idAgente, datos.extension,
+                datos.telefonoCliente, datos.canalId, datosSalida.btAgenteCmpId,
+                datos.ipCRM,datosSalida.idLlamada_]);
+            const folio = await pool.query(querys.consultarIdInsercionObjeto, [datosSalida.noCliente, datosSalida.idLlamada, datos.idAgente]);
+            await poolMarcadorCCO.query(querys.updateIdLlamada, [llamada[0].idN, llamada[0].id]);
+            datosSalida.idFolio = folio[0].ID;
+            datosSalida.telefonoCliente = datos.telefonoCliente;
+            console.log(datosSalida)
+            return datosSalida;
+        } else {
+            await pool.query(querys.ActualizarAgenteOut, ["EN LLAMADA", datos.telefonoCliente, datos.idAgente]);
+            const ds = await pool.query(querys.consultarClienteSalida, [datos.idAgente, datos.telefonoCliente]);
+            var datosSalida = {};
+            if (ds.length > 0) {
+                datosSalida = ds[0]
+            }
+            const camposReservados = await pool.query(querys.consultarCamposReservados, [datosSalida.noCliente, datosSalida.btAgenteCmpId, datosSalida.id]);
+            datosSalida.camposReservados = camposReservados
+            const llamada = await poolMarcadorCCO.query(querys.consultarIdLlamadaOut, [datos.telefonoCliente]);
+            if (llamada.length == 0) {
+                await pool.query(querys.ActualizarAgenteOut, ["DISPONIBLE", datos.telefonoCliente, datos.idAgente]);
+                return "LLAMADA_NO_REALIZADA";
+            }
+            datosSalida.idLlamada =  new Date().getTime()+"." +datos.extension;
+            datosSalida.idLlamada_ = llamada[0].id;
+            datosSalida.fecha = llamada[0].fecha;
+            await pool.query(querys.ActualizarEstatusLlamada, ["llamada", llamada[0].id, datos.idAgente])
+            await pool.query(querys.guardarTipificacionLlamada, [datosSalida.id, datosSalida.idLlamada, datos.idAgente, datos.extension, datos.telefonoCliente, datosSalida.btAgenteCmpId]);
+            await pool.query(querys.ActualizaridLlamada, [datosSalida.idLlamada, datos.idAgente]);
+            await pool.query(querys.GuardarTipificacionCAbeceroAutomatica, [
+                llamada[0].fechaI, llamada[0].horaI, datosSalida.noCliente,
+                datosSalida.idLlamada, datos.idAgente, datos.extension,
+                datos.telefonoCliente, datos.canalId, datosSalida.btAgenteCmpId,
+                datos.ipCRM,datosSalida.idLlamada_, datosSalida.btAgenteCmpId]);
+            const folio = await pool.query(querys.consultarIdInsercionObjeto, [datosSalida.noCliente, datosSalida.idLlamada, datos.idAgente]);
+            await poolMarcadorCCO.query(querys.updateIdLlamada, [llamada[0].idN, llamada[0].id]);
+            datosSalida.idFolio = folio[0].ID;
+            datosSalida.telefonoCliente = datos.telefonoCliente;
+            console.log(datosSalida)
+            return datosSalida;
+        }
+
+    } catch (error) {
+        console.log(error)
+        let data = JSON.stringify(error);
+        fs.writeFileSync('log.txt', data);
+        return "NO";
+    }
+
+
+}

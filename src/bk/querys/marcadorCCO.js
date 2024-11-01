@@ -103,3 +103,6 @@ module.exports.consultarReus = `SELECT case when btbuscarreus = 'SI'
 then (select count(*) from bstntrn.listareus where listareus_telefono = ? limit 1)
 else 0 end enreus  FROM bstntrn.btcampanas
 where btcampanaid = ? and bstnCanalId = 'OBD';`;
+
+module.exports.reparaIdLlamadaOut = "select llamadasEntrantesIdn idN,  llamadasEntrantesId id , llamadasEntrantesFecha fecha, CAST(llamadasEntrantesFecha AS DATE) fechaI, DATE_FORMAT(llamadasEntrantesFecha,'%H:%i:%s') horaI FROM llamadasentrantes " +
+"WHERE llamadasEntrantesNum = ? and llamadasEntrantesFecha >= adddate(now(), interval -2 minute)  order by  llamadasEntrantesIdn desc limit 1 ";

@@ -1,4 +1,5 @@
 const querys = require('../querys/Cliente');
+const queryCC = require('../querys/marcadorCC');
 const pool = require('../cnn/database');
 
 module.exports.consultar = async (criterios, datosPaginacion) => {
@@ -120,25 +121,31 @@ module.exports.insertar = async (obj) => {
         if(obj.idFolio!=null && obj.idFolio!=undefined)
         {
             const clienteCRM12 = await pool.query(querys.consultarClienteCRM12, [obj.idFolio]);
-            if (parseInt(clienteCRM12[0].total) == 0 || clienteCRM12[0].cliente==id[0].id  ) {
-                var actualizo = await pool.query(querys.actualizarCrm, [id[0].id, obj.idFolio]);
-                if(actualizo.affectedRows==0){ 
-                    await pool.query(querys.insertarCrm, [id[0].id , obj.idLlamada, obj.idAgente, obj.nombreAgente, obj.extension, obj.telefonoCliente, obj.canalId, obj.rutaIVR,  obj.urls, obj.idLlamada]);
-                    }
-                await pool.query(querys.guardarNombre, ['EN LLAMADA',obj.idLlamada, obj.telefonoCliente, obj.nombreCompleto, obj.idAgente]);
-            } else {      
-                result = {
-                    result: "Esta llamada ya fue tipificada, no es posible cambiar el cliente seleccionado.",
-                    valores: valores[0],
-                    resultado: resultado[0]
-                }    
-            }
+            if(clienteCRM12.length>0)
+                if (parseInt(clienteCRM12[0].total) == 0 || clienteCRM12[0].cliente==id[0].id  ) {
+                    var actualizo = await pool.query(querys.actualizarCrm, [id[0].id, obj.idFolio]);
+                    if(actualizo.affectedRows==0){ 
+                        await pool.query(querys.insertarCrm, [id[0].id , obj.idLlamada, obj.idAgente, obj.nombreAgente, obj.extension, obj.telefonoCliente, obj.canalId, obj.rutaIVR,  obj.urls, obj.idLlamada]);
+                        }
+                    await pool.query(querys.guardarNombre, ['EN LLAMADA',obj.idLlamada, obj.telefonoCliente, obj.nombreCompleto, obj.idAgente]);
+                }
+            const clienteCRM1 = await pool.query(querys.consultarClienteCRM1, [obj.idFolio]);
+            if(clienteCRM1.length>0)
+                if (parseInt(clienteCRM1[0].total) > 0 || clienteCRM1[0].cliente!=id[0].id  ) {  
+                    await pool.query(queryCC.ActulizarClienteCrm, [id[0].id, obj.idLlamada, obj.idAgente]); 
+                    await pool.query(querys.guardarNombre, ['EN LLAMADA',obj.idLlamada, obj.telefonoCliente, obj.nombreCompleto, obj.idAgente]);                   
+                }
+            result = {
+                result: "OK",
+                valores: valores[0],
+                resultado: resultado[0]
+            } 
         }
     }
     catch(error)
     {
         result = {
-            result: "Huvo un error, en el alta del cliente.",
+            result: "Huvo un error, en el alta del cliente. ["+error+"]",
             valores: "{}",
             resultado:error
         }
@@ -202,25 +209,31 @@ module.exports.insertarEdicion = async (obj) => {
         if(obj.idFolio!=null && obj.idFolio!=undefined)
         {
             const clienteCRM12 = await pool.query(querys.consultarClienteCRM12, [obj.idFolio]);
-            if (parseInt(clienteCRM12[0].total) == 0 || clienteCRM12[0].cliente==id[0].id  ) {
-                var actualizo = await pool.query(querys.actualizarCrm, [id[0].id, obj.idFolio]);
-                if(actualizo.affectedRows==0){ 
-                    await pool.query(querys.insertarCrm, [id[0].id , obj.idLlamada, obj.idAgente, obj.nombreAgente, obj.extension, obj.telefonoCliente, obj.canalId, obj.rutaIVR,  obj.urls, obj.idLlamada]);
-                    }
-                await pool.query(querys.guardarNombre, ['EN LLAMADA',obj.idLlamada, obj.telefonoCliente, obj.nombreCompleto, obj.idAgente]);
-            } else {      
-                result = {
-                    result: "Esta llamada ya fue tipificada, no es posible cambiar el cliente seleccionado.",
-                    valores: valores[0],
-                    resultado: resultado[0]
-                }    
-            }
+            if(clienteCRM12.length>0)
+                if (parseInt(clienteCRM12[0].total) == 0 || clienteCRM12[0].cliente==id[0].id  ) {
+                    var actualizo = await pool.query(querys.actualizarCrm, [id[0].id, obj.idFolio]);
+                    if(actualizo.affectedRows==0){ 
+                        await pool.query(querys.insertarCrm, [id[0].id , obj.idLlamada, obj.idAgente, obj.nombreAgente, obj.extension, obj.telefonoCliente, obj.canalId, obj.rutaIVR,  obj.urls, obj.idLlamada]);
+                        }
+                    await pool.query(querys.guardarNombre, [ obj.nombreCompleto, obj.idAgente]);
+                } 
+            const clienteCRM1 = await pool.query(querys.consultarClienteCRM1, [obj.idFolio]);
+            if(clienteCRM1.length>0)
+                if (parseInt(clienteCRM1[0].total) > 0 || clienteCRM1[0].cliente!=id[0].id  ) {  
+                    await pool.query(queryCC.ActulizarClienteCrm, [id[0].id, obj.idLlamada, obj.idAgente]); 
+                    await pool.query(querys.guardarNombre, [obj.nombreCompleto, obj.idAgente]);     
+                    result = {
+                        result: "OK",
+                        valores: valores[0],
+                        resultado: resultado[0]
+                    }    
+                }
         }
     }
     catch(error)
     {
         result = {
-            result: "Huvo un error, en el alta del cliente.",
+            result: "Huvo un error, en el alta del cliente. ["+error+"]",
             valores: "{}",
             resultado:error
         }
@@ -285,19 +298,23 @@ module.exports.actualizar = async (obj) => {
     if(obj.idFolio!=null && obj.idFolio!=undefined)
     {
         const clienteCRM12 = await pool.query(querys.consultarClienteCRM12, [obj.idFolio]);
-        if (parseInt(clienteCRM12[0].total) == 0 || clienteCRM12[0].cliente==obj.id ) {
-            var actualizo = await pool.query(querys.actualizarCrm, [obj.id, obj.idFolio]);
-            if(actualizo.affectedRows==0){ 
-                await pool.query(querys.insertarCrm, [obj.id , obj.idLlamada, obj.idAgente, obj.nombreAgente, obj.extension, obj.telefonoCliente, obj.canalId, obj.rutaIVR,  obj.urls, obj.idLlamada]);
+        if(clienteCRM12.length>0)
+            if (parseInt(clienteCRM12[0].total) == 0 || clienteCRM12[0].cliente==obj.id ) {
+                var actualizo = await pool.query(querys.actualizarCrm, [obj.id, obj.idFolio]);
+                if(actualizo.affectedRows==0)
+                { 
+                    await pool.query(querys.insertarCrm, [obj.id , obj.idLlamada, obj.idAgente, obj.nombreAgente, obj.extension, obj.telefonoCliente, obj.canalId, obj.rutaIVR,  obj.urls, obj.idLlamada]);
                 }
-            await pool.query(querys.guardarNombre, ['EN LLAMADA',obj.idLlamada, obj.telefonoCliente, obj.nombreCompleto, obj.idAgente]);
-        } else {      
-            var result = {
-                result: "Esta llamada ya fue tipificada, no es posible cambiar el cliente seleccionado.",
-                valores: valores[0],
-                resultado: resultado[0]
-            }    
-        }
+                await pool.query(querys.guardarNombre, ['EN LLAMADA',obj.idLlamada, obj.telefonoCliente, obj.nombreCompleto, obj.idAgente]);
+            } 
+        const clienteCRM1 = await pool.query(querys.consultarClienteCRM1, [obj.idFolio]);
+        if(clienteCRM1.length>0)
+            if (parseInt(clienteCRM1[0].total) > 0 || clienteCRM1[0].cliente!=obj.id )  {      
+                await pool.query(queryCC.ActulizarClienteCrm, [obj.id, obj.idLlamada, obj.idAgente]); 
+                await pool.query(querys.guardarNombre, ['EN LLAMADA',obj.idLlamada, obj.telefonoCliente, obj.nombreCompleto, obj.idAgente]); 
+                
+            }
+
     }
 
 

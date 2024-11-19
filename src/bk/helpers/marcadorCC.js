@@ -189,7 +189,9 @@ module.exports.guardarNombre = async (objAgt) => {
         return "ok";
     } else {        
         console.log("Tiene tipificacion")
-        return "Esta llamada ya fue tipificada, no es posible cambiar el cliente seleccionado.";
+        await pool.query(querys.ActulizarClienteCrm, [objAgt.idCliente, objAgt.idLlamada, objAgt.idAgente]);
+        await pool.query(querys.guardarNombre, ['EN LLAMADA',objAgt.idLlamada, objAgt.telefonoCliente, objAgt.nombrecliente, objAgt.idAgente]);
+        return "ok";
     }
 
 }

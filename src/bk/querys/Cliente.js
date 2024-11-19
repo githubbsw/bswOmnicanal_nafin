@@ -150,7 +150,11 @@ module.exports.actualizarCorreo =  " update bstntrn.btclientecorreo  cross join 
 
  module.exports.consultarCiudad ="SELECT btclienteciudid ID, btclienteciudnoml DSC , bnstredoid EDO  FROM bstntrn.btclienteciud ";
 
- module.exports.consultarClienteCRM12 = " SELECT count(*) total ,  BTCRM1CLIENTENUMERO cliente FROM  bstntrn.btcrm12 WHERE BTCRM1FOLIO= ? limit 1 ; ";
+ module.exports.consultarClienteCRM12 = ` SELECT count(*) total ,BTCRM1CLIENTENUMERO cliente FROM  bstntrn.btcrm12 WHERE BTCRM1FOLIO= ? 
+                                          group by BTCRM1CLIENTENUMERO limit 1 ; `;
+
+module.exports.consultarClienteCRM1 =`SELECT count(*) total ,BTCRM1CLIENTENUMERO cliente FROM  bstntrn.btcrm1 WHERE BTCRM1FOLIO= ? 
+                                          group by BTCRM1CLIENTENUMERO limit 1 ;`;
  
  module.exports.actualizarCrm = "update bstntrn.btcrm1 set BTCRM1CLIENTENUMERO=? where BTCRM1FOLIO= ? and BTCRM1FECHA=cast(now() as date) ";
  module.exports.guardarNombre = " UPDATE bstntrn.btagenteinbound SET btagenteNombreCli = ? WHERE btAgenteInbId = ? ; ";

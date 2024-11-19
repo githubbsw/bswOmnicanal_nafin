@@ -52,3 +52,9 @@ ipcMain.on('ActualizarAgenteExtesionConectada', async(event, datos) => {
   const act = await helper.ActualizarAgenteExtesionConectada(datos); 
   event.reply("actulizarAgenteResult", act);
 });
+
+ipcMain.on('recuperarIdLlamadaOut', async(event, datos) => {
+  const recuperarIdLlamadaOut = await helper.recuperarIdLlamadaOut(datos); 
+  console.log(recuperarIdLlamadaOut)
+  event.reply("consultaridllamOutResult", recuperarIdLlamadaOut);
+});

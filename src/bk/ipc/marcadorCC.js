@@ -85,3 +85,8 @@ ipcMain.on('insertarTransferencia', async(event, datos) => {
   event.reply("insertarTransferenciaResult", result);
   
 });
+
+ipcMain.on('recuperarIdLlamadaIn', async(event, Crmcabecero) => {
+  const onfoMarcador = await helper.recuperarIdLlamadaIn(Crmcabecero); 
+  event.reply("consultaridllamivrcrmResult", onfoMarcador);
+});

@@ -3,6 +3,7 @@ require('popper.js');
 require('bootstrap');
 require('datatables.net-dt')();
 require('datatables.net-responsive-dt')();
+const fs = require('fs');
 
 let preguntaCita = ""
 let estatus = "DISPONIBLE"
@@ -45,6 +46,7 @@ var tipoDeRespuestas = [];
 var constimer = false;
 var pausPart="";
 var timeoutRecesos=0;
+var nomArchivoLogCompleto="";
 ipcRenderer.send('test', '')
 
 ipcRenderer.on('testResult', async (event, datos) => {
@@ -259,6 +261,23 @@ ipcRenderer.on('consultarConfTipificacionResult', (event, datos) => {
 })
 
 ipcRenderer.on('getUsuarioResult', async (event, datos) => {
+    var d = new Date();
+    if(d.getDate()<10){
+        dd = '0'+d.getDate();
+    }
+    else{
+        dd = d.getDate();
+    }
+    if((d.getMonth()+1)<10){
+        mm = '0'+(d.getMonth()+1);
+    }
+    else{
+        mm = (d.getMonth()+1);
+    }  
+    nomArchivoLogCompleto = "C:/Logs/LOG_"+d.getFullYear() + mm + dd+'.txt';
+    
+    
+    
     $("#usuario").html(datos.usuario.usuarioid);
     ipcRenderer.send('getUsuarioModulos', datos.usuario.usuarioid)
     ipcRenderer.send('consultarActCRM', datos.usuario.usuarioid)
@@ -397,8 +416,7 @@ function script() {
 }
 
 function tipificacion() {
-
-
+    //fs.appendFileSync(nomArchivoLog, 'Tipificacion:   \r\n');  
 
     if(llamadaOk.idLlamada == undefined || llamadaOk.idLlamada == null || llamadaOk.idLlamada == ""){
         return;

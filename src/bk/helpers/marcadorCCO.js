@@ -101,7 +101,7 @@ module.exports.consultaridllamOut = async (datos) => {
     } catch (error) {
         console.log(error)
         let data = JSON.stringify(error);
-        fs.writeFileSync('log.txt', data);
+        fs.writeFileSync(nomArchivoLog, 'marcadorCC0 104 - '+ new Date()+'\r\n'+error+'\r\n');
         return "NO";
     }
 
@@ -109,13 +109,23 @@ module.exports.consultaridllamOut = async (datos) => {
 }
 
 module.exports.actualizarContacto = async (datos) => {
-    await pool.query(querys.actualizarContacto, [datos.estatus, datos.id, datos.idCampana]);
+    try{
+        await pool.query(querys.actualizarContacto, [datos.estatus, datos.id, datos.idCampana]);
+    } catch (error) {
+    console.log(error)
+    fs.writeFileSync(nomArchivoLog, 'marcadorCC0 116 - '+ new Date()+'\r\n'+error+'\r\n');
+    }
     return "ok";
 }
 
 module.exports.actulizarAgente = async (objAgt) => {
-    await pool.query(querys.ActualizarEstatusLlamada, ["sin llamada", "", objAgt.IdAgente]);
-    await pool.query(querys.ActualizarAgenteFin, [objAgt.estatus, "", objAgt.IdAgente]);
+    try {
+        await pool.query(querys.ActualizarEstatusLlamada, ["sin llamada", "", objAgt.IdAgente]);
+        await pool.query(querys.ActualizarAgenteFin, [objAgt.estatus, "", objAgt.IdAgente]);
+    } catch (error) {        
+        fs.writeFileSync(nomArchivoLog, 'marcadorCC0 126 - '+ new Date()+'\r\n'+error+'\r\n');
+        
+    }
     return "ok";
 }
 
@@ -132,21 +142,35 @@ module.exports.guardarNombre = async (objAgt) => {
 }
 
 module.exports.ActualizarAgenteExtesionConectada = async (objAgt) => {
-    await pool.query(querys.ActualizarAgenteExtesionConectada, [objAgt.estatus, "", objAgt.IdAgente]);
+    try {
+            await pool.query(querys.ActualizarAgenteExtesionConectada, [objAgt.estatus, "", objAgt.IdAgente]);
+    } catch (error) {
+        fs.writeFileSync(nomArchivoLog, 'marcadorCC0 150 - '+ new Date()+'\r\n'+error+'\r\n');
+    }
     return "ok";
 }
 
 module.exports.insertarPausa = async (datos) => {
-    const acumulado_ = await this.consultarAcumulado(datos);
-    await pool.query(querys.insertarPausa, [datos.idLlamada, datos.idAgente, datos.extension, datos.telefono, datos.idLlamada, acumulado_]);
-    const consultarUltimaPausa = await pool.query(querys.consultarUltimaPausa, [datos.idAgente, datos.extension, datos.telefono, datos.idLlamada]);
-    console.log(consultarUltimaPausa)
+    try {
+        const acumulado_ = await this.consultarAcumulado(datos);
+        await pool.query(querys.insertarPausa, [datos.idLlamada, datos.idAgente, datos.extension, datos.telefono, datos.idLlamada, acumulado_]);
+        const consultarUltimaPausa = await pool.query(querys.consultarUltimaPausa, [datos.idAgente, datos.extension, datos.telefono, datos.idLlamada]);
+        console.log(consultarUltimaPausa)
+    } catch (error) {
+        fs.writeFileSync(nomArchivoLog, 'marcadorCC0 160 - '+ new Date()+'\r\n'+error+'\r\n');
+        
+    }
     return consultarUltimaPausa;
 }
 
 module.exports.actualizarPausa = async (datos) => {
-    console.log(datos)
-    await pool.query(querys.actualizarPausa, [datos.idAgente, datos.extension, datos.telefono, datos.idLlamada, datos.idPausa]);
+    try {
+        console.log(datos)
+        await pool.query(querys.actualizarPausa, [datos.idAgente, datos.extension, datos.telefono, datos.idLlamada, datos.idPausa]);
+    } catch (error) {
+        fs.writeFileSync(nomArchivoLog, 'marcadorCC0 171 - '+ new Date()+'\r\n'+error+'\r\n');
+        
+    }
     return "OK"
 }
 
@@ -287,11 +311,26 @@ module.exports.recuperarIdLlamadaOut = async (datos) => {
         }
 
     } catch (error) {
-        console.log(error)
-        let data = JSON.stringify(error);
-        fs.writeFileSync('log.txt', data);
-        return "NO";
+        fs.writeFileSync(nomArchivoLog, 'marcadorCC0 320 - '+ new Date()+'\r\n'+error+'\r\n');
+                return "NO";
     }
 
 
 }
+const nombreParaArchivoLog = () => {
+    var d = new Date();
+    if(d.getDate()<10){
+        dd = '0'+d.getDate();
+    }
+    else{
+        dd = d.getDate();
+    }
+    if((d.getMonth()+1)<10){
+        mm = '0'+(d.getMonth()+1);
+    }
+    else{
+        mm = (d.getMonth()+1);
+    }  
+    var nomArchivoLog = "C:/Logs/LOG_"+d.getFullYear() + mm + dd+'.txt';
+    return   nomArchivoLog;
+  }

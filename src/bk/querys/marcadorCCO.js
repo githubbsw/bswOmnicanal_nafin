@@ -5,10 +5,14 @@ module.exports.consultarIdLlamada = "select llamadasEntrantesId id , llamadasEnt
 
 module.exports.consultarFechaHora = "select DATE_FORMAT(now(), '%H:%i:%s') hora, DATE_FORMAT(now(), '%Y-%m-%d') fecha "   ;
 
+/*
 module.exports.consultarFechaHoraServer = `select DATE_FORMAT(ADDDATE(calldate, INTERVAL duration second), "%H:%i:%s") hora, 
 DATE_FORMAT(ADDDATE(calldate, INTERVAL duration second), "%Y-%m-%d") fecha  
 FROM cdr where uniqueid = ?
-`
+`*/
+module.exports.consultarFechaHoraServer_ = `select TIME(adjusted_time) AS hora, DATE(adjusted_time) AS fecha from
+    (SELECT ADDDATE(calldate, INTERVAL duration SECOND) AS adjusted_time   FROM cdr  where uniqueid = ?) AS subquery; `;
+
 module.exports.ActualizaridLlamada = " UPDATE bstntrn.BTESTAGNT SET BTESTAGNTCALLID = ? WHERE BTESTAGNTUSR = ? ";
 
 module.exports.ActualizarEstatusLlamada = "UPDATE bstntrn.bstnstatusllamada set estatusLlamada = ? ,IdLlamada = ?  where userid = ? "

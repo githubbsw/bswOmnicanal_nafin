@@ -16,7 +16,7 @@ module.exports.consultar = async (criterios, datosPaginacion) => {
         if (criterios!="") {
             criteriosSeleccion2 = " and cliente.btclienterfc like CONCAT('%','" + criterios + "','%')";
             criteriosSeleccion = " and  cliente.btclienterfc like CONCAT('%','" + criterios + "','%') " +
-            "order by btclienterfc ";
+            "order by btclienteNUMERO DESC, btclienterfc  ";
         }
 
         const resultado1 = await pool.query(querys.consultarTotal + criteriosSeleccion2);

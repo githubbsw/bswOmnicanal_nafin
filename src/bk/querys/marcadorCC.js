@@ -17,20 +17,29 @@ module.exports.fechas____ = `select now() fecha,  CAST(now() AS DATE) fechaI, DA
 module.exports.consultarFechaHora = "select DATE_FORMAT(now(), '%H:%i:%s') hora, DATE_FORMAT(now(), '%Y-%m-%d') fecha "   ;
 
 
-module.exports.consultarFechaHoraServer_ = `select DATE_FORMAT(ADDDATE(calldate, INTERVAL duration second), "%H:%i:%s") hora, 
-DATE_FORMAT(ADDDATE(calldate, INTERVAL duration second), "%Y-%m-%d") fecha  
-FROM cdr where uniqueid = ?
-`
+module.exports.consultarFechaHoraServer_ = `select TIME(adjusted_time) AS hora, DATE(adjusted_time) AS fecha from
+    (SELECT ADDDATE(calldate, INTERVAL duration SECOND) AS adjusted_time   FROM cdr  where uniqueid = ?) AS subquery; `;
 
+
+/*
 module.exports.consultarFechaHoraServer = `select DATE_FORMAT(ADDDATE(calldate, INTERVAL duration second), "%H:%i:%s") hora, 
     DATE_FORMAT(ADDDATE(calldate, INTERVAL duration second), "%Y-%m-%d") fecha  , uniqueid id 
     FROM cdr where disposition = "ANSWERED" and dcontext = "ext-local" and dst = ? and src = ? 
-    and DATE_FORMAT(calldate, '%Y-%m-%d') = ? order by hora desc limit 1; ;`
-
+    and DATE_FORMAT(calldate, '%Y-%m-%d') = ? order by hora desc limit 1;     ;`
+*/
+module.exports.consultarFechaHoraServer = `select TIME(adjusted_time) AS hora, DATE(adjusted_time) AS fecha, id
+    from (
+        SELECT ADDDATE(calldate, INTERVAL duration SECOND) AS adjusted_time, uniqueid id   
+        FROM cdr  
+        where disposition = "ANSWERED" and dcontext = "ext-local" and dst = ? and src = ? 
+        AND calldate >= ? 
+        AND calldate < DATE_ADD(?, INTERVAL 1 DAY) 
+    ) AS subquery
+    order by hora desc limit 1;`;
 
 module.exports.updateIdFinLlamadaCRM = `UPDATE bstntrn.btcrm1
     SET btcrm1idllamadaalt = ? , btcrm1colgo= ? 
-    WHERe SUBSTRING_INDEX(BTCRM1IDLLAMADA,'.',2)   =   SUBSTRING_INDEX(?,'.',2) and cast(BTCRM1FECHA as date) >= cast(now() as date)`
+    WHERe SUBSTRING_INDEX(BTCRM1IDLLAMADA,'.',2)   =   SUBSTRING_INDEX(?,'.',2) and  BTCRM1FECHA >= curdate() `;
 
 
 module.exports.ActualizarAgente = "UPDATE bstntrn.btagenteinbound set btagenteInbtStsExt = ? , btagenteinbhorallam = now(), btagenteNumeroCli = ?, btagentenombrecli = '',btagenteIdLlamada = ? where btAgenteInbId  = ? ";
@@ -41,7 +50,7 @@ module.exports.ActualizarEstatusLlamada = "UPDATE bstntrn.bstnstatusllamada set 
 
 module.exports.consultarRutaIVR = " SELECT concat(registrodeivrruta,'|',registrodeivrcamp01,'|',registrodeivrcamp02)rutaIVR,ifnull(registrodeivrcamp01,'')campo01,ifnull(registrodeivrcamp02,'')campo02,ifnull(registrodeivrcamp03,'')campo03," +
     " ifnull(registrodeivrcamp04,'')campo04,ifnull(registrodeivrcamp05,'')campo05,ifnull(registrodeivrcamp06,'')campo06,ifnull(registrodeivrcamp07,'')campo07 " +
-    " FROM registrodeivr where registrodeidllamada=? and cast(registrodeivrfecha as date) =cast(now() as date) order by registrodeivrfecha desc limit 1 ";
+    " FROM registrodeivr where registrodeidllamada=? and registrodeivrfecha >= curdate() order by registrodeivrfecha desc limit 1 ";
 
 
 module.exports.GuardarTipificacionCAbeceroConRuta = "INSERT INTO bstntrn.btcrm1 "
@@ -92,7 +101,7 @@ module.exports.consultarIdInsercionObjeto = "SELECT BTCRM1FOLIO ID FROM bstntrn.
 module.exports.consultarScript = "SELECT btscript id FROM bstntrn.btcampanas where btcampanaid = ?;";
 
 
-module.exports.actualizarContacto = "UPDATE bstntrn.btcontacto SET btContactoSts = ? WHERE btContactoConsecutivo = ? and btContactoCmpId = ? ;"
+module.exports.actualizarContacto = "UPDATE bstntrn.btcontacto SET btContactoSts = ? WHERE btContactoConsecutivo = ? and btContactoCmpId = ? ;";
 
 module.exports.FINTIPIF1= `update bstntrn.btcrm1 
     set BTCRM1FECINI=BTCRM1FECHA, 
@@ -101,14 +110,14 @@ module.exports.FINTIPIF1= `update bstntrn.btcrm1
     BTCRM1INTERACCIONHORINI=BTCRM1HORA ,
     btcrm1colgo= ? 
     where  SUBSTRING_INDEX(BTCRM1IDLLAMADA,'.',2)   =   SUBSTRING_INDEX(?,'.',2)
-    and BTCRM1INTERACCIONFECINI is null and cast(BTCRM1FECHA as date) >= cast(now() as date)  ;`
+    and BTCRM1INTERACCIONFECINI is null and  BTCRM1FECHA = curdate() ;`;
 
     
 module.exports.proposito = `	update   bstntrn.btcrm1    
  set   
  BTCRMTIPIFCAD = 'TIPIFICACION CANCELADA',
  crmsemaforizacionestatusid=5 , btcrm1motivoc= ?, btcrm1acw= ?
- WHERe cast(BTCRM1FECHA as date) = cast(now()  as date) 
+ WHERe  BTCRM1FECHA = curdate()  
  and SUBSTRING_INDEX(BTCRM1IDLLAMADA,'.',2)   =   SUBSTRING_INDEX(?,'.',2)
  and (BTCRMTIPIFCAD is null or BTCRMTIPIFCAD ='')     ;`
 
@@ -121,7 +130,7 @@ module.exports.FINTIPIF2 = `update bstntrn.btcrm1
     BTCRM1INTERACCIONHORFIN= ?, 
     BTCRM1FECINTERACCIONDUR= SUBSTR((SELECT TIMEDIFF( ? ,concat(BTCRM1INTERACCIONFECINI,' ',BTCRM1INTERACCIONHORINI ) )) ,1,8),
     BTCRM1FECINTERACCIONDURSEG= (SELECT TIME_TO_SEC(TIMEDIFF(? ,concat(BTCRM1INTERACCIONFECINI,' ',BTCRM1INTERACCIONHORINI ) ))) 
-    where SUBSTRING_INDEX(BTCRM1IDLLAMADA,'.',2)   =   SUBSTRING_INDEX(?,'.',2) and cast(BTCRM1FECHA as date) >= cast(now() as date);`
+    where SUBSTRING_INDEX(BTCRM1IDLLAMADA,'.',2)   =   SUBSTRING_INDEX(?,'.',2) and  BTCRM1FECHA = curdate() ;`
 
 module.exports.FINTIPIF3 = `update  crmbd.crmrespcabecero   
     set BTCRM1FECFIN= ? ,
@@ -133,7 +142,7 @@ module.exports.FINTIPIF3 = `update  crmbd.crmrespcabecero
     BTCRM1INTERACCIONHORFIN= ?,
     BTCRM1FECINTERACCIONDUR= SUBSTR((SELECT TIMEDIFF( ? ,concat(BTCRM1INTERACCIONFECINI,' ',BTCRM1INTERACCIONHORINI ) )) ,1,8),
     BTCRM1FECINTERACCIONDURSEG= (SELECT TIME_TO_SEC(TIMEDIFF(? ,concat(BTCRM1INTERACCIONFECINI,' ',BTCRM1INTERACCIONHORINI ) )))
-    where SUBSTRING_INDEX(crmrespcabeceroidllam,'.',2)   =   SUBSTRING_INDEX(?,'.',2) and cast(crmrespcabecerofecmon as date) >= cast(now() as date)  ;`
+    where SUBSTRING_INDEX(crmrespcabeceroidllam,'.',2)   =   SUBSTRING_INDEX(?,'.',2) and crmrespcabecerofecmon =  curdate() ;`
 
 
 
@@ -146,7 +155,7 @@ module.exports.FINTIPIF3 = `update  crmbd.crmrespcabecero
     BTCRM1INTERACCIONHORFIN= cast(cast(now() as time) as char(8)) , 
     BTCRM1FECINTERACCIONDUR= SUBSTR((SELECT TIMEDIFF( cast(now() as datetime)   ,concat(BTCRM1INTERACCIONFECINI,' ',BTCRM1INTERACCIONHORINI ) )) ,1,8),
     BTCRM1FECINTERACCIONDURSEG= (SELECT TIME_TO_SEC(TIMEDIFF(cast(now() as datetime)   ,concat(BTCRM1INTERACCIONFECINI,' ',BTCRM1INTERACCIONHORINI ) ))) 
-    where SUBSTRING_INDEX(BTCRM1IDLLAMADA,'.',2)   =   SUBSTRING_INDEX(?,'.',2) and cast(BTCRM1FECHA as date) >= cast(now() as date);`
+    where SUBSTRING_INDEX(BTCRM1IDLLAMADA,'.',2)   =   SUBSTRING_INDEX(?,'.',2) and BTCRM1FECHA >=  curdate() ;`
 
 module.exports.FINTIPIF3CRM = `update  crmbd.crmrespcabecero   
     set BTCRM1FECFIN= cast(now() as date)  ,
@@ -158,7 +167,7 @@ module.exports.FINTIPIF3CRM = `update  crmbd.crmrespcabecero
     BTCRM1INTERACCIONHORFIN= cast(cast(now() as time) as char(8)),
     BTCRM1FECINTERACCIONDUR= SUBSTR((SELECT TIMEDIFF( cast(now() as datetime) ,concat(BTCRM1INTERACCIONFECINI,' ',BTCRM1INTERACCIONHORINI ) )) ,1,8),
     BTCRM1FECINTERACCIONDURSEG= (SELECT TIME_TO_SEC(TIMEDIFF(cast(now() as datetime) ,concat(BTCRM1INTERACCIONFECINI,' ',BTCRM1INTERACCIONHORINI ) )))
-    where SUBSTRING_INDEX(crmrespcabeceroidllam,'.',2)   =   SUBSTRING_INDEX(?,'.',2) and cast(crmrespcabecerofecmon as date) >= cast(now() as date)  ;`
+    where SUBSTRING_INDEX(crmrespcabeceroidllam,'.',2)   =   SUBSTRING_INDEX(?,'.',2) and crmrespcabecerofecmon >= curdate() ;`
 
     module.exports.insertarllamadastransferencia = " INSERT INTO llamadastransferencia ( " +
     " llamadastransferenciaId,    llamadastransferenciaExt,    llamadastransferenciaNum,    llamadastransferenciaFecha) " +
@@ -168,17 +177,28 @@ module.exports.FINTIPIF3CRM = `update  crmbd.crmrespcabecero
     module.exports.updateExtensionEntrantes = `UPDATE llamadasentrantes SET llamadasEntrantesExt = ? WHERE llamadasEntrantesIdn = ? and llamadasEntrantesId = ? ;`  
     module.exports.consultarTipxQueue =   `SELECT NRHEM07ID valorCampo FROM bdnrh.nrhemdb where NRHEMUSERID = ?; `;
 
-    module.exports.recuperarIdLlamada = "select llamadasEntrantesIdn idN, llamadasEntrantesId id , llamadasEntrantesFecha fecha, CAST(llamadasEntrantesFecha AS DATE) fechaI, DATE_FORMAT(llamadasEntrantesFecha,'%H:%i:%s') horaI, llamadasEntranteidivr idivr from llamadasentrantes "
-    + " where cast( llamadasEntrantefecha as date) = ?  and llamadasEntrantesExt = ?  and llamadasEntrantesNum=? "
-    + " order by llamadasEntrantefecha desc limit 1 ";
+    module.exports.recuperarIdLlamada = " select idN,  id , fecha, date(fecha) fechaI, time(fecha) horaI, idivr "
+    + " from( "
+    + "     select llamadasEntrantesIdn idN, llamadasEntrantesId id , llamadasEntrantesFecha fecha, llamadasEntranteidivr idivr from llamadasentrantes "
+    + "     where  llamadasEntrantefecha >= ? AND llamadasEntrantefecha < DATE_ADD(?, INTERVAL 1 DAY)  "
+    + "         and llamadasEntrantesExt = ?  and llamadasEntrantesNum=? "
+    + "     order by llamadasEntrantefecha desc limit 1 "
+    + " )as subquery";
 
-module.exports.recuperarIdLlamadaSinTelefono = "select llamadasEntrantesIdn idN, llamadasEntrantesId id , llamadasEntrantesFecha fecha, CAST(llamadasEntrantesFecha AS DATE) fechaI, DATE_FORMAT(llamadasEntrantesFecha,'%H:%i:%s') horaI, llamadasEntranteidivr idivr  from llamadasentrantes "
-+ " where cast( llamadasEntrantefecha as date) = ?  and llamadasEntrantesExt = ?   "
-+ " order by llamadasEntrantefecha desc limit 1 ";
+module.exports.recuperarIdLlamadaSinTelefono = "select idN, id , fecha, date(fecha) fechaI, time(fecha) horaI, idivr  "
++ " from( "
++ "     select llamadasEntrantesIdn idN, llamadasEntrantesId id , llamadasEntrantesFecha fecha, llamadasEntranteidivr idivr  "
++ "     from llamadasentrantes "
++ "     where llamadasEntrantefecha >= ? AND llamadasEntrantefecha < DATE_ADD(?, INTERVAL 1 DAY) and llamadasEntrantesExt = ?   "
++ "     order by llamadasEntrantefecha desc limit 1 "
++ " )as subquery";
 
-module.exports.recuperarIdLlamadaSinExtensionTransf = "select llamadasEntrantesIdn idN, llamadasEntrantesId id , llamadasEntrantesFecha fecha, CAST(llamadasEntrantesFecha AS DATE) fechaI, DATE_FORMAT(llamadasEntrantesFecha,'%H:%i:%s') horaI, llamadasEntranteidivr idivr "+ 
-"  from llamadasentrantes "
-+ " where cast( llamadasEntrantefecha as date) = ?  a  and llamadasEntrantesNum=? "
-+ " order by llamadasEntrantefecha desc limit 1 ";
+module.exports.recuperarIdLlamadaSinExtensionTransf = "select idN, id , fecha, date(fecha) fechaI, time(fecha) horaI, idivr  "
++ " from( "
++ "     select llamadasEntrantesIdn idN, llamadasEntrantesId id , llamadasEntrantesFecha fecha, llamadasEntranteidivr idivr "
++ "     from llamadasentrantes "
++ "     where llamadasEntrantefecha >= ? AND llamadasEntrantefecha < DATE_ADD(?, INTERVAL 1 DAY)   and llamadasEntrantesNum=? "
++ "     order by llamadasEntrantefecha desc limit 1 "
++ " )as subquery";
 
     

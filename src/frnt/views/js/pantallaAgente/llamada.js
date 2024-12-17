@@ -22,8 +22,7 @@ var entroAfinLlamada = false;
 var timeTiempoparaFin=0;
 var timerTiempoEnLlamada = 0;
 var contactoseleccionado = {};
-var tipxQueue=""
-
+var tipxQueue="";
 
 var _s1 = 0;
 var _m1 = 0;
@@ -1303,7 +1302,9 @@ function onSipEventStack(e /*SIPml.Stack.Event*/) {
                             
                         }
                     }, 3000);
-                    console.log("i_new_call")
+                    console.log("i_new_call");
+                    
+                            
                     var date = new Date();
                     console.log("LLEGA LLAMADA - " + date)
                     var sRemoteNumber = (oSipSessionCall.getRemoteFriendlyName() || 'unknown');
@@ -2050,7 +2051,7 @@ function StartCall()
         'Llamada entrante',
         {
           body: 'Atender llamada',
-          icon: '../../../../img/agente.png',
+          icon: 'img/agente.png',
         }
       );
       

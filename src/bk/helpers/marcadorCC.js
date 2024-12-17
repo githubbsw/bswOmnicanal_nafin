@@ -8,13 +8,14 @@ module.exports.consultarFechaHora = async (datos) => {
     try {
         // datos.motivoColgar
         var hora = await poolMarcador.query(querys.consultarFechaHora, []);
-        let date =  await poolMarcador.query(`select  date_format(now(), "%Y-%m-%d") fecha, date_format(now(), "%H:%i:%s") hora`);   
+        // se cambia query para optimizacion let date =  await poolMarcador.query(`select  date_format(now(), "%Y-%m-%d") fecha, date_format(now(), "%H:%i:%s") hora`); 
+        let date =  await poolMarcador.query(`select  CURDATE()  fecha, CURTIME() hora`);  
         var horaLlam = "";
         if (datos.id_ != "") {
             var horaLlam = await poolMarcador.query(querys.consultarFechaHoraServer_, [ datos.id_]);
             await pool.query(querys.updateIdFinLlamadaCRM, [datos.id_,datos.motivoColgar, datos.id]);
         } else {
-            horaLlam = await poolMarcador.query(querys.consultarFechaHoraServer, [datos.extension, datos.telefono, date[0].fecha,]);
+            horaLlam = await poolMarcador.query(querys.consultarFechaHoraServer, [datos.extension, datos.telefono, date[0].fecha, date[0].fecha]);
             if (horaLlam.length > 0) {
                 await pool.query(querys.updateIdFinLlamadaCRM, [horaLlam[0].id,datos.motivoColgar, datos.id]);
             }
@@ -42,7 +43,7 @@ module.exports.consultarFechaHora = async (datos) => {
         await pool.query(querys.FINTIPIF3CRM, [ "2", datos.id]);
         return "OK"
     } catch (error) {
-
+        fs.appendFileSync(nombreParaArchivoLog(), 'marcadorCC 50 - '+new Date()+'\r\n' + error +'\r\n');
         return "NO"
     }
 
@@ -55,7 +56,7 @@ module.exports.cancelarllamada = async (datos) => {
         await pool.query(querys.proposito, [datos.motivoCancelar, datos.acw, datos.id]);
         return "OK"
     } catch (error) {
-
+        fs.appendFileSync(nombreParaArchivoLog(), 'marcadorCC 60 - '+new Date()+'\r\n' + error +'\r\n');        
         return "NO"
     }
 
@@ -70,7 +71,7 @@ module.exports.finalizarCrm = async (datos) => {
         await pool.query(querys.FINTIPIF3CRM, [ "2", datos.id]);
         return "OK"
     } catch (error) {
-
+        fs.appendFileSync(nombreParaArchivoLog(), 'marcadorCC 80 - '+new Date()+'\r\n' + error +'\r\n');      
         return "NO"
     }
 
@@ -79,13 +80,14 @@ module.exports.finalizarCrm = async (datos) => {
 
 module.exports.consultaridllamivrcrm = async (datos) => {
     //console.log('tipificacion ' + datos.telefonoCliente)
+    var paraDebug="";
     try {
         var insertarCabecero=false;
         var date =  await poolMarcador.query(`select  date_format(now(), "%Y-%m-%d") fecha, date_format(now(), "%H:%i:%s") hora`);
-        console.log('date ' +[date[0].fecha, datos.extension])
         var telefonoDesconocido = datos.telefonoCliente;
        
         var llamada = await poolMarcador.query(querys.consultarIdLlamada, [date[0].fecha, datos.extension,datos.telefonoCliente]);
+        paraDebug = "llamada " + llamada;
         if (llamada.length == 0) {
             // sí entra aqui, es porque la llamada no tiene numero telefono y va a buscar por extension
              llamada = await poolMarcador.query(querys.consultarIdLlamadaSinTelefono, [date[0].fecha, datos.extension]);
@@ -161,9 +163,7 @@ module.exports.consultaridllamivrcrm = async (datos) => {
         datos.motivoColgar="";
         return datos;
     } catch (error) {
-        console.log(error)
-        let data = JSON.stringify(error);
-        fs.writeFileSync('log.txt', new Date() + data + '\r\n');
+        fs.appendFileSync(nombreParaArchivoLog(), 'marcadorCC 170 - '+new Date()+'\r\n' + error +'\r\n');
         datos.error="NO"
         return datos;
     }
@@ -173,27 +173,38 @@ module.exports.consultaridllamivrcrm = async (datos) => {
 }
 
 module.exports.actulizarAgente = async (objAgt) => {
-    await pool.query(querys.ActualizarAgente, [objAgt.estatus, "", "", objAgt.IdAgente]);
-    await pool.query(querys.ActualizarEstatusLlamada, ["sin llamada", "", objAgt.IdAgente]);
+    try{
+        await pool.query(querys.ActualizarAgente, [objAgt.estatus, "", "", objAgt.IdAgente]);
+        await pool.query(querys.ActualizarEstatusLlamada, ["sin llamada", "", objAgt.IdAgente]);
+    }catch (error){
+        fs.appendFileSync(nombreParaArchivoLog(), 'marcadorCC 180 - '+new Date()+'\r\n' + error +'\r\n');
+        
+    }
     return "ok";
 }
 
 module.exports.guardarNombre = async (objAgt) => {
-    const clienteCRM12 = await pool.query(querys.consultarClienteCRM12, [objAgt.idFolio]);
-    
-    if ((parseInt(clienteCRM12[0].total) == 0)|| clienteCRM12[0].cliente==objAgt.idCliente ) {
-        console.log("No Tiene tipificacion")
-        await pool.query(querys.ActulizarClienteCrm, [objAgt.idCliente, objAgt.idLlamada, objAgt.idAgente]);
-        await pool.query(querys.guardarNombre, ['EN LLAMADA',objAgt.idLlamada, objAgt.telefonoCliente, objAgt.nombrecliente, objAgt.idAgente]);
+    try{
+        const clienteCRM12 = await pool.query(querys.consultarClienteCRM12, [objAgt.idFolio]);
         
-        return "ok";
-    } else {        
-        console.log("Tiene tipificacion")
-        await pool.query(querys.ActulizarClienteCrm, [objAgt.idCliente, objAgt.idLlamada, objAgt.idAgente]);
-        await pool.query(querys.guardarNombre, ['EN LLAMADA',objAgt.idLlamada, objAgt.telefonoCliente, objAgt.nombrecliente, objAgt.idAgente]);
-        return "ok";
+        if ((parseInt(clienteCRM12[0].total) == 0)|| clienteCRM12[0].cliente==objAgt.idCliente ) {
+            console.log("No Tiene tipificacion")
+            await pool.query(querys.ActulizarClienteCrm, [objAgt.idCliente, objAgt.idLlamada, objAgt.idAgente]);
+            await pool.query(querys.guardarNombre, ['EN LLAMADA',objAgt.idLlamada, objAgt.telefonoCliente, objAgt.nombrecliente, objAgt.idAgente]);
+            
+            return "ok";
+        } else {        
+            console.log("Tiene tipificacion")
+            await pool.query(querys.ActulizarClienteCrm, [objAgt.idCliente, objAgt.idLlamada, objAgt.idAgente]);
+            await pool.query(querys.guardarNombre, ['EN LLAMADA',objAgt.idLlamada, objAgt.telefonoCliente, objAgt.nombrecliente, objAgt.idAgente]);
+            return "ok";
+        }
+    }catch(error){
+        let data = JSON.stringify(error);
+        fs.appendFileSync(nombreParaArchivoLog(), 'marcadorCC 210 - '+new Date() +'\r\n' + error +'\r\n');
+            
     }
-
+    return "ok";
 }
 
 module.exports.insertarPausa = async (datos) => {
@@ -206,7 +217,8 @@ module.exports.insertarPausa = async (datos) => {
         console.log(consultarUltimaPausa)
         return consultarUltimaPausa;
     } catch (error) {
-
+        fs.appendFileSync(nombreParaArchivoLog, 'marcadorCC 220 - '+new Date() + error +'\r\n');
+        
         return "NO";
     }
 
@@ -235,7 +247,8 @@ module.exports.insertarTransferencia = async (datos) => {
         var hora =   await poolMarcador.query(querys.insertarllamadastransferencia, [datos.idLlamada, datos.extension, datos.telefonoCliente]);
         return "OK"
     } catch (error) {
-
+        fs.appendFileSync(nombreParaArchivoLog, 'marcadorCC 250 - '+new Date() + error +'\r\n');
+        
         return "NO"
     }
 
@@ -248,14 +261,14 @@ module.exports.recuperarIdLlamadaIn = async (datos) => {
         console.log('date ' +[date[0].fecha, datos.extension])
         var telefonoDesconocido = datos.telefonoCliente;
        
-        var llamada = await poolMarcador.query(querys.recuperarIdLlamada, [date[0].fecha, datos.extension,datos.telefonoCliente]);
+        var llamada = await poolMarcador.query(querys.recuperarIdLlamada, [date[0].fecha, date[0].fecha, datos.extension,datos.telefonoCliente]);
         if (llamada.length == 0) {
             // sí entra aqui, es porque la llamada no tiene numero telefono y va a buscar por extension
-             llamada = await poolMarcador.query(querys.recuperarIdLlamadaSinTelefono, [date[0].fecha, datos.extension]);
+             llamada = await poolMarcador.query(querys.recuperarIdLlamadaSinTelefono, [date[0].fecha, date[0].fecha, datos.extension]);
         }
         if (llamada.length == 0) {
             // sí entra aqui, es porque la llamada es una transferencia y no los datos no  tienen extension
-            llamada = await poolMarcador.query(querys.recuperarIdLlamadaSinExtensionTransf, [date[0].fecha, datos.telefonoCliente]);
+            llamada = await poolMarcador.query(querys.recuperarIdLlamadaSinExtensionTransf, [date[0].fecha, date[0].fecha, datos.telefonoCliente]);
             
             if (llamada.length != 0) {
                 //insertar en las tablas de transferencia
@@ -324,10 +337,27 @@ module.exports.recuperarIdLlamadaIn = async (datos) => {
         datos.motivoColgar="";
         return datos;
     } catch (error) {
-        console.log(error)
-        let data = JSON.stringify(error);
-        fs.writeFileSync('log.txt', new Date() + data + '\r\n');
+        fs.appendFileSync(nombreParaArchivoLog, 'marcadorCC 340 - '+new Date() + error +'\r\n');
+        
         datos.error="NO"
         return datos;
     }
 }
+
+const nombreParaArchivoLog = () => {
+    var d = new Date();
+    if(d.getDate()<10){
+        dd = '0'+d.getDate();
+    }
+    else{
+        dd = d.getDate();
+    }
+    if((d.getMonth()+1)<10){
+        mm = '0'+(d.getMonth()+1);
+    }
+    else{
+        mm = (d.getMonth()+1);
+    }  
+    var nomArchivoLog = "C:/Logs/LOG_"+d.getFullYear() + mm + dd+'.txt';
+    return   nomArchivoLog;
+  }

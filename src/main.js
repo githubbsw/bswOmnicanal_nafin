@@ -9,7 +9,6 @@ const { app, Menu, ipcMain, BrowserWindow, BrowserView, dialog, globalShortcut }
 const path = require('path');
 var rimraf = require("rimraf");
 const fs = require('fs');
-
 const Cryptr = require('cryptr');
 const cryptr = new Cryptr('bsw2019');
 
@@ -216,7 +215,6 @@ function abrirPantallaConfig() {
 }
 
 function ventanaMain() {
-
   Menu.setApplicationMenu(null);
   modulos = new BrowserWindow({
     width: test ? 400 : 1200,

@@ -29,7 +29,7 @@ ipcMain.on('validarUsuario', async(event, usuarioid) => {
     // If it doesn't exist, create the directory
     fs.mkdirSync("C:/Logs");
   } 
-  fs.appendFileSync(nomArchivoLog, 'Version 4.1.64.2_10.dic.2024  \n');
+  fs.appendFileSync(nomArchivoLog, 'Version 4.1.64.2_20.Feb.2025  \n');
   fs.appendFileSync(nomArchivoLog, 'Inicio sesion: ' + d.toLocaleTimeString()+'  \n');  
   
   var validarUsuario =  await helper.validarUsuario(usuarioid, event); 

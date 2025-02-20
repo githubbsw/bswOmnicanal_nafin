@@ -44,7 +44,8 @@ function seleccionarCliente(){
             telefonoCliente:llamadaOk.telefonoCliente,
             idCliente: clientePreSeleccionado.id,
             clienteNombre: clientePreSeleccionado.nombrecompleto,
-            idFolio: llamadaOk.idFolio
+            idFolio: llamadaOk.idFolio,
+            rfc: clientePreSeleccionado.rfc
         }
 
         if(areaIniciada == "OBD"){
@@ -62,7 +63,7 @@ function seleccionarCliente(){
 }
 
 ipcRenderer.on('guardarNombreResult', (event, result) => {
-    if(result == "ok"){
+    if(result.datosNombre == "ok"){
 
         clienteSeleccionado = clientePreSeleccionado;
 
@@ -74,9 +75,10 @@ ipcRenderer.on('guardarNombreResult', (event, result) => {
         });
         clienteSeleccionado = {}
     }
+    
     tipificacion()
     llenarDatosCliente(clienteSeleccionado);
-
+    pintarGridUltimaInteraccion(result.datosInteraccion);
 })
 
 function cancelarBusquedaSelect(){
@@ -885,6 +887,8 @@ ipcRenderer.on('insertarDatosClienteResult', (event, datos) => {
     });
 
     clientePreSeleccionado = datos.resultado;
+
+    pintarGridUltimaInteraccion(datos.datosInteraccion);
 })
 
 ipcRenderer.on('consultarTelefonosResult', (event, datos) =>
@@ -1121,4 +1125,56 @@ function filtrarrfc(){
     if ($('#REGIMENInput').val()=="1" ) {    
         $("#nombreCompletoInput").maxlength = 15;
     }     
+}
+function pintarGridUltimaInteraccion(valores){
+    
+    $('#myUltimasInt').show();
+    var dataSet =[];
+    valores.forEach(valor => {
+        var data =[];
+        data.push(valor.fecha);
+        data.push(valor.agente);
+        data.push(valor.comentarios);
+        dataSet.push(data)
+    });
+
+    var tableUltima = $('#gridUltimaInteraccion').DataTable( {
+        data: dataSet,
+        "info":false, 
+        "pagingType": "simple",
+        "searching": false, 
+        "responsive": {details: true},
+        "select": true, 
+        "lengthMenu": [ 20 ],
+	   	destroy: true,
+        "ordering": false,
+	   //	language: lenguaje,
+        columns: [
+            { title: "Fecha" },
+            { title: "Agente" },
+            { title: "Nota" }            
+        ],
+        "autoWidth": false,
+        //"scrollX": true, // Activa el scroll horizontal si es necesario
+        columnDefs: [
+          { orderable: "false", width: "100px", targets: 0 },
+            { orderable: "false", width: "150px", targets: 1 },  // Ajusta el ancho de la columna de agente
+            { orderable: "false", width: "300px", targets: 2 }   // Ajusta el ancho de la columna de nota
+        ]
+
+    } );
+
+    $('.dataTables_length').remove();
+    $('#gridUltimaInteraccion thead').css("background", "#0c0c0cb8");
+    $('#gridUltimaInteraccion thead').css("color", "#fff");
+    $('#gridUltimaInteraccion').css("color", "#0c0c0c");
+    $('#gridUltimaInteraccion').css("background", "#fff");
+    $('#gridUltimaInteraccion').css("font-size", "14px");
+    $('#gridUltimaInteraccion tr').css("cursor", "pointer");
+    $('.dataTables_paginate').remove();
+    //$('#gridUltimaInteraccion tr td:first-child').css("width", "10px");
+    //$('#gridUltimaInteraccion thead tr th:first-child').css("width", "10px");
+    //tableUltima.rows(':not(.parent)').nodes().to$().find('td:first-child').trigger('click');
+
+    
 }

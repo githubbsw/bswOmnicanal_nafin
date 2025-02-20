@@ -60,6 +60,20 @@ module.exports.consultarTotal = async (criterios) => {
 module.exports.insertar = async (obj) => {
     var id=null;
     var result= null;
+
+    const clienteCRMDia = await pool.query(querys.consultarClienteCRMDia, [obj.rfc]);
+    var clienteCRMDiaActualizado= null;
+    if(clienteCRMDia.length>=3)
+    {
+        clienteCRMDiaActualizado = clienteCRMDia;
+    }else
+    {
+        var registrosDia = (clienteCRMDia.length);
+        var faltantes = 3- registrosDia;
+        const clienteCRMHis = await pool.query(querys.consultarClienteCRMHis, [obj.rfc, faltantes]);
+        clienteCRMDiaActualizado = clienteCRMDia.concat(clienteCRMHis);
+    }
+
     try
     {
         if(obj.rfc!=""){
@@ -115,7 +129,8 @@ module.exports.insertar = async (obj) => {
         result = {
             result: "OK",
             valores: valores[0],
-            resultado: resultado[0]
+            resultado: resultado[0],
+            datosInteraccion:clienteCRMDiaActualizado
         }
 
         if(obj.idFolio!=null && obj.idFolio!=undefined)
@@ -138,9 +153,12 @@ module.exports.insertar = async (obj) => {
             result = {
                 result: "OK",
                 valores: valores[0],
-                resultado: resultado[0]
+                resultado: resultado[0],
+                datosInteraccion:clienteCRMDiaActualizado
             } 
         }
+
+        
     }
     catch(error)
     {
@@ -409,4 +427,5 @@ module.exports.consultarCombosCliente = async () => {
     }
     return res;
 }
+
 

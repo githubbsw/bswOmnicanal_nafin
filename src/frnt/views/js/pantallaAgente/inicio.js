@@ -1138,9 +1138,10 @@ function verScript() {
     const result = tipoDeRespuestas.filter(tipo => tipo.bstrtId == $("#listRespuestas").val()[0])[0];
 
    // const result = tipoDeRespuestas.filter(tipo => tipo.bstrtId == $("#listRespuestas").val())[0];
-    $("#preguntaTitulo").html(result.bstrtDsc);
+   try  {
+    $("#preguntaTitulo").html(result.bstrtDsc);    
     $("#respuestaText").html(result.bstrtrrespTipo);
-
+    } catch (err){}
    
 }
 
@@ -1441,7 +1442,6 @@ function consultarCombosCliente(datos) {
     $("#GeneroInput").html(""); 
     $("#ActividadInput").html("");
     $("#MedioInput").html("");
-    MedioInput
     datos["regimen"].forEach(e => {
         $("#REGIMENInput").append(`<option value="${e.ID}">${e.DSC}</option>`)
     });

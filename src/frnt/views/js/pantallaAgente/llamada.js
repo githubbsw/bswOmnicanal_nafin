@@ -151,8 +151,8 @@ ipcRenderer.on('consultaridllamivrcrmResult', (event, datos) => {
     $("#btnRecuperarDatosLlamada").hide()
     if (datos.error == "NO") {
         $("#chats").hide()
-        $("#displayScript").show()
-        $("#displayScript").show()
+        $("#displayScript").show();
+        //marisol $("#displayScript").show();
         $("#displayCliente").hide()
         $("#btnRecuperarDatosLlamada").show()
         return;
@@ -1918,9 +1918,9 @@ function finalizarLlamadas(s_description) {
         _m1 = 0;
     }, 1500);
     if (window.btnBFCP) window.btnBFCP.disabled = true;
-    
-    
-    
+
+    $("#gridUltimaInteraccion").empty();
+    $('#myUltimasInt').hide();
     if (s_description = "Call terminating...") {
 
         txtCallStatus.innerHTML = "<i>Llamada terminada...</i>";

@@ -5,11 +5,16 @@ module.exports.consultarIdLlamada = "select llamadasEntrantesId id , llamadasEnt
 
 module.exports.consultarFechaHora = "select DATE_FORMAT(now(), '%H:%i:%s') hora, DATE_FORMAT(now(), '%Y-%m-%d') fecha "   ;
 
-/*
-module.exports.consultarFechaHoraServer = `select DATE_FORMAT(ADDDATE(calldate, INTERVAL duration second), "%H:%i:%s") hora, 
-DATE_FORMAT(ADDDATE(calldate, INTERVAL duration second), "%Y-%m-%d") fecha  
-FROM cdr where uniqueid = ?
-`*/
+
+module.exports.consultarFechaHoraServer = `SELECT 
+            DATE_FORMAT(ended_at, "%H:%i:%s") AS hora, 
+            DATE_FORMAT(ended_at, "%Y-%m-%d") AS fecha
+        FROM (
+            SELECT ADDDATE(calldate, INTERVAL duration SECOND) AS ended_at
+            FROM cdr
+            WHERE uniqueid = ?
+        ) AS subquery;`;
+
 module.exports.consultarFechaHoraServer_ = `select TIME(adjusted_time) AS hora, DATE(adjusted_time) AS fecha from
     (SELECT ADDDATE(calldate, INTERVAL duration SECOND) AS adjusted_time   FROM cdr  where uniqueid = ?) AS subquery; `;
 

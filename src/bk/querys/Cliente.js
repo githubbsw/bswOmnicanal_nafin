@@ -196,3 +196,14 @@ module.exports.consultarCombosGenero ="SELECT idbtsexonaf ID,concat(idbtsexonaf,
 module.exports.consultarCombosActividad ="SELECT idbtactnaf ID,concat(idbtactnaf,' - ',btactnafDsc) DSC FROM crmnafbd.btactnaf; ";
 module.exports.consultarCombosMedio ="SELECT idbtmedcon ID,concat(idbtmedcon,' - ',btmedconnafDsc) DSC FROM crmnafbd.btmedconnaf; ";
 module.exports.buscarRfc = "SELECT COUNT(*) rfcs FROM bstntrn.btcliente WHERE btclienterfc = ? ;"
+module.exports.consultarClienteCRMDia = " select concat(DATE_FORMAT(crm1.BTCRM1FECHA, '%d-%m-%Y'),' ', BTCRM1HORA) fecha, crm1.BTCRM1ATENDIONOMBRE agente, IFNULL(crm1.BTCRM1COMENTARIO,'') comentarios "+
+            " from  bstntrn.btcrm1 crm1  "+
+            " inner join  bstntrn.btcliente  cli on btclientenumero = BTCRM1CLIENTENUMERO  COLLATE latin1_swedish_ci and cli.btclienterfc = ?  "+
+            " where  BTCRM1FECHA = curdate() ORDER BY STR_TO_DATE(CONCAT(crm1.BTCRM1FECHA, ' ', crm1.BTCRM1HORA), '%Y-%m-%d %H:%i:%s') DESC "+
+            " limit 3 ;";
+
+module.exports.consultarClienteCRMHis = " select concat(DATE_FORMAT(fecha, '%d-%m-%Y'),' ', horaIni) fecha, nomAgente agente, ifnull(cNota_Desc,'') comentarios from crmnafbd.btcrm1 c  "+
+            " where rfc  = ? "+
+            " order by STR_TO_DATE(CONCAT(c.fecha, ' ', c.horaIni), '%Y-%m-%d %H:%i:%s')  desc limit ? ";
+
+

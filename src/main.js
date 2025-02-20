@@ -232,7 +232,7 @@ function ventanaMain() {
     backgroundThrottling: false,
     minimizable: false
   })
-  //modulos.webContents.openDevTools();
+//modulos.webContents.openDevTools();
   if (test) {
     if (canalDefault == "OBD") {
       modulos.loadFile('src/frnt/views/outbound.html')

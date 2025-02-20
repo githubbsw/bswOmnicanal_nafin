@@ -66,8 +66,14 @@ ipcMain.on('actulizarAgente', async(event, objtAgt) => {
 });
 
 ipcMain.on('guardarNombre', async(event, obj) => {
+  const objAg2 = await helper.consultarUltimaInteraccion(obj.rfc); 
   const objAg = await helper.guardarNombre(obj); 
-  event.reply("guardarNombreResult", objAg);
+  const objFinal = {
+    datosInteraccion: objAg2,
+    datosNombre: objAg
+  };
+  //res.interacciones= objAg2;
+  event.reply("guardarNombreResult", objFinal);
 });
 
 ipcMain.on('insertarPausa', async(event, obj) => {

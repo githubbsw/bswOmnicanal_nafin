@@ -361,3 +361,19 @@ const nombreParaArchivoLog = () => {
     var nomArchivoLog = "C:/Logs/LOG_"+d.getFullYear() + mm + dd+'.txt';
     return   nomArchivoLog;
   }
+  module.exports.consultarUltimaInteraccion = async (rfc) => {
+    
+    const clienteCRMDia = await pool.query(querys.consultarClienteCRMDia, [rfc]);
+    if(clienteCRMDia.length>=3)
+    {
+        return clienteCRMDia;
+    }else
+    {
+        var registrosDia = (clienteCRMDia.length);
+        var faltantes = 3- registrosDia;
+        const clienteCRMHis = await pool.query(querys.consultarClienteCRMHis, [rfc, faltantes]);
+        const clienteCRMDiaActualizado = clienteCRMDia.concat(clienteCRMHis);
+
+        return clienteCRMDiaActualizado;
+    }
+}

@@ -275,30 +275,36 @@ module.exports.actualizar = async (obj) => {
         obj.generoCtoIput,
         obj.fechaNacimientoCtoInput,
         obj.curpCtoInput,
-        obj.afiliadoCtoInput, obj.estado, obj.municipio, obj.sucursal,
-        obj.id]);
+        obj.afiliadoCtoInput, obj.estado, obj.municipio, obj.sucursal,obj.telefono, obj.Extesion,
+         obj.id]);
 
     var exiTel=0;
+    if(obj.telefono!="" && obj.telefono!=undefined){
+        exiTel =  await pool.query(querys.actualizarTelefono, [obj.id, obj.telefono, 'PERSONAL']);
+        if(exiTel.affectedRows==0){ 
+            await pool.query(querys.insertarTelefono, [obj.id, obj.nir, obj.serie, obj.razon, obj.telefono, 'PERSONAL']);
+        }
+    }
     if(obj.telefonoFijoInput!="" && obj.telefonoFijoInput!=undefined){
         exiTel =  await pool.query(querys.actualizarTelefono, [obj.id, obj.telefonoFijoInput, 'PERSONAL']);
         if(exiTel.affectedRows==0){ 
             await pool.query(querys.insertarTelefono, [obj.id, obj.nir, obj.serie, obj.razon, obj.telefonoFijoInput, 'PERSONAL']);
         }
     }
-    if(obj.telefonoMovilInput!="" && obj.telefonoFijoInput!=undefined){
+    if(obj.telefonoMovilInput!="" && obj.telefonoMovilInput!=undefined){
         exiTel =  await pool.query(querys.actualizarTelefono, [obj.id, obj.telefonoMovilInput, 'MOVIL']);
         if(exiTel.affectedRows==0){ 
             await pool.query(querys.insertarTelefono, [obj.id, obj.nir, obj.serie, obj.razon, obj.telefonoMovilInput, 'MOVIL']);
         } 
     }
-    if(obj.telefonoAlternativoInput!="" && obj.telefonoFijoInput!=undefined){
+    if(obj.telefonoAlternativoInput!="" && obj.telefonoAlternativoInput!=undefined){
         exiTel =  await pool.query(querys.actualizarTelefono, [obj.id, obj.telefonoAlternativoInput, 'ALTERNATIVO']);
         if(exiTel.affectedRows==0){ 
             await pool.query(querys.insertarTelefono, [obj.id, obj.nir, obj.serie, obj.razon, obj.telefonoAlternativoInput, 'ALTERNATIVO']);
         } 
     }
     //insertar correo    
-    if(obj.correoElectronico!="" && obj.telefonoFijoInput!=undefined){
+    if(obj.correoElectronico!="" && obj.correoElectronico!=undefined){
      exiCorreo = await pool.query(querys.actualizarCorreo, [obj.id, obj.correoElectronico]);
     if (exiCorreo.affectedRows==0){ 
         await pool.query(querys.insertarCorreo, [obj.id, obj.correoElectronico]);
@@ -427,5 +433,16 @@ module.exports.consultarCombosCliente = async () => {
     }
     return res;
 }
+module.exports.duplicarcliente = async (filtros) => {
+    /*const telefonos = await pool.query(querys.duplicarcliente, [filtros.idCliente, filtros.rfc]);
+    return telefonos;*/
 
+      // 1. Ejecutar el SP y guardar el valor en una variable de sesión
+     const result =await pool.query('CALL bstntrn.duplicarCliente(?, ?, @pNuevoId)', [
+        filtros.idCliente,
+        filtros.rfc
+    ]);
+    const nuevoId = result[0][0]._nuevoId || result[1][0].nuevoId;
+    return nuevoId;
+}
 

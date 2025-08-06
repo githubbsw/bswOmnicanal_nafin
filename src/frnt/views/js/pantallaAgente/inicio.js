@@ -52,7 +52,8 @@ ipcRenderer.send('test', '')
 ipcRenderer.on('testResult', async (event, datos) => {
     if (!datos.test) {
         $("body").show();
-        ipcRenderer.send('getUsuario', $("#AREAINICIADA_").val())
+        ipcRenderer.send('getUsuario', $("#AREAINICIADA_").val());
+        
     } else {
         $("body").show();
         $("body").html(
@@ -88,13 +89,42 @@ ipcRenderer.on('testResult', async (event, datos) => {
                 ipcRenderer.send('cerrarSesion_', "")
             }
         })
-        var webviewTipificacion = document.getElementById('webviewTipificacion')
+        var webviewTipificacion = document.getElementById('webviewTipificacion');
         webviewTipificacion.addEventListener('dom-ready', () => {
             tipi2 = true;
             if(tipi2 && tipi1){
                 ipcRenderer.send('cerrarSesion_', "")
             }
         })
+
+        const webview = document.getElementById('webviewTipificacion');
+
+        // Inyectar script
+        webview.addEventListener('dom-ready', () => {
+        webview.executeJavaScript(`
+            window.addEventListener('message', event => {
+            console.log('evento', event.data);
+            });
+        `);
+        });
+
+        // Interceptar console.log
+        webview.addEventListener('console-message', (e) => {
+        if (e.message.startsWith('evento')) {
+            console.log('Evento recibido:', e.message);
+        }
+        });
+
+        // Escucha mensajes desde el contenido del webview
+        /*
+        const webview = document.getElementById('webviewTipificacion');
+        webview.addEventListener('message', (event) => {
+            console.log('Mensaje recibido del WebView:', event.data);
+            if (event.data.tipo === 'evento-desde-webview') {
+                console.log(event.data.datos);
+            }
+      
+        })*/
     }
 })
 
@@ -172,6 +202,16 @@ ipcRenderer.on('consultarContactosResult', async (event, datos) => {
             </div>`
         );
     }
+
+
+    const webview = document.getElementById('webviewTipificacion');
+        webview.addEventListener('message', (event) => {
+            console.log('Mensaje recibido del WebView:', event.data);
+            if (event.data.tipo === 'evento-desde-webview') {
+                console.log(event.data.datos);
+            }
+      
+        })
 })
 
 function marcarList(numero) {
@@ -465,10 +505,50 @@ function tipificacion() {
         "&IP=" + urls.ipCRM +
         "&ESTATUSFINALIZADO=" + "" +
         "&CAMPANAID=" + obtenerCampana();
-    $("#displayTipificacion").html(
+    /*$("#displayTipificacion").html(
         '<webview id="webviewTipificacion" src="' + url + parametros + '" style="display:inline-flex; width:100%; height:100%;" localStorage="true" partition="persist:simplifica"></webview>'
+    );*/
+    $("#displayTipificacion").html(
+        '<webview id="webviewTipificacion" src="' + url + parametros + '" style="display:inline-flex; width:100%; height:100%;" partition="persist:simplifica" preload="js/pantallaAgente/preload-webview.js"></webview>'
     );
+
+    // Espera a que el DOM y el WebView estén listos
+    
+    setTimeout(() => {
+        const webview1 = document.getElementById('webviewTipificacion');
+
+        webview1.addEventListener('ipc-message', (event) => {
+            if (event.channel === 'mensaje-webview') {
+            const data = event.args[0];
+            console.log('Mensaje recibido desde el WebView:', data);
+            if (data.tipo === 'evento-cambio-cliente') {
+                console.log(data.datos);
+                //MARISOLllenarDatosCliente(data.datos);
+                //consultaUltimasInt();
+ 
+               var clientes = [];
+                clientes.id = data.datos.FOLIOCLIENTECRM;
+                clientes.nombrecompleto = data.datos.NOMBRECLIENTECRM;
+                clientes.rfc = data.datos.RFCCLIENTECRM;
+                clientes.pyme = data.datos.PYMECLIENTECRM;
+                clientes.correoElectronico = data.datos.CORREOCLIENTECRM;
+                clientes.telefonos = data.datos.TELEFONOCLIENTECRM;
+                /*clientes.telefonoFijoInput
+                clientes.telefonoAlternativoInput
+                clientes.telefonoMovilInput*/
+                llenarDatosCliente(clientes);
+                ipcRenderer.send('consultaUltimasInt', clientes.rfc);
+            
+
+            }
+            }
+        });
+        }, 500);
+
 }
+ipcRenderer.on('consultaUltimasIntResult', (event, datos) => {
+    pintarGridUltimaInteraccion(datos);
+});
 
 function reemplazaPalabras(camposResv) {
     var campos = "";

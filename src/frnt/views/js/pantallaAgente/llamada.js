@@ -1171,33 +1171,43 @@ function uiCallTerminated(s_description) {
         });
         finalizarCrm();
 
-        var tiempoParaFin = areaIniciada == "IBD" ? agenteOk.tiempoTip : agenteOk.tiempoFRM;
-        timerFinalizarLlamadaacw=tiempoParaFin;
-        if (tiempoParaFin > 0) {
-            $("#divFinalizarLlamada").show();
-            $("#timerParaFin").show();
-            timerFin_ = tiempoParaFin;
-            timerFin = setInterval(function () {
-                $("#timerParaFin").html(timerFin_ + " seg ");
-                timerFin_ = timerFin_ - 1;
-
-            }, 1000);
-
-            timeTiempoparaFin=setTimeout(function () {
-                finalizarLlamadas(s_description)
-                $("#timerParaFin").html("");
-                $("#timerParaFin").hide();
-                $("#divFinalizarLlamada").hide();
-                clearInterval(timerFin);
-                clearTimeout(timeTiempoparaFin);
-                entroAfinLlamada = false;
-            }, (tiempoParaFin + 1) * 1000);
-        } else {
-
-            finalizarLlamadas(s_description)
+        /*RECUPERO EL VALOR DEL TIMER , si se termino la llamada antes de 15 segundos
+        terminamos la llamada sin mostrar la papeleta*/
+        // solo validaremos cuando sea inb
+        if(areaIniciada == "IBD"){}
+        const tiempoEnllamadaPantalla = $("#tiempoEnLlamada").text().trim(); 
+        const segundosTotalesPantalla = convertirATiempo(tiempoEnllamadaPantalla);
+        if (areaIniciada === "IBD" && segundosTotalesPantalla <= parseInt(urls.tiempoGhost)) {
+            finalizarLlamadas(s_description);
             entroAfinLlamada = false;
-        }
+        }else{
+            var tiempoParaFin = areaIniciada == "IBD" ? agenteOk.tiempoTip : agenteOk.tiempoFRM;
+            timerFinalizarLlamadaacw=tiempoParaFin;
+            if (tiempoParaFin > 0) {
+                $("#divFinalizarLlamada").show();
+                $("#timerParaFin").show();
+                timerFin_ = tiempoParaFin;
+                timerFin = setInterval(function () {
+                    $("#timerParaFin").html(timerFin_ + " seg ");
+                    timerFin_ = timerFin_ - 1;
 
+                }, 1000);
+
+                timeTiempoparaFin=setTimeout(function () {
+                    finalizarLlamadas(s_description)
+                    $("#timerParaFin").html("");
+                    $("#timerParaFin").hide();
+                    $("#divFinalizarLlamada").hide();
+                    clearInterval(timerFin);
+                    clearTimeout(timeTiempoparaFin);
+                    entroAfinLlamada = false;
+                }, (tiempoParaFin + 1) * 1000);
+            } else {
+
+                finalizarLlamadas(s_description);
+                entroAfinLlamada = false;
+            }
+        }
         stopRingbackTone();
         stopRingTone();
 
@@ -1225,7 +1235,10 @@ function uiCallTerminated(s_description) {
 
     }
 }
-
+function convertirATiempo(segundosTexto) {
+  const [horas, minutos, segundos] = segundosTexto.split(':').map(Number);
+  return (horas * 3600) + (minutos * 60) + segundos;
+}
 // Callback function for SIP Stacks
 function onSipEventStack(e /*SIPml.Stack.Event*/) {
     tsk_utils_log_info('==stack event = ' + e.type);

@@ -96,3 +96,8 @@ ipcMain.on('recuperarIdLlamadaIn', async(event, Crmcabecero) => {
   const onfoMarcador = await helper.recuperarIdLlamadaIn(Crmcabecero); 
   event.reply("consultaridllamivrcrmResult", onfoMarcador);
 });
+
+ipcMain.on('consultaUltimasInt', async(event, obj) => {
+  const objFinal = await helper.consultarUltimaInteraccion(obj); 
+  event.reply("consultaUltimasIntResult", objFinal);
+});

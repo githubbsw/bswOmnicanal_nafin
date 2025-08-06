@@ -11,6 +11,8 @@ var criteriosSeleccionEditarCliente=[];
 var recargarcliente=false;
 var telefonostxt = "";
 var correotxt = "";
+var modoEditarCliente = false;
+var clickbotonGuarda = false;
 
 function abrirBuscarCliente() {
     if(!$("#buscarCliente").is(":visible")){
@@ -86,6 +88,8 @@ function cancelarBusquedaSelect(){
     $("#seleccionarCliente").hide();
     $("#editarCliente").hide(); 
     $("#cancelarSeleccion").hide();
+   // document.getElementById('divRFC').classList.remove('deshabilitado');
+    $("#divRFC").removeClass("deshabilitado");
     llenarDatosCliente(clienteSeleccionado);
 }
 
@@ -368,7 +372,7 @@ function llenarDatosCliente(datos){
         $("#datoFechaNac").html(datos.fechaNacimientoCtoInput);
         $("#datoGenero").html((datos.generoCtoIput == 1 ? "MASCULINO": "FEMENINO"));
         $("#datoAfilio").html(datos.afiliadoCtoInput);
-        setTimeout(() => {
+        /*NO SE UTILIZA setTimeout(() => {
             $("#comboEstadoPersona").val(datos.estado)
             cmboMuncipioPersonaBuscar()
         }, 1000);
@@ -381,7 +385,7 @@ function llenarDatosCliente(datos){
         setTimeout(() => {
             $("#comboSucursalesPersona").val(datos.sucursal)
         }, 4500);
-
+        */
        
     }
 
@@ -398,12 +402,107 @@ function crearNombreCompleto(clase){
     nombrecompleto2+=   $("#primerNombreInput").val(); 
     nombreComp += $("#apellidoPaternoInput").val() + " " + $("#apellidoMaternoInput").val();
     
-    $("#nombreCompletoInput").val(nombreComp) 
-   
+    $("#nombreCompletoInput").val(nombreComp);
 
-    
+    //validar campos para ver si se actualiza el nombre, app, pyme
+    if(modoEditarCliente){
+        actualizarCampo('1');   
+    }
 }
 
+function actualizarCampo(numero){
+    if(numero==1)
+        clickbotonGuarda = false;    
+
+    if($("#primerNombreInput").val() != '' && $("#apellidoPaternoInput").val()!= '' && $("#apellidoMaternoInput").val()!='' &&
+    $("#pYMEInput").val().toUpperCase()!='' && $("#RFCInput").val()!='')
+    {
+
+        //recuperar datos anteriores para validar si hay cambios
+        var nombre_ = clientePreSeleccionado.primerNombre;
+        var appPaterno_ = clientePreSeleccionado.apellidoPaterno;
+        var appMaterno_ = clientePreSeleccionado.apellidoMaterno;
+        var pYMEInput_ = clientePreSeleccionado.razonsocial;
+        var RFCInput_ = clientePreSeleccionado.rfc;
+        var telefonoInput_ = clientePreSeleccionado.telefonos;
+
+
+        var nombreActual_=$("#primerNombreInput").val().toUpperCase();  
+        var apellidoPaterno_ = $("#apellidoPaternoInput").val().toUpperCase(); 
+        var apellidoMaterno_ = $("#apellidoMaternoInput").val().toUpperCase();
+        var pyme_ = $("#pYMEInput").val().toUpperCase();
+        var rfc_ = $("#RFCInput").val();
+        var telefononuevo_ = $("#telefonoInput").val();
+
+
+
+        var obj = {
+            idLlamada: llamadaOk.idLlamada,
+            idAgente: usuarioOk.CNUSERID,
+            telefonoCliente:llamadaOk.telefonoCliente,      
+            idFolio: llamadaOk.idFolio,
+            urls: urls.ipCRM,
+            nombreAgente: llamadaOk.nombreAgente,
+            extension: llamadaOk.extension,
+            canalId: llamadaOk.canalId,
+            rutaIVR: llamadaOk.rutaIVR,
+            rfc: $("#RFCInput").val().toUpperCase(),
+            pyme:$("#pYMEInput").val().toUpperCase(),
+            regimen:$("#REGIMENInput").val(),
+            sector:$("#sectorInput").val(),
+            primerNombre: $("#primerNombreInput").val().toUpperCase(),      
+            apellidoPaterno: $("#apellidoPaternoInput").val().toUpperCase(),  
+            apellidoMaterno: $("#apellidoMaternoInput").val().toUpperCase(),  
+            nombreCompleto: $("#nombreCompletoInput").val().toUpperCase(),
+            correo:$("#clineteCorreoInput").val(),
+            edad:$("#edadInput").val(),  
+            estado: $("#comboEstadoPersona").val(), 
+            municipio: $("#comboMunicipioPersona").val(), 
+            sucursal: $("#comboSucursalesPersona").val(), 
+            genero: $("#GeneroInput").val(), 
+            telefono: $("#telefonoInput").val(),
+            tipotelefono:$("#TipotelInput").val(),
+            Extesion:$("#ExtesionInput").val(), 
+            codigoPostal: $("#cpInput").val(),
+            Actividad:$("#ActividadInput").val(),
+            ActividadOtro:$("#ActividadOtroInput").val(),
+            Medio:$("#MedioInput").val(),
+            OtroCanal:$("#OtroCanalInput").val(),
+            nir: $("#nirInput").val(),
+            serie: $("#serieInput").val(),
+            razon: $("#compaInput").val(),
+            telefono: $("#telefonoInput").val(),
+            tipo: $("#tipoTelefonoIput").val(),
+            correoElectronico:  $("#clineteCorreoInput").val(),
+            correo:$("#clineteCorreoInput").val(), 
+            nombrecompleto2:nombrecompleto2.toUpperCase(),
+            /*datos contacto*/
+
+            telefonoAlternativoInput:$("#telefonoAlternativoInput").val(),
+            telefonoMovilInput: $("#telefonoMovilInput").val(),
+            generoCtoIput: $("#generoCtoIput").val(),
+            fechaNacimientoCtoInput: $("#fechaNacimientoCtoInput").val(),
+            curpCtoInput: $("#curpCtoInput").val(),
+            afiliadoCtoInput: $("#afiliadoCtoInput").val(),
+            id: $("#idClienteInput").val()
+        
+        };
+            
+            if( nombre_ != nombreActual_ || appPaterno_ != apellidoPaterno_ || appMaterno_!=apellidoMaterno_ ||
+                pYMEInput_ != pyme_ || RFCInput_ != rfc_ || telefonoInput_ != telefononuevo_ )
+            {    //cambiar datos hacer update
+                if($("#idClienteInput").val()=="")
+                {
+                    ipcRenderer.send('insertarDatosCliente', obj);
+                }else
+                    ipcRenderer.send('actualizarDatosCliente', obj);
+            }
+            else
+            {
+            /***no hacer nada */
+            }
+    }
+}
 function validarTelefono(telefono){    
     if (telefono.value.trim() == "" || telefono.value.toUpperCase() == "NO PROPORCIONA") {
         $('#'+telefono.id).val("NO PROPORCIONA");
@@ -509,13 +608,16 @@ function nuevoCliente(){
     $("#RFCInput").val("");
     $("#pYMEInput").val("");
     $("#RFCInput").prop('disabled', false);
+    document.getElementById('divRFC').classList.remove('deshabilitado');
+    $("#divRFC").removeClass("deshabilitado");
 }
 
 
 function editarCliente(){
-    cmboEstadoPersonaBuscar()
+    modoEditarCliente = true;
+    cmboEstadoPersonaBuscar();
     criteriosSeleccionEditarCliente=clientePreSeleccionado;
- 
+    document.getElementById('divRFC').classList.add('deshabilitado');
     quitarTipificacion(); 
     pestanasCRM("CRMPRINCIPALES");
     $("#displayClienteNuevo").hide();
@@ -547,10 +649,32 @@ function editarCliente(){
     $("#displayClienteNuevo").show();
     $("#displayScript").hide()
     $("#RFCInput").prop('disabled', true);
+    /*MARISOL*/
+    var obj = {
+        idCliente: $("#idClienteInput").val(),
+        rfc: $("#RFCInput").val(),
+        pyme:$("#pYMEInput").val().toUpperCase(),
+        primerNombre: $("#primerNombreInput").val().toUpperCase(),      
+        apellidoPaterno: $("#apellidoPaternoInput").val().toUpperCase(),  
+        apellidoMaterno: $("#apellidoMaternoInput").val().toUpperCase(),  
+        nombreCompleto: $("#nombreCompletoInput").val().toUpperCase(),
+        correo:$("#clineteCorreoInput").val(),
+        telefono: $("#telefonoInput").val(),
+        Extesion:$("#ExtesionInput").val(), 
+        telefono: $("#telefonoInput").val(),
+        tipo: $("#tipoTelefonoIput").val(),
+        correoElectronico:  $("#clineteCorreoInput").val(),
+        telefonoAlternativoInput:$("#telefonoAlternativoInput").val(),
+        telefonoMovilInput: $("#telefonoMovilInput").val(),
+
+    };
+    ipcRenderer.send('duplicarcliente', obj);
+    
 }
 
-
-
+ipcRenderer.on('duplicarclienteResult', (event, datos) => {
+    $("#idClienteInput").val(datos);    
+});
 
 ipcRenderer.on('insertarCteResult', (event, datos) => {
     if(datos.result!="OK"){
@@ -601,6 +725,8 @@ function llenarCamposAltainsertarCte( datos){
 
 function insertarCliente(numero)
 {
+    if(numero=='0')
+        clickbotonGuarda=true;
     var obj2 = $(".CRMPRINCIPALES input");
     var obj_ = $(".CRMPRINCIPALES select");
     for(var i = 0; i < obj2.length; i++ ){
@@ -845,7 +971,7 @@ function insertarCliente(numero)
     var rfc_ = $("#RFCInput").val();
         
 
-    if($("#idClienteInput").val()=="")
+    /*if($("#idClienteInput").val()=="")
     {
         ipcRenderer.send('insertarDatosCliente', obj);
     }else
@@ -858,6 +984,17 @@ function insertarCliente(numero)
             obj.id=$("#idClienteInput").val();
             ipcRenderer.send('actualizarDatosCliente', obj);
         }
+    }*/
+
+    if($("#idClienteInput").val()=="")
+    {
+        ipcRenderer.send('insertarDatosCliente', obj);
+    }else
+    {
+       
+            obj.id=$("#idClienteInput").val();
+            ipcRenderer.send('actualizarDatosCliente', obj);
+        
     }
     
 }
@@ -877,15 +1014,15 @@ ipcRenderer.on('insertarDatosClienteResult', (event, datos) => {
     $("#CRMINSCLIENTE").show();
     llenarCamposAlta(datos.valores);
 
-    $("#actuaGuarda").html("<Strong>Aviso.</Strong> Datos de cliente guarda.");
-
-    
-    
-    $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
-    {
-        $("#actuaGuarda").slideUp(3000);
-    });
-
+    if(clickbotonGuarda){
+        ////if(!modoEditarCliente){
+            $("#actuaGuarda").html("<Strong>Aviso.</Strong> Datos de cliente guardados.");    
+            $("#actuaGuarda").fadeTo(3000, 500).slideUp(500, function()
+            {
+                $("#actuaGuarda").slideUp(3000);
+            });
+        //}
+    }
     clientePreSeleccionado = datos.resultado;
 
     pintarGridUltimaInteraccion(datos.datosInteraccion);
@@ -1088,7 +1225,7 @@ function llenarCamposAlta( datos){
      $("#rfcInput").val(datos.rfc);
  
 
-recargarcliente=false;
+    recargarcliente=false;
 
 }
 
@@ -1117,7 +1254,7 @@ function cancelarAltaCliente(){
      llenarCamposAlta("");
      consultarCliente("listClientes", "");
     } 
-
+    modoEditarCliente = false;
 }
 
 function filtrarrfc(){    
@@ -1175,6 +1312,25 @@ function pintarGridUltimaInteraccion(valores){
     //$('#gridUltimaInteraccion tr td:first-child').css("width", "10px");
     //$('#gridUltimaInteraccion thead tr th:first-child').css("width", "10px");
     //tableUltima.rows(':not(.parent)').nodes().to$().find('td:first-child').trigger('click');
+
+    
+}
+function resultCambioPersonaTipificacion(){
+    
+    llenarDatosCliente(clienteSeleccionado);
+    pintarGridUltimaInteraccion(result.datosInteraccion);
+}
+function tabDatosCliente(clase){
+   
+    nombrecompleto2="";
+    var nombreComp =  $("#primerNombreInput").val() + " " ;
+    
+    nombrecompleto2= $("#apellidoPaternoInput").val() + " " + $("#apellidoMaternoInput").val()+" ";
+    nombrecompleto2+=   $("#primerNombreInput").val(); 
+    nombreComp += $("#apellidoPaternoInput").val() + " " + $("#apellidoMaternoInput").val();
+    
+    $("#nombreCompletoInput").val(nombreComp) 
+   
 
     
 }

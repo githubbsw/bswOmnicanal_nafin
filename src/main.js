@@ -63,7 +63,7 @@ if (!gotTheLock) {
 }
 
 try {
-
+  console.log('entra a leer 140398.json');
   let rawdata = fs.readFileSync('140398.json');
   let conf = JSON.parse(rawdata);
 
@@ -73,12 +73,12 @@ try {
 }
 catch (err) {
   if (err.code === 'ENOENT') {
-    console.log('file or directory does not exist');
+    console.log('file or directory does not exist 1');
   }
 }
 
 try {
-
+console.log('entra a leer cnn2020.json');
   let cnnns = fs.readFileSync('cnn2020.json');
 
 }
@@ -232,7 +232,7 @@ function ventanaMain() {
     backgroundThrottling: false,
     minimizable: false
   })
-//modulos.webContents.openDevTools();
+  //modulos.webContents.openDevTools();
   if (test) {
     if (canalDefault == "OBD") {
       modulos.loadFile('src/frnt/views/outbound.html')

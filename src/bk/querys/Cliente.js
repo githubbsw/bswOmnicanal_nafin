@@ -85,7 +85,8 @@ module.exports.actualizar =" UPDATE bstntrn.btcliente SET"
                     + " btclientectoafiliado= ? , "
                     + " btclienteestadoid = ?, "
                     + " btclienteciudadid = ?, " 
-                    + " btclientesuc = ? "
+                    + " btclientesuc = ?, "
+                    + " btclientetelefono = ? , btclienteextension = ?"
                     + " WHERE btclienteNUMERO = ? ";
 
 
@@ -173,9 +174,7 @@ module.exports.consultarClientes =   " 	SELECT  "+
                             " BTCLIENTECORRELEC correoElectronico,  "+
                             " cliente.BTCLIENTENCOMPLETO nombrecompleto,  "+
                             " btclienteRFC rfc,btclienterazonsocial pyme," +
-                            " CONCAT(( select BTCLIENTETELNO from bstntrn.btclientetel where BTCLIENTETELNOCTEID = cliente.btclienteNUMERO and BTCLIENTETELTIPO='PERSONAL'order by BTCLIENTETELCONSID desc limit 1), ' (PERSONAL)', "  +
-                            " ( select BTCLIENTETELNO from bstntrn.btclientetel where BTCLIENTETELNOCTEID = cliente.btclienteNUMERO and BTCLIENTETELTIPO='ALTERNATIVO'order by BTCLIENTETELCONSID desc limit 1)  , ' (ALTERNATIVO)' , "  +
-                            " ( select BTCLIENTETELNO from bstntrn.btclientetel where BTCLIENTETELNOCTEID = cliente.btclienteNUMERO and BTCLIENTETELTIPO='MOVIL'order by BTCLIENTETELCONSID desc limit 1) , ' (MOVIL)' ) telefonos ,"  +                         
+                            " ( select BTCLIENTETELNO from bstntrn.btclientetel where BTCLIENTETELNOCTEID = cliente.btclienteNUMERO and BTCLIENTETELTIPO='PERSONAL'order by BTCLIENTETELCONSID desc limit 1) telefonos ,"  +                         
                             " cliente.btclientegenid generoCtoIput,  "+
                             " cast(cast(cliente.btclientefnac  as date) as char(10)) fechaNacimientoCtoInput,  "+
                             " cliente.btclientecurp curpCtoInput,  "+
@@ -205,5 +204,8 @@ module.exports.consultarClienteCRMDia = " select concat(DATE_FORMAT(crm1.BTCRM1F
 module.exports.consultarClienteCRMHis = " select concat(DATE_FORMAT(fecha, '%d-%m-%Y'),' ', horaIni) fecha, nomAgente agente, ifnull(cNota_Desc,'') comentarios from crmnafbd.btcrm1 c  "+
             " where rfc  = ? "+
             " order by STR_TO_DATE(CONCAT(c.fecha, ' ', c.horaIni), '%Y-%m-%d %H:%i:%s')  desc limit ? ";
+
+module.exports.duplicarcliente = "call bstntrn.duplicarCliente(?,?); ";
+
 
 

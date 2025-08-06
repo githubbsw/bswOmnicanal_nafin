@@ -188,7 +188,7 @@
             <div class="d-flex justify-content-between bd-highlight flex-wrap">
                <button onclick="pestanasCRM('CRMPRINCIPALES')" id="CRMPRINCIPALES" type="button"
                   class="btn  btn-aux-crm col btn-dark mx-1">Datos principales</button>               
-               <button onclick="insertarCliente()" id="CRMINSCLIENTE" type="button"
+               <button onclick="insertarCliente('0')" id="CRMINSCLIENTE" type="button"
                   class="btn col btn-info mx-1">Guardar</button>
                <button onclick="insertarCorreo()" id="CRMINSCORREOS" type="button" class="btn col btn-info mx-1"
                   style="display:none">Guardar correo</button>
@@ -220,17 +220,17 @@
                <input class="col " id="RFCInput" title="RFC" style="text-transform: uppercase;" maxlength="15" />
             </div>
             <div class="CRMPRINCIPALES col-12 float-left altaCRM text-left ">PyME Razón Social<input
-               class="col " id="pYMEInput" title="PyME" 
+               onblur="actualizarCampo('1')" class="col " id="pYMEInput" title="PyME" 
                style="text-transform: uppercase;" onkeyup="this.value=Letras(this.value)"  >
             </div>
             <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left  ">Teléfono
-               <input class="col" id="telefonoInput" title="Teléfono" maxlength="10" >
+               <input class="col" id="telefonoInput" title="Teléfono" maxlength="10" onblur="actualizarCampo('1')">
             </div>
             <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left  ">Extension telefonica
-               <input class="col"id="ExtesionInput" title="tipotel" maxlength="10" >
+               <input class="col"id="ExtesionInput" title="tipotel" maxlength="10" onblur="actualizarCampo('1')" >
             </div>
             <div class="CRMPRINCIPALES col-6 float-left altaCRM text-left ">Correo
-               <input class="col"id="clineteCorreoInput" title="Correo"
+               <input class="col"id="clineteCorreoInput" title="Correo" onblur="actualizarCampo('1')"
                style="text-transform: lowercase;"  >
             </div>
             

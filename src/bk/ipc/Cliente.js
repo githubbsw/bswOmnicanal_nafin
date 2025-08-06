@@ -18,7 +18,8 @@ const helper = require('../helpers/Cliente.js');
 
   ipcMain.on('insertarDatosCliente', async(event, obj) => {
 
-    const clienteObj = await helper.insertar(obj); 
+    const clienteObj = 
+    await helper.insertar(obj); 
     event.reply("insertarDatosClienteResult", clienteObj);
 
   });
@@ -125,3 +126,9 @@ const helper = require('../helpers/Cliente.js');
 
   });
 
+  ipcMain.on('duplicarcliente', async(event,filtros) => {
+
+    const clienteObj = await helper.duplicarcliente(filtros); 
+    event.reply("duplicarclienteResult", clienteObj);
+
+  });

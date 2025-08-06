@@ -1,8 +1,18 @@
 {
   "name": "spartacus",
-  "version": "4.1.64",
-  "productName": "Spartacus",
+  "version": "4.1.67",
   "description": "Spartacus, programa del agente",
+  "homepage": "https://github.com/githubbsw/bswOmnicanal_nafin#readme",
+  "bugs": {
+    "url": "https://github.com/githubbsw/bswOmnicanal_nafin/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/githubbsw/bswOmnicanal_nafin.git"
+  },
+  "license": "ISC",
+  "author": "Spartacus inc",
+  "type": "commonjs",
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
@@ -11,13 +21,6 @@
     "package-linux": "electron-packager . spartacus --overwrite --asar --platform=linux --arch=x64 --icon=assets/icons/favi.png --prune=true --out=release-builds",
     "create-debian-installer": "electron-installer-debian --src release-builds/spartacus-linux-x64/ --arch amd64 --config debian.json",
     "create-linux-installer": " electron-installer-redhat --src release-builds/spartacus-linux-x64/ --arch x86_64 --config linux.json"
-  },
-  "author": "Spartacus inc",
-  "license": "ISC",
-  "devDependencies": {
-    "electron": "^7.3.3",
-    "electron-packager": "^14.0.6",
-    "electron-winstaller": "^4.0.2"
   },
   "dependencies": {
     "asterisk-ami-client": "^1.1.5",
@@ -35,5 +38,11 @@
     "request": "^2.88.0",
     "require": "^2.4.20",
     "rimraf": "^3.0.0"
-  }
+  },
+  "devDependencies": {
+    "electron": "^7.3.3",
+    "electron-packager": "^14.0.6",
+    "electron-winstaller": "^4.0.2"
+  },
+  "productName": "Spartacus"
 }
